@@ -1,0 +1,212 @@
+﻿<Window x:Class="Shining_BeautifulGirls.技能编辑"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Shining_BeautifulGirls"
+        mc:Ignorable="d"
+        Title="技能编辑" Height="800" Width="1200">
+    <Window.Resources>
+        <Style x:Key="标题TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="微软雅黑"/>
+        </Style>
+        <Style x:Key="技能类别TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="微软雅黑"/>
+            <Setter Property="Cursor" Value="Help"/>
+        </Style>
+        <Style TargetType="{x:Type Border}">
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+        </Style>
+        <DataTemplate x:Key="技能ListBoxItemTemplate">
+            <Image Cursor="Hand" Height="60" Source="{Binding Path}" Width="160">
+                <Image.ToolTip>
+                    <ToolTip Content="{Binding Name}"/>
+                </Image.ToolTip>
+            </Image>
+        </DataTemplate>
+        <ControlTemplate x:Key="ListBoxTemplate" TargetType="{x:Type ListBox}">
+            <Border BorderBrush="Black" BorderThickness="1">
+                <ScrollViewer>
+                    <ItemsPresenter/>
+                </ScrollViewer>
+            </Border>
+        </ControlTemplate>
+
+        <Style x:Key="技能ListBoxStyle" TargetType="{x:Type ListBox}">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="AllowDrop" Value="True"/>
+            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBox_PreviewMouseLeftButtonDown"/>
+            <EventSetter Event="Drop" Handler="ListBox_Drop"/>
+
+            <!--
+            <EventSetter Event="DragEnter" Handler="ListBox_DragEnter"/>
+            <EventSetter Event="DragOver" Handler="ListBox_DragOver"/>
+            -->
+        </Style>
+        <Style x:Key="技能分类介绍ToolTipStyle" TargetType="{x:Type ToolTip}">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Placement" Value="Top"/>
+        </Style>
+        <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="FontFamily" Value="KaiTi"/>
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF74ECA7"/>
+                        <GradientStop Color="#FFDDFDD4" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+        </Style>
+    </Window.Resources>
+    <Border>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="15*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0">
+                <TextBlock Style="{DynamicResource 标题TextBlockStyle}">名称</TextBlock>
+            </Border>
+            <Border Grid.Column="1">
+                <TextBlock Style="{DynamicResource 标题TextBlockStyle}">技能组配置</TextBlock>
+            </Border>
+            <Border Grid.Column="2">
+                <TextBlock Style="{DynamicResource 标题TextBlockStyle}">仓库</TextBlock>
+            </Border>
+
+            <Border Grid.Row="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="17*"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ListBox x:Name="文件列表" AllowDrop="False" SelectionChanged="文件列表_SelectionChanged"  Template="{DynamicResource ListBoxTemplate}" d:ItemsSource="{d:SampleData ItemCount=5}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="文件列表_MouseDoubleClick">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Margin="0,5,0,0">
+                                    <TextBlock Text="{Binding}" FontSize="20" TextAlignment="Center" FontFamily="微软雅黑" FontWeight="Bold"/>
+                                    <TextBox Visibility="Hidden" Text="textbox" FontSize="20" TextAlignment="Center" BorderBrush="{x:Null}"  FontFamily="微软雅黑" IsEnabled="False" Foreground="#FF19AB0D" FontWeight="Bold" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" ContextMenu="{x:Null}"/>
+
+                                    <Grid.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="删除" Click="Button删除_Click" IsEnabled="True"/>
+                                            <MenuItem Header="重命名" Click="右键重命名Click" IsEnabled="True"/>
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <!--下方按钮-->
+                    <Border Grid.Row="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="Button添加" Content="添加" Style="{DynamicResource ButtonStyle}" Click="Button添加_Click"/>
+                            <Button x:Name="Button删除" Grid.Column="1" Content="删除" Style="{DynamicResource ButtonStyle}" Click="Button删除_Click" IsEnabled="False">
+                                <Button.Background>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="#FFFF5959"/>
+                                        <GradientStop Color="#FFF7EDDD" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Grid.Row="1"/>
+            <Border Grid.Column="2" Grid.Row="1"/>
+            <!--配置面板-->
+            <Grid x:Name="配置面板" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" IsEnabled="False" Visibility="Hidden">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Border>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="15*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0">
+                            <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅰ">
+                                <TextBlock.ToolTip>
+                                    <ToolTip Content="最优先技能：第一次学习时即要学习的技能；默认学习的技能。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </Border>
+                        <Border Grid.Column="1">
+                            <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅱ">
+                                <TextBlock.ToolTip>
+                                    <ToolTip Content="次优先技能：第三次学习开始(或前置技能均学习完毕|养成结束，下略)时开始学习。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </Border>
+                        <Border Grid.Column="2">
+                            <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅲ">
+                                <TextBlock.ToolTip>
+                                    <ToolTip Content="后置技能：第六次技能学习开始时，或最后一次技能学习时才开启的技能。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </Border>
+                        <Border Grid.Column="3">
+                            <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅳ">
+                                <TextBlock.ToolTip>
+                                    <ToolTip Content="补足技能：只在养成结束时学习的技能。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </Border>
+
+
+                        <ListBox x:Name="级别1" Grid.Column="0" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+                        <ListBox x:Name="级别2" Grid.Column="1" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+                        <ListBox x:Name="级别3" Grid.Column="2" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+                        <ListBox x:Name="级别4" Grid.Column="3" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+                    </Grid>
+                </Border>
+
+                <ListBox x:Name="技能仓库" Grid.Column="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" d:ItemsSource="{d:SampleData ItemCount=5}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

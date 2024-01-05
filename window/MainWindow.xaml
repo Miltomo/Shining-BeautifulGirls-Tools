@@ -1,0 +1,138 @@
+﻿<Window x:Class="Shining_BeautifulGirls.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Shining_BeautifulGirls"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800"
+        >
+    <Window.Resources>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="#FFF3C5C5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Height" Value="90"/>
+            <Setter Property="Width" Value="190"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+        </Style>
+        <Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="50"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" 
+                   Text="Shining! BeautifulGirls" 
+                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                   />
+
+        <TextBlock Style="{DynamicResource TextBlockStyle}" 
+           Text="Tools" 
+           Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" RenderTransformOrigin="0.703,0.996" Margin="190,103,0,0" VerticalAlignment="Top" Grid.RowSpan="2" FontSize="60" Grid.ColumnSpan="2"
+           >
+            <TextBlock.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="22.67"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </TextBlock.RenderTransform>
+        </TextBlock>
+
+        <TextBlock Style="{DynamicResource TextBlockStyle}"
+                   x:Name="提示"
+                   Text=""
+                   FontSize="35"
+                   FontFamily="楷体"
+                   Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                   />
+
+        <ComboBox Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="1" Grid.RowSpan="2" 
+                 Height="40"
+                 Width="400"
+                 x:Name="模拟器列表"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" 
+                 SelectionChanged="模拟器列表_SelectionChanged"
+                 >
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ComboBox}}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1.2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Grid.Column="0"
+                            Style="{DynamicResource TextBlockStyle}" 
+                            Text="{Binding Name}"
+                            FontSize="25"
+                            FontFamily="Consolas"
+                            />
+                        <TextBlock
+                            Grid.Column="1"
+                            Style="{DynamicResource TextBlockStyle}" 
+                            Text="{Binding State}"
+                            FontSize="25"
+                            FontFamily="微软雅黑"
+                            />
+                        <ItemsControl Grid.Column="2" ItemsSource="{Binding Size}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontSize="15" FontFamily="Consolas" Style="{DynamicResource TextBlockStyle}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <Button Style="{DynamicResource ButtonStyle}" Grid.Row="1" Grid.RowSpan="2" Grid.Column="3"
+                Height="30" Width="70"
+                FontSize="20"
+                x:Name="Button刷新" Background="#FF49BBF7" BorderBrush="#FFEDC63E"
+                Click="刷新" HorizontalAlignment="Center"
+                >
+            刷新
+        </Button>
+        <CheckBox x:Name="自动连接CheckBox" Visibility="Collapsed" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Content="下次启动时自动连接该设备" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5" FontFamily="楷体">
+            <CheckBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                </TransformGroup>
+            </CheckBox.RenderTransform>
+        </CheckBox>
+        <Button Style="{DynamicResource ButtonStyle}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                Height="60"
+                IsEnabled="False"
+                x:Name="Button确定"
+                Click="确定"
+                >
+            确定
+        </Button>
+
+        <TextBlock x:Name="版本信息" Text="Version" Grid.Row="3" Grid.ColumnSpan="4" FontSize="20" Opacity="0.2" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,0,0,0"/>
+    </Grid>
+</Window>

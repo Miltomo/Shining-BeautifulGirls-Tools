@@ -1,0 +1,344 @@
+﻿<Window x:Class="Shining_BeautifulGirls.用户界面"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Shining_BeautifulGirls"
+        mc:Ignorable="d"
+        Title="用户界面" Height="900" Width="600">
+    <Window.Resources>
+        <Style x:Key="面板名TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontFamily" Value="楷体"/>
+            <Setter Property="FontWeight" Value="ExtraBlack"/>
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFEA5123"/>
+                        <GradientStop Color="#FFD4B214" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="选项TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="微软雅黑"/>
+        </Style>
+        <Style x:Key="ComboBoxStyle" TargetType="{x:Type ComboBox}">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontFamily" Value="FangSong"/>
+            <Setter Property="FontWeight" Value="Black"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="属性值TextBoxStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="UltraLight"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="MinWidth" Value="10"/>
+            <Setter Property="MaxLength" Value="20"/>
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="Gray"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="RadioButtonStyle" TargetType="{x:Type RadioButton}">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="属性TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontFamily" Value="kaiti"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style x:Key="BorderStyle" TargetType="{x:Type Border}">
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#FFFBF9E3"/>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFF73F21"/>
+                        <GradientStop Color="#FFF1CA41" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="启用CheckBoxStyle" TargetType="{x:Type CheckBox}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="RenderTransformOrigin" Value="0,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <!--上部-->
+        <Canvas Grid.Row="0">
+            <Grid x:Name="选项面板" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}"
+                  Canvas.Left="0"
+                  Canvas.Top="0"
+                  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <!--养成任务-->
+                <Border x:Name="养成任务" Style="{DynamicResource BorderStyle}">
+                    <Border.BorderBrush>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFF73F21"/>
+                            <GradientStop Color="#FFF1CA41" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="1.3*"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition Height="1.5*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Style="{DynamicResource 面板名TextBlockStyle}">养成任务</TextBlock>
+                        <TextBlock Grid.Row="1" Text="目标属性值" Style="{DynamicResource 选项TextBlockStyle}"/>
+                        <TextBlock Grid.Row="2" Text="好友协助卡" Style="{DynamicResource 选项TextBlockStyle}"/>
+                        <TextBlock Grid.Row="3" Text="学习技能组" Style="{DynamicResource 选项TextBlockStyle}"/>
+                        <TextBlock Grid.Row="4" Text="重赛逻辑" Style="{DynamicResource 选项TextBlockStyle}"/>
+                        <TextBlock Grid.Row="5" Text="养成算法" Style="{DynamicResource 选项TextBlockStyle}"/>
+                        <TextBlock Grid.Row="6" Text="循环设置" Style="{DynamicResource 选项TextBlockStyle}"/>
+
+                        <!--编辑属性值-->
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="2*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Style="{DynamicResource 属性TextBlockStyle}" Foreground="#FFF96161">速度</TextBlock>
+                            <TextBox x:Name="速度Input" Grid.Row="1" Grid.Column="0" Style="{DynamicResource 属性值TextBoxStyle}" Text="100" KeyDown="NumberInput_KeyDown" KeyUp="NumberInput_KeyUp"/>
+                            <TextBlock Grid.Column="1" Style="{DynamicResource 属性TextBlockStyle}" Foreground="#FF49B7E4">耐力</TextBlock>
+                            <TextBox x:Name="耐力Input" Grid.Row="1" Grid.Column="1" Style="{DynamicResource 属性值TextBoxStyle}" Text="100" KeyDown="NumberInput_KeyDown" KeyUp="NumberInput_KeyUp"/>
+                            <TextBlock Grid.Column="2" Style="{DynamicResource 属性TextBlockStyle}" Foreground="#FFEAD12F">力量</TextBlock>
+                            <TextBox x:Name="力量Input" Grid.Row="1" Grid.Column="2" Style="{DynamicResource 属性值TextBoxStyle}" Text="100" KeyDown="NumberInput_KeyDown" KeyUp="NumberInput_KeyUp"/>
+                            <TextBlock Grid.Column="3" Style="{DynamicResource 属性TextBlockStyle}" Foreground="#FF9D44EC">毅力</TextBlock>
+                            <TextBox x:Name="毅力Input" Grid.Row="1" Grid.Column="3" Style="{DynamicResource 属性值TextBoxStyle}" Text="100" KeyDown="NumberInput_KeyDown" KeyUp="NumberInput_KeyUp"/>
+                            <TextBlock Grid.Column="4" Style="{DynamicResource 属性TextBlockStyle}" Foreground="#FF28C14D">智力</TextBlock>
+                            <TextBox x:Name="智力Input" Grid.Row="1" Grid.Column="4" Style="{DynamicResource 属性值TextBoxStyle}" Text="100" KeyDown="NumberInput_KeyDown" KeyUp="NumberInput_KeyUp"/>
+                        </Grid>
+
+                        <ComboBox x:Name="协助卡ComboBox" Grid.Row="2" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" 
+                                  SelectedIndex="0"
+                                  SelectionChanged="协助卡ComboBox_SelectionChanged"
+                                  >
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" Margin="5,5,0,10"/>
+                                        <Image Grid.Row="1" Source="{Binding Path}" Width="96" Height="106" Margin="30,0,0,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <Image x:Name="协助卡Image" Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Margin="14,41,40,2"/>
+
+                        <ComboBox x:Name="技能ComboBox" Grid.Row="3" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0"/>
+
+                        <Button Style="{DynamicResource ButtonStyle}" x:Name="Button技能编辑" Grid.Row="3" Grid.Column="2" Height="30" Width="60" HorizontalAlignment="Left" Click="Button技能编辑_Click" Content="编辑"/>
+
+                        <ComboBox x:Name="重赛逻辑ComboBox" Grid.Row="4" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0">
+                            <ComboBoxItem Content="只使用免费次数"/>
+                            <ComboBoxItem Content="每场比赛至多重赛一次"/>
+                            <ComboBoxItem Content="只要失败就重赛"/>
+                        </ComboBox>
+
+                        <ComboBox Grid.Row="5" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0" IsEnabled="False">
+                            <ComboBoxItem Content="基本逻辑"/>
+                        </ComboBox>
+
+                        <!--循环设置-->
+                        <Grid Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <RadioButton x:Name="养成循环_体力" Style="{DynamicResource RadioButtonStyle}" Content="用尽所有体力" GroupName="养成循环设置" IsChecked="True"/>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <RadioButton x:Name="养成循环_次数" Style="{DynamicResource RadioButtonStyle}" GroupName="养成循环设置" Checked="Set养成次数" Unchecked="Set养成次数"/>
+                                <TextBlock Margin="10,0,0,0" FontSize="18">循环</TextBlock>
+                                <TextBox x:Name="养成次数Input" Style="{DynamicResource 属性值TextBoxStyle}" Text="1" FontSize="18" Margin="10,0,10,0" FontFamily="Microsoft YaHei UI" Foreground="#FFFD0D0D" FontWeight="Bold" KeyDown="NumberInput_KeyDown" KeyUp="NumberInput_KeyUp" IsEnabled="False"/>
+                                <TextBlock FontSize="18">次</TextBlock>
+                            </StackPanel>
+                            <CheckBox x:Name="使用体力补剂CheckBox" Visibility="Collapsed" IsChecked="True" Content="使用道具回复" Grid.ColumnSpan="2" Margin="268,0,0,0" Width="116">
+                                <CheckBox.Foreground>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="#FF36AD48"/>
+                                        <GradientStop Color="#FFABECA6" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </CheckBox.Foreground>
+                            </CheckBox>
+                            <CheckBox x:Name="使用宝石CheckBox" IsEnabled="False" Visibility="Collapsed"  Grid.Row="1" IsChecked="False" Content="使用宝石回复" Grid.ColumnSpan="2" Margin="269,0,0,0" Width="115">
+                                <CheckBox.Foreground>
+                                    <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+                                        <GradientStop Color="#FF44CDE8"/>
+                                        <GradientStop Color="#FFF97171" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </CheckBox.Foreground>
+                            </CheckBox>
+                        </Grid>
+
+                        <!--<Button Style="{DynamicResource ButtonStyle}" x:Name="Button默认" Grid.Column="1" Click="Button默认_Click" Height="30">
+                            恢复默认值
+                        </Button>-->
+                        <CheckBox x:Name="养成启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True" Checked="启用CheckBox_CheckChanged" Unchecked="启用CheckBox_CheckChanged"/>
+                    </Grid>
+                </Border>
+                <!--杂项任务-->
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Border x:Name="竞技场任务" Style="{DynamicResource BorderStyle}" Grid.Row="0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="2*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{DynamicResource 面板名TextBlockStyle}" Grid.ColumnSpan="2">团队竞技场</TextBlock>
+                            <TextBlock Grid.Row="1" Text="选队策略" Style="{DynamicResource 选项TextBlockStyle}"/>
+
+                            <ComboBox x:Name="选队ComboBox" Grid.Row="1" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0">
+                                <ComboBoxItem Content="优先礼物，否则高战力队"/>
+                                <ComboBoxItem Content="优先礼物，否则中战力队"/>
+                                <ComboBoxItem Content="优先礼物，否则低战力队"/>
+                            </ComboBox>
+
+                            <CheckBox x:Name="竞技场启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True" Checked="启用CheckBox_CheckChanged" Unchecked="启用CheckBox_CheckChanged" Margin="20,0,0,0"/>
+                        </Grid>
+                    </Border>
+                    <Border x:Name="日常赛事任务" Style="{DynamicResource BorderStyle}" Grid.Row="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="2*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{DynamicResource 面板名TextBlockStyle}" Grid.ColumnSpan="2">日常赛事</TextBlock>
+                            <TextBlock Grid.Row="1" Text="赛事类型" Style="{DynamicResource 选项TextBlockStyle}"/>
+
+                            <Grid Grid.Row="1" Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox x:Name="日常赛事ComboBox1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0" Width="100" HorizontalAlignment="Right">
+                                    <ComboBoxItem Content="月光奖"/>
+                                    <ComboBoxItem Content="木星杯"/>
+                                </ComboBox>
+                                <ComboBox x:Name="日常赛事ComboBox2" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0" Width="100" HorizontalAlignment="Left">
+                                    <ComboBoxItem Content="HARD"/>
+                                    <ComboBoxItem Content="MEDIUM"/>
+                                    <ComboBoxItem Content="EASY"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <CheckBox x:Name="日常赛事启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True" Checked="启用CheckBox_CheckChanged" Unchecked="启用CheckBox_CheckChanged"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+            <Grid x:Name="输出面板" Opacity="0"
+                  Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}"
+                  Canvas.Left="600"
+                  Canvas.Top="0"
+                  >
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="9*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Style="{DynamicResource 面板名TextBlockStyle}">运行记录</TextBlock>
+                <FlowDocumentScrollViewer x:Name="滚动包装器" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <FlowDocument x:Name="运行记录" FontFamily="微软雅黑" FontSize="20"/>
+                </FlowDocumentScrollViewer>
+            </Grid>
+        </Canvas>
+        <!--下部-->
+        <Grid x:Name="控制面板" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="3*"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="Button执行" Grid.Row="1" Style="{DynamicResource ButtonStyle}" FontSize="30" Height="60" Width="150"
+                    Click="Button执行_Click"
+                    >
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF65BCF3"/>
+                        <GradientStop Color="#FFF5F5DF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background> 开始执行
+            </Button>
+        </Grid>
+    </Grid>
+</Window>
