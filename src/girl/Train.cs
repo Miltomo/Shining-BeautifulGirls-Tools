@@ -6,10 +6,10 @@ namespace Shining_BeautifulGirls
     {
         public static List<string> SubjectS { get; } =
             ["速度", "耐力", "力量", "毅力", "智力"];
-        private List<TrainInfo> T { get; } = new();
+        private List<TrainInfo> T { get; } = [];
         public void TryTrain()
         {
-            MoveTo("训练", ["返回", "训练"]);
+            MoveTo("训练", ["返回", "选择末尾", "训练"]);
 
             Subject巡视();
 

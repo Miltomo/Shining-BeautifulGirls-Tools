@@ -17,7 +17,8 @@ namespace Shining_BeautifulGirls
         }
 
         [ToSave]
-        public int[] Property { get; private set; } = new int[5];
+        private int[]? _hproperty;
+        public int[] Property => _hproperty ?? [0, 0, 0, 0, 0];
         public int Vitality { get; private set; }
         public int Mood { get; private set; } = 3;//普通
         [ToSave]
@@ -90,11 +91,24 @@ namespace Shining_BeautifulGirls
             Mood = GetMood();
 
             InSummer = Check("夏日");
-
-            for (int i = 0; i < Property.Length; i += 1)
-                Property[i] = GetPropertyValue(SubjectS[i]);
-
             _lastHP = Vitality;
+
+            //TODO 测试
+            // 读取当前属性值
+            List<int> property = [];
+            for (int i = 0; i < SubjectS.Count; i += 1)
+                property.Add(GetPropertyValue(SubjectS[i]));
+
+            _hproperty ??= [.. property];
+
+            for (int i = 0; i < property.Count; i += 1)
+            {
+                var dq = property[i];
+                var hdq = _hproperty[i];
+
+                // 识别值正常时，更新历史记录
+                if (hdq - dq < 100) _hproperty[i] = dq;
+            }
         }
 
         public void Log(string logInfo)

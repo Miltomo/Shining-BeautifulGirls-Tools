@@ -77,9 +77,10 @@ namespace Shining_BeautifulGirls
                 int waitting = -1;
                 int gap = 300;
                 bool Aw = false;
-                while (!Aw && waitting < maxTime)
+                while (true)
                 {
                     Pause(gap);
+                    //TODO 加速
                     foreach (var symbol in symbols)
                         if (CheckSymbol(symbol, delta: sim))
                         {
@@ -87,6 +88,8 @@ namespace Shining_BeautifulGirls
                             break;
                         }
                     waitting += gap;
+                    if (Aw || waitting > maxTime)
+                        break;
                 }
                 if (Aw)
                     break;

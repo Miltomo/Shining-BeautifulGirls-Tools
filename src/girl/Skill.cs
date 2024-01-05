@@ -25,7 +25,7 @@ namespace Shining_BeautifulGirls
         [ToSave]
         private int SkIndex { get; set; } = 0;
         [ToSave]
-        private int SkTurns { get; set; } = 0;
+        public int SkTurns { get; private set; } = 0;
         private int SkPoints { get; set; } = 0;
 
         private string? LearnName;

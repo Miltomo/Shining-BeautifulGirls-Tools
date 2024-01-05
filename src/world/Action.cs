@@ -208,6 +208,7 @@ namespace Shining_BeautifulGirls
                 Log("✔️检测到上次养成数据");
                 Log($"回合数: {Girl.Turn}");
                 Log($"属性值: {Girl.Property[0]} , {Girl.Property[1]} , {Girl.Property[2]} , {Girl.Property[3]} , {Girl.Property[4]}");
+                Log($"技能学习次数: {Girl.SkTurns}");
                 Girl.UserConfig = UserConfig?.SBGConfig;
                 Girl.Continue();
             }
