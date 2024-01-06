@@ -1,4 +1,5 @@
-﻿using NumSharp.Utilities;
+﻿using MHTools;
+using NumSharp.Utilities;
 using System;
 using System.Threading;
 
@@ -9,6 +10,7 @@ namespace Shining_BeautifulGirls
         private bool _stop = false;
         private string _lastClick;
         private static readonly Random _random = new();
+        private static readonly int refreshGAP = 200;
 
         /// <summary>
         /// 通过点击一组按钮，移动到某页面（先点击再检查）。
@@ -27,23 +29,30 @@ namespace Shining_BeautifulGirls
                 Click(bts);
 
                 int waitting = -1;
-                int gap = 300;
                 bool Aw = false;
                 while (waitting < maxTime)
                 {
-                    Pause(gap);
+                    Pause();
                     if (CheckSymbol(symbol, delta: sim))
                     {
                         Aw = true;
                         break;
                     }
-                    waitting += gap;
+                    waitting += refreshGAP;
                 }
                 if (Aw)
                     break;
             }
         }
 
+        /// <summary>
+        /// 通过点击一组按钮，移动到某页面（先点击再检查）。并指定可能出现的意外情况。
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="occurs"></param>
+        /// <param name="sec"></param>
+        /// <param name="sim"></param>
+        /// <returns>true，当成功移动到目标页面时；false，当意外情况出现时。</returns>
         public bool MoveToEx(string[][] data, string[][]? occurs = default, int sec = 1, double sim = 0.9)
         {
             var symbols = data[0];
@@ -54,9 +63,35 @@ namespace Shining_BeautifulGirls
 
             while (true)
             {
+                // 点击按钮(组)
+                Click(bts);
+
+                // 判断是否到达目标界面
+                int waitting = -1;
+                bool Aw = false;
+                while (true)
+                {
+                    Pause();
+                    //TODO 加速
+                    foreach (var symbol in symbols)
+                        if (CheckSymbol(symbol, delta: sim))
+                        {
+                            Aw = true;
+                            break;
+                        }
+                    waitting += refreshGAP;
+                    if (Aw || waitting > maxTime)
+                        break;
+                }
+                if (Aw)
+                    break;
+
+                // 检查是否出现意外情况
                 if (occurs is not null)
+                {
                     for (int i = 0; i < occurs.Length; i++)
                     {
+                        //TODO 加速
                         var dq = occurs[i];
                         if (CheckSymbol(dq[0]))
                         {
@@ -68,31 +103,9 @@ namespace Shining_BeautifulGirls
                             Click(dq.Slice(1, dq.Length));
                         }
                     }
+                }//if occurs
 
-                if (exit)
-                    return false;
-
-                Click(bts);
-
-                int waitting = -1;
-                int gap = 300;
-                bool Aw = false;
-                while (true)
-                {
-                    Pause(gap);
-                    //TODO 加速
-                    foreach (var symbol in symbols)
-                        if (CheckSymbol(symbol, delta: sim))
-                        {
-                            Aw = true;
-                            break;
-                        }
-                    waitting += gap;
-                    if (Aw || waitting > maxTime)
-                        break;
-                }
-                if (Aw)
-                    break;
+                if (exit) return false;
             }
 
             return true;
@@ -111,17 +124,16 @@ namespace Shining_BeautifulGirls
                 bt = data[1];
 
             int waitting = 0;
-            int gap = 300;
             while (true)
             {
-                Pause(gap);
+                Pause();
                 if (CheckSymbol(symbol, delta: sim))
                 {
-                    Pause(1000);
+                    Pause();
                     Click(bt, 1);
                     break;
                 }
-                waitting += gap;
+                waitting += refreshGAP;
                 if (waitting > 10000)
                 {
                     Click(_lastClick);
@@ -138,22 +150,22 @@ namespace Shining_BeautifulGirls
                 bt = data[1];
 
             int waitting = 0;
-            int gap = 300;
             while (true)
             {
-                Pause(gap);
+                Pause();
                 if (CheckSymbol(symbol, delta: sim))
                 {
-                    Pause(1000);
+                    Pause();
                     Click(bt, 1);
                     break;
                 }
 
+                //TODO 加速
                 for (int i = 0; i < ex.Length; i++)
                     if (CheckSymbol(ex[i], delta: sim))
                         return false;
 
-                waitting += gap;
+                waitting += refreshGAP;
                 if (waitting > 10000)
                 {
                     Click(_lastClick);
@@ -177,25 +189,39 @@ namespace Shining_BeautifulGirls
                 Location = "未知";*/
         }
 
+
+
+
         /// <summary>
         /// 暂停等待
         /// </summary>
         /// <param name="time"></param>
-        public void Pause(int time = 500)
+        public void Pause(int time = 200)
         {
+            // 关闭超时计时器
+            StopOverTimer();
             int remain = time;
             while (remain > 0)
             {
                 if (_stop)
-                    throw new Exception();
+                    throw new UserStopException();
 
                 int step = remain > 1000 ? 1000 : remain;
-                //等待时间波动
+                remain -= step;
+
+                // 等待时间波动
                 if (step > 100)
                     step += _random.Next(200) - 100;
                 Thread.Sleep(step);
-
-                remain -= step;
+            }
+            // 启动超时计时器
+            try
+            {
+                StartOverTimer();
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -205,7 +231,6 @@ namespace Shining_BeautifulGirls
             {
                 if (ADB.Click(x, y))
                     break;
-                Pause(20);
             }
             Pause(pauseTime);
         }
