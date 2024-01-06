@@ -1,6 +1,8 @@
 ﻿using OpenCvSharp;
+using OpenCvSharp.Features2D;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ComputerVision
 {
@@ -145,6 +147,35 @@ namespace ComputerVision
             Cv2.Threshold(image, thresholded, thresholdValue, 255, ThresholdTypes.Binary);
 
             return thresholded;
+        }
+
+
+        public static double FeatureMatch(string targetImagePath, string backgroundImagePath)
+        {
+            // 读取目标图像和背景图像
+            Mat targetImage = new Mat(targetImagePath);
+            Mat backgroundImage = new Mat(backgroundImagePath);
+
+            // 初始化SIFT
+            SIFT sift = SIFT.Create();
+
+            // 检测和计算目标图像的关键点和描述符
+            Mat descriptorsTarget = new();
+            sift.DetectAndCompute(targetImage, null, out KeyPoint[] keyPointsTarget, descriptorsTarget);
+
+            // 检测和计算背景图像的关键点和描述符
+            Mat descriptorsBackground = new Mat();
+            sift.DetectAndCompute(backgroundImage, null, out KeyPoint[] keyPointsBackground, descriptorsBackground);
+
+            // 使用FLANN进行特征匹配
+            FlannBasedMatcher matcher = new FlannBasedMatcher();
+            DMatch[] matches = matcher.Match(descriptorsTarget, descriptorsBackground);
+
+            // 计算匹配度
+            double maxMatchDistance = matches.Max(m => m.Distance);
+            double matchConfidence = 1.0 - maxMatchDistance / 100.0; // 根据需要调整分母
+
+            return matchConfidence;
         }
 
 
