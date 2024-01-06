@@ -310,6 +310,7 @@ namespace Shining_BeautifulGirls
         public void Stop()
         {
             _stop = true;
+            StopOverTimer();
         }
     }
 }
