@@ -19,7 +19,6 @@ namespace Shining_BeautifulGirls
         public string Screen { get; init; }
         public string DeviceID { get; init; }
 
-
         string 主界面 { get; set; } = "未知";
         string 次界面 { get; set; } = "未知";
 
