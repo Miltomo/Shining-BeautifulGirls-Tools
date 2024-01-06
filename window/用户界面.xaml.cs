@@ -285,13 +285,23 @@ namespace Shining_BeautifulGirls
                     while (PlanQueue.Count > 0)
                         PlanQueue.Dequeue()();
 
+                    Monitor.Stop();
                     //线程成功结束
                     RunningState = 2;
                     return;
                 }
+                catch (UserStopException)
+                {
+                    Debug.WriteLine("用户终止");
+                }
+                catch (LongTimeNoOperationException)
+                {
+                    OutPut("⚠️由于长时间未响应，程序已结束⚠️");
+                    OutPut("请检查网络或ADB连接");
+                }
                 catch (Exception)
                 {
-                    Trace.WriteLine("用户终止");
+                    throw;
                 }
                 Save养成优俊少女();
                 //线程异常结束
