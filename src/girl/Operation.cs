@@ -32,6 +32,17 @@ namespace Shining_BeautifulGirls
         }
 
         /// <summary>
+        /// (无刷新) 直接检查背景图是否包含目标象征物
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="sim"></param>
+        /// <returns></returns>
+        private bool FastCheck(string symbol, double sim = 0.9)
+        {
+            return Mnt.FastSymbolCheck(symbol, sim);
+        }
+
+        /// <summary>
         /// (刷新) 匹配象征图像
         /// </summary>
         /// <param name="symbol"></param>
