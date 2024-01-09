@@ -61,17 +61,17 @@ namespace Shining_BeautifulGirls
                     if (Check("医务室", sim: 0.8))
                     {
                         Log("已受伤，进行治疗");
-                        __treat__();
+                        System__treat__();
                     }
                     else if (Vitality < 26)
                     {
                         Log("体力过低，放松休息");
-                        __relax__();
+                        System__relex__();
                     }
                     else if (Mood < 3)
                     {
                         Log("心情低落，选择外出");
-                        __out__();
+                        System__out__();
                     }
                     else
                     {

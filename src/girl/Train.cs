@@ -36,10 +36,10 @@ namespace Shining_BeautifulGirls
                 switch (plan)
                 {
                     case "休息":
-                        __relax__();
+                        System__relex__();
                         break;
                     case "外出":
-                        __out__();
+                        System__out__();
                         break;
                 }
             }

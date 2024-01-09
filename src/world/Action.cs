@@ -202,7 +202,7 @@ namespace Shining_BeautifulGirls
                 Girl = new ShiningGirl(this, UserConfig?.SBGConfig);
                 if (已存在养成)
                     Log("⚠️未检测到上次养成数据，会从零开始进行养成，这可能会导致行为不符合预期");
-                Girl.BeginNewDay();
+                Girl.Start();
             }
             else
             {
