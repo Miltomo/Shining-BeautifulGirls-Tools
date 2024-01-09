@@ -82,16 +82,19 @@ namespace Shining_BeautifulGirls
             UserConfig = userConfig;
         }
 
-        public void Update()
+        public void ReadInfo()
         {
             Mnt.Refresh();
-            Turn += 1;
+            // 刷新体力
             Vitality = GetHP();
             Vitality = Vitality > 95 && _lastHP < 45 && _lastAction != "休息" ? 0 : Vitality;
+            _lastHP = Vitality;
+
+            // 获取心情
             Mood = GetMood();
 
+            // 检查日期
             InSummer = Check("夏日");
-            _lastHP = Vitality;
 
             // 读取当前属性值
             List<int> property = [];
