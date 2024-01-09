@@ -6,6 +6,7 @@ namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
+        public static string RecordDir { get; set; } = @"./record/";
         public static string HighLightDir
         {
             get
@@ -22,9 +23,9 @@ namespace Shining_BeautifulGirls
         public int Vitality { get; private set; }
         public int Mood { get; private set; } = 3;//普通
         [ToSave]
-        public int Turn { get; private set; } = 0;
+        public int Turn { get; private set; } = 1;
         [ToSave]
-        public string Location { get; private set; } = "主页";
+        public string Stage { get; private set; } = string.Empty;
         [ToSave]
         public bool EndTraining { get; private set; } = false;
 
@@ -80,37 +81,6 @@ namespace Shining_BeautifulGirls
         {
             Mnt = world;
             UserConfig = userConfig;
-        }
-
-        public void ReadInfo()
-        {
-            Mnt.Refresh();
-            // 刷新体力
-            Vitality = GetHP();
-            Vitality = Vitality > 95 && _lastHP < 45 && _lastAction != "休息" ? 0 : Vitality;
-            _lastHP = Vitality;
-
-            // 获取心情
-            Mood = GetMood();
-
-            // 检查日期
-            InSummer = Check("夏日");
-
-            // 读取当前属性值
-            List<int> property = [];
-            for (int i = 0; i < SubjectS.Count; i += 1)
-                property.Add(GetPropertyValue(SubjectS[i]));
-
-            _hproperty ??= [.. property];
-
-            for (int i = 0; i < property.Count; i += 1)
-            {
-                var dq = property[i];
-                var hdq = _hproperty[i];
-
-                // 识别值正常时，更新历史记录
-                if (hdq - dq < 100) _hproperty[i] = dq;
-            }
         }
 
         public void Log(string logInfo)

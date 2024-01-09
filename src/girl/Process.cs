@@ -1,4 +1,5 @@
 ﻿using MHTools;
+using System;
 
 namespace Shining_BeautifulGirls
 {
@@ -8,6 +9,7 @@ namespace Shining_BeautifulGirls
 
         private void 养成流程(string stage)
         {
+            Stage = stage;
             switch (stage)
             {
                 // 控制中心
@@ -51,6 +53,7 @@ namespace Shining_BeautifulGirls
                     Click("选择末尾", 300);
                     养成流程("转场处理");
                     break;
+
                 case "普通日":
                     Log($"###############第 {Turn} 回合###############");
 
@@ -76,11 +79,16 @@ namespace Shining_BeautifulGirls
                     else
                     {
                         Log("前往训练场地");
-                        TryTrain();
+                        if (!TryTrain())
+                        {
+                            养成流程("转场处理");
+                            break;
+                        }
                     }
 
                     养成流程("每日总结");
                     break;
+
                 case "比赛日":
                     Log($"###############第 {Turn} 回合###############");
 
@@ -102,10 +110,12 @@ namespace Shining_BeautifulGirls
                     else
                         养成流程("结束");
                     break;
+
                 case "每日总结":
                     Turn += 1;
                     养成流程("转场处理");
                     break;
+
                 case "结束":
                     技能学习过程("结束学习");
                     Log("结束养成");
@@ -127,6 +137,8 @@ namespace Shining_BeautifulGirls
 
                     MoveTo(["主界面", "结束连点"], sec: 0, sim: 0.7);
                     break;
+                default:
+                    throw new NotImplementedException($"养成流程不存在此过程:{stage}");
             }
         }
 

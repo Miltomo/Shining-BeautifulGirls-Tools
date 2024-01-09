@@ -58,14 +58,6 @@ namespace Shining_BeautifulGirls
             return Mnt.Match(out loc, Path.Combine(World.SymbolDir, $"{symbol}.png"), bg);
         }
 
-        private void MoveTo(string destination, string[] data)
-        {
-            if (Location == destination)
-                return;
-            MoveTo(data, 3, 0.8);
-            Location = destination;
-        }
-
         private void MoveTo(string[] data, int sec = 1, double sim = 0.9)
         {
             Mnt.MoveTo(data, sec, sim);
