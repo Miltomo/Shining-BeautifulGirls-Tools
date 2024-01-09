@@ -6,6 +6,48 @@ namespace Shining_BeautifulGirls
     {
         private int _dqRemakeTimes = 0;
 
+        private void 养成流程(string stage)
+        {
+            switch (stage)
+            {
+                case "转场处理":
+                    //TODO 改为控制中心语法
+                    var rs = Mnt.MoveToEx([["养成主页", "比赛日主页"], ["选择末尾"]], [
+                        ["粉丝不足"],
+                        ["未达要求"],
+                        ["无法参赛"],
+                        ["养成结束"],
+                        ["继续", "比赛结束3"],
+                        ["因子继承", "继续"],
+                        ["抓娃娃", "比赛结束3"],
+                        ["OK", "比赛结束1"]
+                        ],
+                        sec: 0);
+                    if (rs == true)
+                    {
+                        //新的一天...
+                    }
+                    else
+                    {
+                        //要去比赛或者特殊处理...
+                    }
+                    break;
+                case "普通日":
+                    // 读取基本值
+                    // 判断要去训练还是干别的
+                    break;
+                case "比赛日":
+                    break;
+                case "每日总结":
+                    // 在此处进行回合数增加操作
+                    // 跳到 => 转场处理
+                    break;
+                case "结束":
+
+                    break;
+            }
+        }
+
         /// <summary>
         /// 比赛的过程处理
         /// </summary>
@@ -27,7 +69,12 @@ namespace Shining_BeautifulGirls
                     _dqRemakeTimes = 0;
                     if (Check("连续参赛"))
                         Click("弹窗确认", 1000);
-
+                    //TODO 测试
+                    if (Check("赛事推荐弹窗"))
+                    {
+                        Click("不弹赛事推荐");
+                        Click("比赛结束1");
+                    }
                     Log("参加比赛");
                     Click("参赛");
                     PageDown(["参赛确认", "大弹窗确认"]);
@@ -49,7 +96,7 @@ namespace Shining_BeautifulGirls
 
                         if (Mnt.MoveToEx([["下一页"], ["继续"]],
                             [["重新挑战"]
-                            ]))
+                            ], sec: 0))
                         {
                             Click("比赛结束2");
                             PageDown(["赛果", "比赛结束2"]);
@@ -105,16 +152,7 @@ namespace Shining_BeautifulGirls
                     EndTraining = true;
 
                     var dir = GetTodayRecordDir();
-
-                    //TODO 测试
                     var name = FileManagerHelper.SetDir(dir).NextName();
-
-                    /*string[] files = Directory.GetFiles(dir);
-                    int name = 1;
-                    // 检查文件名
-                    while (Array.Exists(files, file => Path.GetFileNameWithoutExtension(file) == $"{name}"))
-                        name++;*/
-
 
                     PageDown(["下一页", "结束连点"]);
                     PageDown(["下一页"]);
@@ -175,7 +213,7 @@ namespace Shining_BeautifulGirls
                         if (IsNecessarySkill(mask))
                         {
                             Match(out OpenCvSharp.Point pt, "技能+", mask);
-                            Mnt.Click(pt.X + 20, pt.Y + 20, 200);
+                            Mnt.Click(pt.X + 20, pt.Y + 20, 1);
                             Mnt.Refresh();
                             var ch = ExtractValue("技能点2");
                             if (ch != orin)

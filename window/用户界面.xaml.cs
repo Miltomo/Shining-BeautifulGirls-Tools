@@ -133,6 +133,8 @@ namespace Shining_BeautifulGirls
                 OutPut
                 );
 
+            //Monitor.SaveScreen();
+
             Refresh();
             //TODO Monitor位置检测
         }
@@ -407,6 +409,14 @@ namespace Shining_BeautifulGirls
             {
                 //未开始
                 case 0:
+                    //TODO 位置检查
+                    /*if (!Monitor.位置检测())
+                    {
+                        Trace.WriteLine("⚠️请先回到游戏主界面⚠️");
+                        return;
+                    }*/
+
+
                     Save用户设置();
 
                     PlanQueue.Clear();

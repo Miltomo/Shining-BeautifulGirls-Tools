@@ -85,7 +85,8 @@
         private void __treat__()
         {
             _lastAction = "治疗";
-            Click("医务室", 2000);
+            Mnt.ClickEx("医务室", "医务室确认", ["弹窗勾选", "弹窗确认"]);
+            Mnt.Pause(1000);
         }
 
         public void EndTheDay()
@@ -93,6 +94,8 @@
             //Log("等待结算......");
             Location = "主页";
             //TODO 有概率长时间无响应，ADB连接问题？
+            //TODO 休息/外出/治疗时由于网络问题，会误以为进入训练日。但实际下一步是比赛日。
+            // => 需要重构整体的流程判断！
 
             //选项处理
             if (Mnt.MoveToEx([["养成主页", "比赛日主页"], ["选择末尾"]],

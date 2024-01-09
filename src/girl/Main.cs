@@ -93,7 +93,6 @@ namespace Shining_BeautifulGirls
             InSummer = Check("夏日");
             _lastHP = Vitality;
 
-            //TODO 测试
             // 读取当前属性值
             List<int> property = [];
             for (int i = 0; i < SubjectS.Count; i += 1)

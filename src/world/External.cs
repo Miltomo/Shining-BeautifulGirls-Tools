@@ -7,6 +7,8 @@ using static ComputerVision.TextDetection;
 
 namespace Shining_BeautifulGirls
 {
+    //TODO 更换检测方法 => 需要重构Symbol图像
+    //TODO 若要更换，必须得会文字识别才行，否则还是没用
     partial class World
     {
         //========================
@@ -32,6 +34,11 @@ namespace Shining_BeautifulGirls
         {
             return Match(out _, file, bg);
         }
+
+        /*public bool Feature(string file, string? background)
+        {
+            return FeatureJudge(file, background ?? Screen);
+        }*/
 
         private bool Check(string file, string? background = default, double delta = 0.9)
         {

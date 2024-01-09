@@ -2,6 +2,7 @@
 using NumSharp.Utilities;
 using System;
 using System.Threading;
+using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
 {
@@ -33,7 +34,9 @@ namespace Shining_BeautifulGirls
                 while (waitting < maxTime)
                 {
                     Pause();
-                    if (CheckSymbol(symbol, delta: sim))
+                    Refresh();
+
+                    if (FastSymbolCheck(symbol, sim))
                     {
                         Aw = true;
                         break;
@@ -72,9 +75,10 @@ namespace Shining_BeautifulGirls
                 while (true)
                 {
                     Pause();
-                    //TODO 加速
+                    Refresh();
+
                     foreach (var symbol in symbols)
-                        if (CheckSymbol(symbol, delta: sim))
+                        if (FastSymbolCheck(symbol, sim))
                         {
                             Aw = true;
                             break;
@@ -91,9 +95,8 @@ namespace Shining_BeautifulGirls
                 {
                     for (int i = 0; i < occurs.Length; i++)
                     {
-                        //TODO 加速
                         var dq = occurs[i];
-                        if (CheckSymbol(dq[0]))
+                        if (FastSymbolCheck(dq[0], sim))
                         {
                             if (dq.Length == 1)
                             {
@@ -127,7 +130,9 @@ namespace Shining_BeautifulGirls
             while (true)
             {
                 Pause();
-                if (CheckSymbol(symbol, delta: sim))
+                Refresh();
+
+                if (FastSymbolCheck(symbol, sim))
                 {
                     Pause();
                     Click(bt, 1);
@@ -153,16 +158,17 @@ namespace Shining_BeautifulGirls
             while (true)
             {
                 Pause();
-                if (CheckSymbol(symbol, delta: sim))
+                Refresh();
+
+                if (FastSymbolCheck(symbol, sim))
                 {
                     Pause();
                     Click(bt, 1);
                     break;
                 }
 
-                //TODO 加速
                 for (int i = 0; i < ex.Length; i++)
-                    if (CheckSymbol(ex[i], delta: sim))
+                    if (FastSymbolCheck(ex[i], sim))
                         return false;
 
                 waitting += refreshGAP;
@@ -175,10 +181,30 @@ namespace Shining_BeautifulGirls
             return true;
         }
 
+        /// <summary>
+        /// (无刷新) 直接开始匹配目标象征物
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="sim"></param>
+        /// <returns></returns>
+        public bool FastSymbolCheck(string symbol, double sim = 0.9)
+        {
+            /*return FeatureJudge(
+                FileManagerHelper.SetDir(SymbolDir).Find(symbol)!,
+                Screen);*/
+
+            return
+                MatchImage(FileManagerHelper.SetDir(SymbolDir).Find(symbol)!,
+                Screen,
+                out _)
+                >
+                sim;
+        }
+
+
         public void Refresh()
         {
             ADB.GetScreen(DeviceID);
-            Pause(20);
             /*if (CheckSymbol("主界面"))
             {
                 Location = "主界面";
@@ -188,8 +214,6 @@ namespace Shining_BeautifulGirls
             else
                 Location = "未知";*/
         }
-
-
 
 
         /// <summary>
@@ -257,18 +281,7 @@ namespace Shining_BeautifulGirls
         {
             Click(buttonName, 1000);
             if (CheckSymbol(occur))
-                QuickClick(bts);
-        }
-
-        public void QuickClick(string buttonName)
-        {
-            Click(buttonName, 100);
-        }
-
-        public void QuickClick(string[] bts)
-        {
-            for (int i = 0; i < bts.Length; i++)
-                QuickClick(bts[i]);
+                Click(bts);
         }
 
         public void Scroll(double[] start, double distance)

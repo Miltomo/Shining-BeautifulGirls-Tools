@@ -5,6 +5,7 @@ namespace Shining_BeautifulGirls
 {
     partial class World
     {
+        //TODO 重构竞技场流程
         private bool 竞技场流程()
         {
             var state = "初入";
@@ -300,6 +301,18 @@ namespace Shining_BeautifulGirls
                 Pause(1000);
             }
             return hasFound;
+        }
+
+
+        public bool 位置检测()
+        {
+            Refresh();
+            //TODO 相似度有问题！
+            if (FastSymbolCheck("主界面", 0.8))
+            {
+                return true;
+            }
+            return false;
         }
 
         public void Start()

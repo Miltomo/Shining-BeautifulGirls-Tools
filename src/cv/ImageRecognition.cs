@@ -150,11 +150,14 @@ namespace ComputerVision
         }
 
 
-        public static double FeatureMatch(string targetImagePath, string backgroundImagePath)
+        public static MatchResult FeatureMatch(string targetImagePath, string backgroundImagePath)
         {
             // 读取目标图像和背景图像
-            Mat targetImage = new Mat(targetImagePath);
-            Mat backgroundImage = new Mat(backgroundImagePath);
+            Mat targetImage = new(targetImagePath);
+            Mat backgroundImage = new(backgroundImagePath);
+
+            if (targetImage.Empty() || backgroundImage.Empty())
+                throw new Exception();
 
             // 初始化SIFT
             SIFT sift = SIFT.Create();
@@ -164,18 +167,67 @@ namespace ComputerVision
             sift.DetectAndCompute(targetImage, null, out KeyPoint[] keyPointsTarget, descriptorsTarget);
 
             // 检测和计算背景图像的关键点和描述符
-            Mat descriptorsBackground = new Mat();
+            Mat descriptorsBackground = new();
             sift.DetectAndCompute(backgroundImage, null, out KeyPoint[] keyPointsBackground, descriptorsBackground);
 
             // 使用FLANN进行特征匹配
-            FlannBasedMatcher matcher = new FlannBasedMatcher();
-            DMatch[] matches = matcher.Match(descriptorsTarget, descriptorsBackground);
+            FlannBasedMatcher matcher = new();
+            DMatch[] matches;
+            try
+            {
+                matches = matcher.Match(descriptorsTarget, descriptorsBackground);
+            }
+            catch (Exception)
+            {
+                return new MatchResult();
+            }
 
-            // 计算匹配度
-            double maxMatchDistance = matches.Max(m => m.Distance);
-            double matchConfidence = 1.0 - maxMatchDistance / 100.0; // 根据需要调整分母
+            return new MatchResult(matches);
+        }
 
-            return matchConfidence;
+        public static bool FeatureJudge(string targetImagePath, string backgroundImagePath)
+        {
+            MatchResult result = FeatureMatch(targetImagePath, backgroundImagePath);
+            int half = result.Half;
+
+            if (
+                result.ZeroCount > 1 ||
+                result.Confidence > 0.8 ||
+                (result.SmallCount > half && result.Confidence > 0.7)
+                )
+                return true;
+            return false;
+        }
+
+
+        public class MatchResult
+        {
+            public DMatch[] Matches { get; init; }
+            public int Count => Matches.Length;
+            public int Half { get; init; }
+            public int ZeroCount { get; init; }
+            public int SmallCount { get; init; }
+            public double Confidence { get; init; }
+
+            public MatchResult(DMatch[] matches)
+            {
+                Matches = matches;
+                double avg = matches.Average(m => m.Distance);
+                double max = matches.Max(m => m.Distance);
+
+                Half = (int)Math.Floor(Count / 2.0);
+                ZeroCount = matches.Where(x => x.Distance < 10e-5).Count();
+                SmallCount = matches.Where(x => x.Distance < avg / 10).Count();
+                Confidence = 1.0 - avg / max;
+            }
+            public MatchResult()
+            {
+                Matches = [];
+                Half = int.MaxValue;
+                ZeroCount = 0;
+                SmallCount = 0;
+                Confidence = 0.0;
+            }
         }
 
 
@@ -292,6 +344,8 @@ namespace ComputerVision
             public int minY = Math.Min(y1, y2);
             public int maxY = Math.Max(y1, y2);
         }
+
+
 
         public static Mat ConnectLines(Mat edgeImage)
         {
