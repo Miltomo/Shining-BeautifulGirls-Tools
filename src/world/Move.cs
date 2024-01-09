@@ -49,6 +49,31 @@ namespace Shining_BeautifulGirls
         }
 
         /// <summary>
+        /// 尝试移动到目标场所，等待数秒
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="sim"></param>
+        /// <param name="maxWait"></param>
+        /// <returns>true,成功移动到目标; false,未能移动到目标</returns>
+        public bool WaitTo(string[] data, double sim = 0.9, int maxWait = 5)
+        {
+            var symbol = data[0];
+            var bts = data.Slice(1, data.Length);
+            var count = maxWait * 2;
+
+            for (int i = 0; i < count; i++)
+            {
+                Click(bts);
+                Pause(500);
+                Refresh();
+
+                if (FastSymbolCheck(symbol, sim))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 通过点击一组按钮，移动到某页面（先点击再检查）。并指定可能出现的意外情况。
         /// </summary>
         /// <param name="data"></param>
