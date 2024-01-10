@@ -165,18 +165,40 @@ namespace Shining_BeautifulGirls
 
                 if (!PageDownEx(["最终确认"], ["回复训练值确认"], 0.99))
                 {
-                    if ((UserConfig?.CultivateUseProp ?? false) && UserConfig.CultivateCount > 0)
+                    if (UserConfig is not null && (UserConfig.CultivateCount > 0))
                     {
                         Click("弹窗确认");
-                        PageDown(["回复训练值", "使用能量饮料"]);
-                        PageDown(["回复选条", "大弹窗确认"]);
+                        PageDown(["回复训练值"]);
+
+                        if (UserConfig.CultivateUseProp)
+                        {
+                            if (FastSymbolCheck("能量饮料"))
+                                Click("使用能量饮料");
+                            else goto UseMoney;
+                            PageDown(["回复选条", "大弹窗确认"]);
+                            goto End;
+                        }
+
+                    UseMoney:
+                        if (UserConfig.CultivateUseMoney)
+                        {
+                            Click("使用宝石");
+                            PageDown(["回复选条"]);
+                            Click("加号");
+                            Click("大弹窗确认");
+                        }
+                        else
+                        {
+                            // 关闭
+                            Click("比赛结束1");
+                            return false;
+                        }
+
+                    End:
                         MoveTo(["最终确认", "继续"], sec: 0);
                     }
                     else
-                    {
-                        MoveTo(["养成", "主页"], 0);
                         return false;
-                    }
                 };
 
                 Log("确定养成");
@@ -255,6 +277,8 @@ namespace Shining_BeautifulGirls
                         {
                             if (一次养成())
                                 break;
+                            else
+                                MoveTo(["养成", "主页"], 0);
                             // 等待十分钟
                             Pause(10 * 60 * 1000);
                         }
@@ -306,13 +330,9 @@ namespace Shining_BeautifulGirls
 
         public bool 位置检测()
         {
-            Refresh();
-            //TODO 相似度有问题！
-            if (FastSymbolCheck("主界面", 0.8))
-            {
-                return true;
-            }
-            return false;
+            Start();
+            Log("正在检测位置......");
+            return WaitTo(["主界面", "主页"]);
         }
 
         public void Start()

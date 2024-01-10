@@ -42,6 +42,11 @@ namespace Shining_BeautifulGirls
         {
             base.OnStartup(e);
 
+            /*CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding((ICommand)FindResource("截图Command"), (s, e) =>
+            {
+                Trace.WriteLine("已触发");
+            }));*/
+
             // 订阅未处理异常事件
             Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
         }

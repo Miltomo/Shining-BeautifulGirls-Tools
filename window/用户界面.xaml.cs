@@ -133,10 +133,7 @@ namespace Shining_BeautifulGirls
                 OutPut
                 );
 
-            //Monitor.SaveScreen();
-
             Refresh();
-            //TODO Monitor位置检测
         }
 
         public void Refresh()
@@ -282,12 +279,17 @@ namespace Shining_BeautifulGirls
             {
                 try
                 {
-                    Monitor.Start();
+                    if (Monitor.位置检测())
+                    {
+                        while (PlanQueue.Count > 0)
+                            PlanQueue.Dequeue()();
 
-                    while (PlanQueue.Count > 0)
-                        PlanQueue.Dequeue()();
-
-                    Monitor.Stop();
+                        Monitor.Stop();
+                    }
+                    else
+                    {
+                        OutPut("⚠️请先回到游戏主界面⚠️");
+                    }
                     //线程成功结束
                     RunningState = 2;
                     return;
@@ -409,14 +411,6 @@ namespace Shining_BeautifulGirls
             {
                 //未开始
                 case 0:
-                    //TODO 位置检查
-                    /*if (!Monitor.位置检测())
-                    {
-                        Trace.WriteLine("⚠️请先回到游戏主界面⚠️");
-                        return;
-                    }*/
-
-
                     Save用户设置();
 
                     PlanQueue.Clear();
@@ -488,6 +482,11 @@ namespace Shining_BeautifulGirls
             养成次数Input.IsEnabled = toSet;
             使用体力补剂CheckBox.Visibility = toSet ? Visibility.Visible : Visibility.Collapsed;
             使用宝石CheckBox.Visibility = toSet ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void 右键截图_Click(object sender, RoutedEventArgs e)
+        {
+            Monitor.SaveScreen();
         }
     }
 }

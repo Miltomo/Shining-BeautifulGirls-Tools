@@ -103,6 +103,12 @@
         </Style>
     </Window.Resources>
     <Grid>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="截图" Cursor="Hand" Click="右键截图_Click"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>
             <RowDefinition/>
@@ -228,7 +234,7 @@
                                     </LinearGradientBrush>
                                 </CheckBox.Foreground>
                             </CheckBox>
-                            <CheckBox x:Name="使用宝石CheckBox" IsEnabled="False" Visibility="Collapsed"  Grid.Row="1" IsChecked="False" Content="使用宝石回复" Grid.ColumnSpan="2" Margin="269,0,0,0" Width="115">
+                            <CheckBox x:Name="使用宝石CheckBox" Visibility="Collapsed" Grid.Row="1" IsChecked="False" Content="使用宝石回复" Grid.ColumnSpan="2" Margin="269,0,0,0" Width="115" Cursor="">
                                 <CheckBox.Foreground>
                                     <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
                                         <GradientStop Color="#FF44CDE8"/>
