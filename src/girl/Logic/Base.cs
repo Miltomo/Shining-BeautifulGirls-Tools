@@ -17,6 +17,7 @@ namespace Shining_BeautifulGirls
             }
         }
         private int CurrentFail { get; set; } = 0;
+
         private void PrimaryLogic()
         {
             if (Turn > 25)
@@ -40,7 +41,7 @@ namespace Shining_BeautifulGirls
                         else
                             去休息();
                         break;
-                    case >= 3:
+                    case > 2:
                         if (CurrentFail > 5 * (headScore - 2) + failLine)
                             去休息();
                         break;
@@ -58,7 +59,7 @@ namespace Shining_BeautifulGirls
             for (int i = 0; i < targetV.Length; i++)
                 w.Add(targetV[i] / s);
 
-            //当体力较低时，增加智力的基础得分
+            // 当体力较低时，增加智力的基础得分
             if (Vitality < 65)
                 T[^1].Score += 2;
 
@@ -91,8 +92,26 @@ namespace Shining_BeautifulGirls
             var currentScore = PlanToDo.Score;
             var failLine = 30;
 
-            if (currentScore - (5 - Mood) * 8.5 < 0)
+            // 与心情惩罚值比较
+            if (currentScore - (5 - Mood) * 9 < 0.1)
                 去外出();
+            // 与基准得分比较
+            else if (currentScore < baseScore)
+            {
+                var maxUp = PlanToDo.UpS.Max();
+                // 目标为智力的情况
+                if (PlanToDo.Subject == "智力")
+                {
+                    if (Vitality < 41 && maxUp < 25)
+                        去休息();
+                    return;
+                }
+
+                // 训练其他项目的情况
+                if (maxUp < 21 && Vitality < 61)
+                    去休息();
+            }
+            // 与失败率比较
             else if (CurrentFail > 1 * (currentScore - baseScore) + failLine)
             {
                 if (Mood < 4)
@@ -135,11 +154,19 @@ namespace Shining_BeautifulGirls
 
         private void 去休息()
         {
-            PlanToDo = new() { Subject = "休息" };
+            PlanToDo = new()
+            {
+                Subject = "休息",
+                Fail = CurrentFail
+            };
         }
         private void 去外出()
         {
-            PlanToDo = new() { Subject = "外出" };
+            PlanToDo = new()
+            {
+                Subject = "外出",
+                Fail = CurrentFail
+            };
         }
     }
 }
