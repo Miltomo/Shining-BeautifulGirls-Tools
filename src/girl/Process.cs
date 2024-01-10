@@ -153,7 +153,8 @@ namespace Shining_BeautifulGirls
             switch (state)
             {
                 case "正常比赛":
-                    Click("参赛", 1000);//比赛日主页的“赛事”按键
+                    // 比赛日主页的「赛事」
+                    Click("参赛", 1000);
                     return 比赛处理("参赛");
                 case "不满足参赛要求":
                     Click("大弹窗确认", 1000);
@@ -286,7 +287,7 @@ namespace Shining_BeautifulGirls
                         if (IsNecessarySkill(mask))
                         {
                             Match(out OpenCvSharp.Point pt, "技能+", mask);
-                            Mnt.Click(pt.X + 20, pt.Y + 20, 1);
+                            Mnt.Click(pt.X + 20, pt.Y + 20, 200);
                             Mnt.Refresh();
                             var ch = ExtractValue("技能点2");
                             if (ch != orin)

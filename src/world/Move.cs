@@ -6,6 +6,7 @@ using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
 {
+    //TODO 继续重构M/P方法。增加原子操作
     partial class World
     {
         private bool _stop = false;
@@ -64,9 +65,8 @@ namespace Shining_BeautifulGirls
             for (int i = 0; i < count; i++)
             {
                 Click(bts);
-                Pause(500);
+                Pause(300);
                 Refresh();
-
                 if (FastSymbolCheck(symbol, sim))
                     return true;
             }
