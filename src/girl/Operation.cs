@@ -32,6 +32,17 @@ namespace Shining_BeautifulGirls
         }
 
         /// <summary>
+        /// (无刷新) 直接检查背景图是否包含目标象征物
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="sim"></param>
+        /// <returns></returns>
+        private bool FastCheck(string symbol, double sim = 0.9)
+        {
+            return Mnt.FastSymbolCheck(symbol, sim);
+        }
+
+        /// <summary>
         /// (刷新) 匹配象征图像
         /// </summary>
         /// <param name="symbol"></param>
@@ -45,14 +56,6 @@ namespace Shining_BeautifulGirls
         private double Match(out OpenCvSharp.Point loc, string symbol, string? bg = default)
         {
             return Mnt.Match(out loc, Path.Combine(World.SymbolDir, $"{symbol}.png"), bg);
-        }
-
-        private void MoveTo(string destination, string[] data)
-        {
-            if (Location == destination)
-                return;
-            MoveTo(data, 3, 0.8);
-            Location = destination;
         }
 
         private void MoveTo(string[] data, int sec = 1, double sim = 0.9)

@@ -1,4 +1,5 @@
 ﻿using MHTools;
+using System;
 
 namespace Shining_BeautifulGirls
 {
@@ -8,43 +9,136 @@ namespace Shining_BeautifulGirls
 
         private void 养成流程(string stage)
         {
+            Stage = stage;
             switch (stage)
             {
+                // 控制中心
                 case "转场处理":
-                    //TODO 改为控制中心语法
-                    var rs = Mnt.MoveToEx([["养成主页", "比赛日主页"], ["选择末尾"]], [
-                        ["粉丝不足"],
-                        ["未达要求"],
-                        ["无法参赛"],
-                        ["养成结束"],
-                        ["继续", "比赛结束3"],
-                        ["因子继承", "继续"],
-                        ["抓娃娃", "比赛结束3"],
-                        ["OK", "比赛结束1"]
-                        ],
-                        sec: 0);
-                    if (rs == true)
+                    Mnt.Refresh();
+
+                    if (FastCheck("养成主页"))
                     {
-                        //新的一天...
+                        养成流程("普通日");
+                        break;
+                    }
+                    else if (FastCheck("比赛日主页"))
+                    {
+                        养成流程("比赛日");
+                        break;
+                    }
+                    else if (FastCheck("粉丝不足") || FastCheck("未达要求") || FastCheck("无法参赛"))
+                    {
+                        比赛处理("不满足参赛要求");
+                        养成流程("每日总结");
+                        break;
+                    }
+                    else if (FastCheck("继续") || FastCheck("抓娃娃"))
+                    {
+                        Click("比赛结束3");
+                    }
+                    else if (FastCheck("OK"))
+                    {
+                        Click("比赛结束1");
+                    }
+                    else if (FastCheck("因子继承"))
+                    {
+                        Click("继续");
+                    }
+                    else if (FastCheck("养成结束"))
+                    {
+                        养成流程("结束");
+                        break;
+                    }
+
+                    Click("选择末尾", 300);
+                    养成流程("转场处理");
+                    break;
+
+                case "普通日":
+                    Log($"###############第 {Turn} 回合###############");
+
+                    ReadInfo();
+                    Log(基本信息);
+
+                    // 判断要去训练还是干别的
+                    if (Check("医务室", sim: 0.8))
+                    {
+                        Log("已受伤，进行治疗");
+                        System__treat__();
+                    }
+                    else if (Vitality < 26)
+                    {
+                        Log("体力过低，放松休息");
+                        System__relex__();
+                    }
+                    else if (Mood < 3)
+                    {
+                        Log("心情低落，选择外出");
+                        System__out__();
                     }
                     else
                     {
-                        //要去比赛或者特殊处理...
+                        Log("前往训练场地");
+                        if (!TryTrain())
+                        {
+                            养成流程("转场处理");
+                            break;
+                        }
                     }
-                    break;
-                case "普通日":
-                    // 读取基本值
-                    // 判断要去训练还是干别的
-                    break;
-                case "比赛日":
-                    break;
-                case "每日总结":
-                    // 在此处进行回合数增加操作
-                    // 跳到 => 转场处理
-                    break;
-                case "结束":
 
+                    养成流程("每日总结");
                     break;
+
+                case "比赛日":
+                    Log($"###############第 {Turn} 回合###############");
+
+                    SkPoints = ExtractValue("技能点");
+
+                    Log($"★今天是比赛日★");
+                    Log($"技能点：{SkPoints}");
+
+                    if ((Turn > 35 || SkPoints > 500) && SkPoints > 150)
+                    {
+                        if (Check("决赛"))
+                            技能学习过程("最终学习");
+                        else
+                            技能学习过程("普通学习");
+                    }
+
+                    if (比赛处理("正常比赛"))
+                        养成流程("每日总结");
+                    else
+                        养成流程("结束");
+                    break;
+
+                case "每日总结":
+                    Turn += 1;
+                    养成流程("转场处理");
+                    break;
+
+                case "结束":
+                    技能学习过程("结束学习");
+                    Log("结束养成");
+                    Click("养成结束");
+                    PageDown(["养成结束弹窗", "大弹窗确认"]);
+                    EndTraining = true;
+
+                    var dir = GetTodayRecordDir();
+                    var name = FileManagerHelper.SetDir(dir).NextName();
+
+                    PageDown(["下一页", "结束连点"]);
+                    PageDown(["下一页"]);
+                    Mnt.SaveScreen(dir, $"{name}_因子");
+                    Log("已保存因子信息截图");
+                    Click("结束连点", 1000);
+                    PageDown(["优俊少女详情"]);
+                    Mnt.SaveScreen(dir, name);
+                    Log("已保存养成信息截图");
+
+                    MoveTo(["主界面", "结束连点"], sec: 0, sim: 0.7);
+                    break;
+                default:
+                    throw new NotImplementedException($"养成流程不存在此过程:{stage}");
             }
         }
 
@@ -52,18 +146,19 @@ namespace Shining_BeautifulGirls
         /// 比赛的过程处理
         /// </summary>
         /// <param name="state"></param>
-        /// <returns><b>true</b>,继续游戏; <b>false</b>,养成结束</returns>
-        private bool 比赛和结束处理(string state)
+        /// <returns><b>true</b>,比赛成功; <b>false</b>,比赛失败</returns>
+        private bool 比赛处理(string state)
         {
             Mnt.Refresh();
             switch (state)
             {
                 case "正常比赛":
-                    Click("参赛", 1000);//比赛日主页的“赛事”按键
-                    return 比赛和结束处理("参赛");
+                    // 比赛日主页的「赛事」
+                    Click("参赛", 1000);
+                    return 比赛处理("参赛");
                 case "不满足参赛要求":
                     Click("大弹窗确认", 1000);
-                    return 比赛和结束处理("参赛");
+                    return 比赛处理("参赛");
                 case "参赛":
                     _lastAction = "比赛";
                     _dqRemakeTimes = 0;
@@ -138,32 +233,11 @@ namespace Shining_BeautifulGirls
                             Log("放弃重新挑战");
                         }
                     }
-                    return 比赛和结束处理("比赛失败");
+                    return 比赛处理("比赛失败");
                 case "比赛失败":
                     Log("比赛失败");
                     Click("结束养成");
                     MoveTo(["养成结束", "比赛结束2"], 0);
-                    return 比赛和结束处理("结束养成");
-                case "结束养成":
-                    技能学习过程("结束学习");
-                    Log("结束养成");
-                    Click("养成结束");
-                    PageDown(["养成结束弹窗", "大弹窗确认"]);
-                    EndTraining = true;
-
-                    var dir = GetTodayRecordDir();
-                    var name = FileManagerHelper.SetDir(dir).NextName();
-
-                    PageDown(["下一页", "结束连点"]);
-                    PageDown(["下一页"]);
-                    Mnt.SaveScreen(dir, $"{name}_因子");
-                    Log("已保存因子信息截图");
-                    Click("结束连点", 1000);
-                    PageDown(["优俊少女详情"]);
-                    Mnt.SaveScreen(dir, name);
-                    Log("已保存养成信息截图");
-
-                    MoveTo(["主界面", "结束连点"], sec: 0, sim: 0.7);
                     return false;
                 default:
                     return false;
@@ -213,7 +287,7 @@ namespace Shining_BeautifulGirls
                         if (IsNecessarySkill(mask))
                         {
                             Match(out OpenCvSharp.Point pt, "技能+", mask);
-                            Mnt.Click(pt.X + 20, pt.Y + 20, 1);
+                            Mnt.Click(pt.X + 20, pt.Y + 20, 200);
                             Mnt.Refresh();
                             var ch = ExtractValue("技能点2");
                             if (ch != orin)

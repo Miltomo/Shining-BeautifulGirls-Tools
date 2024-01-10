@@ -7,15 +7,20 @@ namespace Shining_BeautifulGirls
         public static List<string> SubjectS { get; } =
             ["速度", "耐力", "力量", "毅力", "智力"];
         private List<TrainInfo> T { get; } = [];
-        public void TryTrain()
+        public bool TryTrain()
         {
-            MoveTo("训练", ["返回", "选择末尾", "训练"]);
+            if (Mnt.WaitTo(["返回", "训练"], 0.8))
+            {
+                Subject巡视();
 
-            Subject巡视();
+                PrimaryLogic();
 
-            PrimaryLogic();
+                StartPlan();
 
-            StartPlan();
+                return true;
+            }
+
+            return false;
         }
 
         private void StartPlan()
@@ -36,10 +41,10 @@ namespace Shining_BeautifulGirls
                 switch (plan)
                 {
                     case "休息":
-                        __relax__();
+                        System__relex__();
                         break;
                     case "外出":
-                        __out__();
+                        System__out__();
                         break;
                 }
             }

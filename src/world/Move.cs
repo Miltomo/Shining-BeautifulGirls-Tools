@@ -6,6 +6,7 @@ using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
 {
+    //TODO 继续重构M/P方法。增加原子操作
     partial class World
     {
         private bool _stop = false;
@@ -46,6 +47,30 @@ namespace Shining_BeautifulGirls
                 if (Aw)
                     break;
             }
+        }
+
+        /// <summary>
+        /// 尝试移动到目标场所，等待数秒
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="sim"></param>
+        /// <param name="maxWait"></param>
+        /// <returns>true,成功移动到目标; false,未能移动到目标</returns>
+        public bool WaitTo(string[] data, double sim = 0.9, int maxWait = 5)
+        {
+            var symbol = data[0];
+            var bts = data.Slice(1, data.Length);
+            var count = maxWait * 2;
+
+            for (int i = 0; i < count; i++)
+            {
+                Click(bts);
+                Pause(300);
+                Refresh();
+                if (FastSymbolCheck(symbol, sim))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
