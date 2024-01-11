@@ -164,8 +164,7 @@ namespace Shining_BeautifulGirls
                     _dqRemakeTimes = 0;
                     if (Check("连续参赛"))
                         Click("弹窗确认", 1000);
-                    //TODO 测试
-                    if (Check("赛事推荐弹窗"))
+                    if (Check("赛事推荐弹窗", sim: 0.8))
                     {
                         Click("不弹赛事推荐");
                         Click("比赛结束1");
@@ -287,7 +286,8 @@ namespace Shining_BeautifulGirls
                         if (IsNecessarySkill(mask))
                         {
                             Match(out OpenCvSharp.Point pt, "技能+", mask);
-                            Mnt.Click(pt.X + 20, pt.Y + 20, 200);
+                            for (int k = 0; k < 2; k++)
+                                Mnt.Click(pt.X + 20, pt.Y + 20, 200);
                             Mnt.Refresh();
                             var ch = ExtractValue("技能点2");
                             if (ch != orin)

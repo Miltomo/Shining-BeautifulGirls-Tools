@@ -141,7 +141,7 @@ namespace Shining_BeautifulGirls
             bool 已存在养成 = false;
 
             Click("主页");
-            if (PageDownEx(["养成", "养成"], ["养成2"]))
+            if (PageDownEx(["养成", "养成"], ["养成2"], sim: 0.8))
             {
                 PageDown(["继续"]);
                 Pause(1000);
