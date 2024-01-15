@@ -47,21 +47,29 @@ namespace Shining_BeautifulGirls
                 Trace.WriteLine("已触发");
             }));*/
 
+
+
             // 订阅未处理异常事件
-            Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+            // 非UI线程上的异常
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                Exception ex = e.ExceptionObject as Exception;
+                MessageBox.Show($"出现了一个未经处理的异常: {ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(0);
+            };
+
+            // UI线程上的异常
+            Current.DispatcherUnhandledException += (s, e) =>
+            {
+                // 防止应用程序终止
+                e.Handled = true;
+
+                // 显示错误对话框或者记录日志
+                MessageBox.Show($"An unhandled exception occurred: {e.Exception.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                Shutdown();
+            };
         }
-
-        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            // 防止应用程序终止
-            e.Handled = true;
-
-            // 显示错误对话框或者记录日志
-            MessageBox.Show($"An unhandled exception occurred: {e.Exception.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-
-            Shutdown();
-        }
-
 
         public static ScrollViewer? GetScrollViewer(DependencyObject element)
         {
