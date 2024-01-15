@@ -189,7 +189,7 @@ namespace Shining_BeautifulGirls
                 int.Parse(毅力Input.Text),
                 int.Parse(智力Input.Text),
             ];
-            User.协助卡名称 = ((协助卡Item)协助卡ComboBox.SelectedItem).Name;
+            User.协助卡名称 = ((协助卡Item)协助卡ComboBox.SelectedItem)?.Name ?? "";
             User.技能文件名 = 技能ComboBox.SelectedItem as string ?? "";
             User.重赛逻辑 = 重赛逻辑ComboBox.SelectedIndex;
             User.选队Index = 选队ComboBox.SelectedIndex;
@@ -277,20 +277,20 @@ namespace Shining_BeautifulGirls
             //=============
             Thread thread核心程序 = new(() =>
             {
+                Monitor.Start();
                 try
                 {
                     if (Monitor.位置检测())
                     {
                         while (PlanQueue.Count > 0)
                             PlanQueue.Dequeue()();
-
-                        Monitor.Stop();
                     }
                     else
-                    {
                         OutPut("⚠️请先回到游戏主界面⚠️");
-                    }
-                    //线程成功结束
+
+                    Monitor.Stop();
+
+                    // 线程成功结束
                     RunningState = 2;
                     return;
                 }
@@ -307,8 +307,12 @@ namespace Shining_BeautifulGirls
                 {
                     throw;
                 }
+                Monitor.Stop();
                 Save养成优俊少女();
-                //线程异常结束
+
+                //TODO 通过改变值来控制 => 重构整体的控制方式
+
+                // 线程异常结束
                 RunningState = 5;
             });
             //===========================================
