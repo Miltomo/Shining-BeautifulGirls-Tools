@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MHTools;
+using System.Collections.Generic;
 using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
@@ -59,6 +60,7 @@ namespace Shining_BeautifulGirls
                             state = "跳跃处理";
                         break;
                     case "查看结果":
+                        PageDown(["返回"]);
                         Click("比赛结束1", 1000);
                         Click("快进");
                         PageDown(["赛事结束", "比赛结束3"]);
@@ -108,7 +110,7 @@ namespace Shining_BeautifulGirls
                         if (CheckSymbol("多次参赛ON", delta: 0.99))
                         {
                             Click("比赛结束2");
-                            PageDown(["返回"], sim: 0.7);
+                            PageDown(["返回"]);
                             日常赛事流程("参赛");
                         }
                         else
@@ -127,7 +129,7 @@ namespace Shining_BeautifulGirls
                 case "参赛":
                     Log("进行日常赛事比赛");
                     ClickEx("继续", "多次参赛", ["弹窗确认"]);
-                    MoveTo(["返回", "比赛结束1"], sec: 1, sim: 0.7);
+                    MoveTo(["返回", "比赛结束1"], sec: 1);
                     日常赛事流程("退出");
                     break;
                 case "退出":
@@ -136,6 +138,11 @@ namespace Shining_BeautifulGirls
             }
         }
 
+        /// <summary>
+        /// 进行一次养成的标准流程
+        /// </summary>
+        /// <returns>true,当成功进行了完整养成; false,当且仅当训练值不足时</returns>
+        /// <exception cref="UserStopException"></exception>
         private bool 养成流程()
         {
             bool 已存在养成 = false;
@@ -151,7 +158,7 @@ namespace Shining_BeautifulGirls
                     ], sec: 0))
                 {
                     Log("⚠️请先自行选好继承优俊少女再尝试养成⚠️");
-                    return false;
+                    throw new UserStopException();
                 }
 
                 var card = UserConfig is null ? "北部玄驹" : UserConfig.SupportCard;
@@ -160,10 +167,11 @@ namespace Shining_BeautifulGirls
                 else
                 {
                     Log($"⚠️未找到目标协助卡\"{card}\"⚠️");
-                    throw new Exception();
+                    throw new UserStopException();
                 }
 
-                if (!PageDownEx(["最终确认"], ["回复训练值确认"], 0.99))
+                // 训练值不足时的处理
+                if (!PageDownEx(["最终确认"], ["回复训练值确认"], 0.8))
                 {
                     if (UserConfig is not null && (UserConfig.CultivateCount > 0))
                     {
@@ -172,7 +180,7 @@ namespace Shining_BeautifulGirls
 
                         if (UserConfig.CultivateUseProp)
                         {
-                            if (FastSymbolCheck("能量饮料"))
+                            if (FastSymbol("能量饮料"))
                                 Click("使用能量饮料");
                             else goto UseMoney;
                             PageDown(["回复选条", "大弹窗确认"]);
@@ -257,11 +265,6 @@ namespace Shining_BeautifulGirls
             Log("结束日常赛事任务");
         }
 
-        public bool 一次养成()
-        {
-            return 养成流程();
-        }
-
         public void 自定义养成()
         {
             if (UserConfig is not null)
@@ -275,7 +278,7 @@ namespace Shining_BeautifulGirls
                     {
                         while (true)
                         {
-                            if (一次养成())
+                            if (养成流程())
                                 break;
                             else
                                 MoveTo(["养成", "主页"], 0);
@@ -287,7 +290,7 @@ namespace Shining_BeautifulGirls
                     }
                     else
                     {
-                        if (一次养成())
+                        if (养成流程())
                             continue;
                         Log($"训练值不足，结束任务");
                         t--;
@@ -302,31 +305,58 @@ namespace Shining_BeautifulGirls
         {
             Log("正在选择好友协助卡");
             Click("选卡");
-            Scroll([100, 1100, 80]);
-            int i = 1;
-            bool hasFound = false;
-            for (int t = 0; t < 4; t++)
+
+            Queue<string> queue = new();
+            queue.Enqueue("移到合适位置");
+            queue.Enqueue("比对");
+            queue.Enqueue("下移");
+            queue.Enqueue("比对");
+
+            // 定义刷新次数
+            for (int s = 0; s < 10; s++)
             {
-                Refresh();
-                for (i = 1; i < 6; i++)
-                {
-                    if (CheckCard(card, MaskScreen($"卡{i}", "card")))
-                    {
-                        Log($"已找到目标卡「{card}」");
-                        Click($"卡{i}");
-                        hasFound = true;
-                        break;
-                    }
-                }
-
-                if (hasFound)
-                    break;
-                Scroll([100, 1100, 750]);
-                Pause(1000);
+                queue.Enqueue("刷新");
+                queue.Enqueue("比对");
             }
-            return hasFound;
-        }
 
+            while (queue.Count > 0)
+            {
+                switch (queue.Dequeue())
+                {
+                    case "移到合适位置":
+                        Scroll([100, 1100, 80]);
+                        Pause(200);
+                        break;
+
+                    case "下移":
+                        Scroll([100, 1100, 750]);
+                        Pause(1000);
+                        break;
+
+                    case "刷新":
+                        Click("刷新协助卡", 1000);
+                        break;
+
+                    case "比对":
+                        Refresh();
+                        for (int i = 1; i < 6; i++)
+                        {
+                            if (FastCheck(
+                                FileManagerHelper.SetDir(CardDir).Find(card)!,
+                                MaskScreen($"卡{i}", "card"))
+                                )
+                            {
+                                Log($"已找到目标卡「{card}」");
+                                Click($"卡{i}");
+                                return true;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            return false;
+        }
 
         public bool 位置检测()
         {
