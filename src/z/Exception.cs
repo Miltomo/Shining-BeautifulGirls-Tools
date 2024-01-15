@@ -2,6 +2,6 @@
 
 namespace MHTools
 {
-    class UserStopException : Exception { }
+    class StopException : Exception { }
     class LongTimeNoOperationException : Exception { }
 }

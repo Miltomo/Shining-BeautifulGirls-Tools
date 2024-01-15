@@ -24,16 +24,16 @@ namespace Shining_BeautifulGirls
         private readonly string _json养成优俊少女 = Path.Combine(App.UserDataDir, "girl.json");
         private readonly string _json用户设置 = Path.Combine(App.UserDataDir, "user.json");
 
-        private int _state = 0;
-        public int RunningState
+        private string _corestate = "未启动";
+        public string CoreState
         {
-            get => _state;
+            get => _corestate;
             private set
             {
                 switch (value)
                 {
-                    //未开始
-                    case 0:
+                    case "未启动":
+                        // UI变动
                         Dispatcher.Invoke(() =>
                         {
                             Button执行.IsEnabled = true;
@@ -50,8 +50,60 @@ namespace Shining_BeautifulGirls
                             Button执行.Background = brush;
                         });
                         break;
-                    //执行中
-                    case 1:
+
+                    case "准备开始":
+                        // UI变动
+                        Dispatcher.Invoke(() =>
+                        {
+                            Button执行.IsEnabled = false;
+                        });
+                        Thread threadUI = new(() =>
+                        {
+                            Animation面板移动();
+                        });
+
+                        // 核程序变动
+                        Thread thread核心程序 = new(() =>
+                        {
+                            Monitor.Start();
+                            try
+                            {
+                                if (Monitor.位置检测())
+                                    while (PlanQueue.Count > 0)
+                                        PlanQueue.Dequeue()();
+                                else
+                                    OutPut("⚠️请先回到游戏主界面⚠️");
+                            }
+                            catch (StopException)
+                            {
+                                Debug.WriteLine("程序终止");
+                            }
+                            catch (LongTimeNoOperationException)
+                            {
+                                OutPut("⚠️由于长时间未响应，程序已结束⚠️");
+                                OutPut("请检查网络或ADB连接");
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
+                            Monitor.Stop();
+                            Save养成优俊少女();
+
+#pragma warning disable CA2011 // 禁用无限递归警告
+                            if (CoreState == "终止")
+                                CoreState = "重置";
+                            else
+                                CoreState = "已结束";
+#pragma warning restore CA2011 // 恢复无限递归警告
+                        });
+                        //===========================================
+                        threadUI.Start();
+                        thread核心程序.Start();
+                        break;
+
+                    case "运行中":
+                        // UI变动
                         Dispatcher.Invoke(() =>
                         {
                             Button执行.IsEnabled = true;
@@ -68,8 +120,19 @@ namespace Shining_BeautifulGirls
                             Button执行.Background = brush;
                         });
                         break;
-                    //成功结束
-                    case 2:
+
+                    // 用户主动停止
+                    case "终止":
+                        // UI变动
+                        Dispatcher.Invoke(() =>
+                        {
+                            Button执行.IsEnabled = false;
+                        });
+                        Monitor.Stop();
+                        break;
+
+                    case "已结束":
+                        // UI变动
                         Dispatcher.Invoke(() =>
                         {
                             LinearGradientBrush brush = new()
@@ -79,15 +142,36 @@ namespace Shining_BeautifulGirls
                             };
                             brush.GradientStops.Add(new GradientStop(Color.FromRgb(232, 192, 84), 0));
                             brush.GradientStops.Add(new GradientStop(Color.FromRgb(245, 245, 223), 1));
+
                             Button执行.IsEnabled = true;
                             Button执行.Content = "返回";
                             Button执行.Background = brush;
                         });
                         break;
+
+                    // 回到初始状态
+                    case "重置":
+                        // UI变动
+                        Dispatcher.Invoke(() =>
+                        {
+                            Button执行.IsEnabled = false;
+                            运行记录.Blocks.Clear();
+                        });
+                        Thread thread = new(() =>
+                        {
+                            Animation面板移动(true);
+                        });
+                        thread.Start();
+                        break;
+
+                    default:
+                        value = "未知状态";
+                        break;
                 }
-                _state = value;
+                _corestate = value;
             }
         }
+
 
         Queue<Action> PlanQueue { get; set; } = new();
         World Monitor { get; init; }
@@ -174,12 +258,7 @@ namespace Shining_BeautifulGirls
             if (Monitor.Girl is not null)
                 SaveAllToSaveAsJSON(Monitor.Girl, _json养成优俊少女);
         }
-        private void Load养成优俊少女()
-        {
-            ShiningGirl girl = new(Monitor);
-            LoadFromJSON(girl, _json养成优俊少女);
-            Monitor.Girl = girl;
-        }
+
         private void Save用户设置()
         {
             User.目标属性值 = [
@@ -237,89 +316,6 @@ namespace Shining_BeautifulGirls
             日常赛事启用CheckBox.IsChecked = User.需要日常赛事;
         }
 
-
-        /// <summary>
-        /// 程序运行的中心控制处
-        /// </summary>
-        /// <param name="stopIt"></param>
-        private void 运行程序(bool stopIt = false)
-        {
-            Button执行.IsEnabled = false;
-            //终止程序
-            if (stopIt)
-            {
-                Monitor.Stop();
-                Thread thread = new(() =>
-                {
-                    while (true)
-                    {
-                        // 如果程序线程已退出
-                        if (RunningState > 1)
-                        {
-                            Animation面板移动(true);
-                            break;
-                        }
-                    }
-                });
-                thread.Start();
-                return;
-            }
-            运行记录.Blocks.Clear();
-            //==============
-            //★操作UI的线程★
-            //==============
-            Thread threadUI = new(() =>
-            {
-                Animation面板移动();
-            });
-            //=============
-            //★主程序线程★
-            //=============
-            Thread thread核心程序 = new(() =>
-            {
-                Monitor.Start();
-                try
-                {
-                    if (Monitor.位置检测())
-                    {
-                        while (PlanQueue.Count > 0)
-                            PlanQueue.Dequeue()();
-                    }
-                    else
-                        OutPut("⚠️请先回到游戏主界面⚠️");
-
-                    Monitor.Stop();
-
-                    // 线程成功结束
-                    RunningState = 2;
-                    return;
-                }
-                catch (UserStopException)
-                {
-                    Debug.WriteLine("用户终止");
-                }
-                catch (LongTimeNoOperationException)
-                {
-                    OutPut("⚠️由于长时间未响应，程序已结束⚠️");
-                    OutPut("请检查网络或ADB连接");
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                Monitor.Stop();
-                Save养成优俊少女();
-
-                //TODO 通过改变值来控制 => 重构整体的控制方式
-
-                // 线程异常结束
-                RunningState = 5;
-            });
-            //===========================================
-            threadUI.Start();
-            thread核心程序.Start();
-        }
-
         private void Animation面板移动(bool reverse = false)
         {
             const double W = 600;
@@ -349,7 +345,7 @@ namespace Shining_BeautifulGirls
                 输出面板.SetValue(Canvas.LeftProperty, reverse ? W : 0d);
             });
 
-            RunningState = reverse ? 0 : 1;
+            CoreState = reverse ? "未启动" : "运行中";
         }
 
 
@@ -411,12 +407,12 @@ namespace Shining_BeautifulGirls
 
         private void Button执行_Click(object sender, RoutedEventArgs e)
         {
-            switch (RunningState)
+            switch (CoreState)
             {
-                //未开始
-                case 0:
+                case "未启动":
                     Save用户设置();
 
+                    // 任务入队
                     PlanQueue.Clear();
                     if (User.需要竞技场)
                         PlanQueue.Enqueue(Monitor.标准竞技场);
@@ -430,6 +426,12 @@ namespace Shining_BeautifulGirls
                         return;
                     }
 
+                    // 还原养成优俊少女
+                    ShiningGirl girl = new(Monitor);
+                    LoadFromJSON(girl, _json养成优俊少女);
+                    Monitor.Girl = girl;
+
+                    // 载入用户配置
                     Monitor.UserConfig = new World.Config
                     {
                         DailyRaceNumber = User.赛事名Index + 1,
@@ -450,24 +452,17 @@ namespace Shining_BeautifulGirls
                         }
                     };
 
-                    Load养成优俊少女();
+                    CoreState = "准备开始";
+                    break;
 
-                    运行程序();
+                case "运行中":
+                    CoreState = "终止";
+                    break;
+
+                case "已结束":
+                    CoreState = "重置";
                     break;
                 default:
-                    运行程序(true);
-                    break;
-            }
-        }
-
-        private void 启用CheckBox_CheckChanged(object sender, RoutedEventArgs e)
-        {
-            var cb = (CheckBox)sender;
-            switch (cb.Name)
-            {
-                case "养成启用CheckBox":
-                    /*养成任务.IsEnabled = cb.IsChecked ?? false;
-                    cb.IsEnabled = true;*/
                     break;
             }
         }
