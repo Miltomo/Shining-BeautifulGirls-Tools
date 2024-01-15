@@ -209,7 +209,7 @@ namespace Shining_BeautifulGirls
             Title = $"操作设备：（{emulator.Name}）";
             Height = 800;
             Width = 600;
-            App.用户界面 = this;
+            App.UserWindow = this;
 
             Monitor = new(
                 new AdbHelper(App.AdbPath, World.CacheDir)
@@ -253,13 +253,13 @@ namespace Shining_BeautifulGirls
             base.OnClosed(e);
         }
 
-        private void Save养成优俊少女()
+        public void Save养成优俊少女()
         {
             if (Monitor.Girl is not null)
                 SaveAllToSaveAsJSON(Monitor.Girl, _json养成优俊少女);
         }
 
-        private void Save用户设置()
+        public void Save用户设置()
         {
             User.目标属性值 = [
                 int.Parse(速度Input.Text),
@@ -470,8 +470,8 @@ namespace Shining_BeautifulGirls
         private void Button技能编辑_Click(object sender, RoutedEventArgs e)
         {
             Save用户设置();
-            App.技能编辑界面 ??= new 技能编辑();
-            App.技能编辑界面.Show();
+            App.SkillWindow ??= new 技能编辑();
+            App.SkillWindow.Show();
             IsEnabled = false;
         }
 

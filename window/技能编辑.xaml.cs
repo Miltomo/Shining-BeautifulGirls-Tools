@@ -82,13 +82,13 @@ namespace Shining_BeautifulGirls
         protected override void OnClosed(EventArgs e)
         {
             Save技能配置(FileManager.SelectedFile);
-            if (App.用户界面 is not null)
+            if (App.UserWindow is not null)
             {
-                App.用户界面.IsEnabled = true;
-                App.用户界面.Show();
-                (App.用户界面 as 用户界面)!.Refresh();
+                App.UserWindow.IsEnabled = true;
+                App.UserWindow.Show();
+                (App.UserWindow as 用户界面)!.Refresh();
             }
-            App.技能编辑界面 = null;
+            App.SkillWindow = null;
             base.OnClosed(e);
         }
 

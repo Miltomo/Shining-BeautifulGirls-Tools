@@ -12,10 +12,10 @@ namespace Shining_BeautifulGirls
     /// </summary>
     public partial class App : Application
     {
-        public static Window? 用户界面 { get; set; }
-        public static Window? 技能编辑界面 { get; set; }
+        public static Window? UserWindow { get; set; }
+        public static Window? SkillWindow { get; set; }
 
-        public static readonly string Version = "v0.9.6";
+        public static readonly string Version = "v0.9.6-repair";
 
         public static string AdbPath => Path.Combine(ProgramDir, @"adb/adb.exe");
         public static string ProgramDir { get; private set; } = Environment.CurrentDirectory;
@@ -53,6 +53,13 @@ namespace Shining_BeautifulGirls
             // 非UI线程上的异常
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
+                // 保存数据
+                if (UserWindow is 用户界面 wd)
+                {
+                    wd.Save养成优俊少女();
+                    wd.Save用户设置();
+                }
+
                 Exception ex = e.ExceptionObject as Exception;
                 MessageBox.Show($"出现了一个未经处理的异常: {ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Environment.Exit(0);
