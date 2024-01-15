@@ -247,7 +247,7 @@
                         <!--<Button Style="{DynamicResource ButtonStyle}" x:Name="Button默认" Grid.Column="1" Click="Button默认_Click" Height="30">
                             恢复默认值
                         </Button>-->
-                        <CheckBox x:Name="养成启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True" Checked="启用CheckBox_CheckChanged" Unchecked="启用CheckBox_CheckChanged"/>
+                        <CheckBox x:Name="养成启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True"/>
                     </Grid>
                 </Border>
                 <!--杂项任务-->
@@ -276,7 +276,7 @@
                                 <ComboBoxItem Content="优先礼物，否则低战力队"/>
                             </ComboBox>
 
-                            <CheckBox x:Name="竞技场启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True" Checked="启用CheckBox_CheckChanged" Unchecked="启用CheckBox_CheckChanged" Margin="20,0,0,0"/>
+                            <CheckBox x:Name="竞技场启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True" Margin="20,0,0,0"/>
                         </Grid>
                     </Border>
                     <Border x:Name="日常赛事任务" Style="{DynamicResource BorderStyle}" Grid.Row="1">
@@ -309,7 +309,7 @@
                                 </ComboBox>
                             </Grid>
 
-                            <CheckBox x:Name="日常赛事启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True" Checked="启用CheckBox_CheckChanged" Unchecked="启用CheckBox_CheckChanged"/>
+                            <CheckBox x:Name="日常赛事启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True"/>
                         </Grid>
                     </Border>
                 </Grid>
