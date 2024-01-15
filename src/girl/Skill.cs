@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using static ComputerVision.ImageRecognition;
 using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
@@ -33,7 +32,10 @@ namespace Shining_BeautifulGirls
         {
             for (int i = 0; i < SkList.Count; i++)
             {
-                if (MatchImage(Path.Combine(SkillDir, $"{SkList[i]}.png"), skillBackground, out _) > 0.95)
+                if (Mnt.FastCheck(
+                    Path.Combine(SkillDir, $"{SkList[i]}.png"),
+                    skillBackground,
+                    0.95))
                 {
                     LearnName = SkList[i];
                     return true;

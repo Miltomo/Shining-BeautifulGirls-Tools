@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using MHTools;
+using OpenCvSharp;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -51,14 +52,40 @@ namespace Shining_BeautifulGirls
             return false;
         }
 
+        /// <summary>
+        /// (不刷新) 快速检测目标物
+        /// </summary>
+        /// <param name="targetPath"></param>
+        /// <param name="bgPath"></param>
+        /// <param name="sim"></param>
+        /// <returns></returns>
+        public bool FastCheck(string targetPath, string? bgPath = default, double sim = 0.9)
+        {
+            return
+                MatchImage(targetPath,
+                bgPath ?? Screen,
+                out _)
+                >
+                sim;
+        }
+
+
         public bool CheckSymbol(string name, string? background = default, double delta = 0.9)
         {
             return Check(Path.Combine(SymbolDir, $"{name}.png"), background, delta);
         }
 
-        public bool CheckCard(string name, string? background = default)
+        /// <summary>
+        /// (不刷新) 直接开始匹配目标象征物
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="sim"></param>
+        /// <returns></returns>
+        public bool FastSymbol(string symbol, double sim = 0.9)
         {
-            return Check(Path.Combine(CardDir, $"{name}.png"), background);
+            return FastCheck(
+                FileManagerHelper.SetDir(SymbolDir).Find(symbol)!,
+                sim: sim);
         }
 
         //========================

@@ -16,35 +16,35 @@ namespace Shining_BeautifulGirls
                 case "转场处理":
                     Mnt.Refresh();
 
-                    if (FastCheck("养成主页"))
+                    if (FastSymbol("养成主页"))
                     {
                         养成流程("普通日");
                         break;
                     }
-                    else if (FastCheck("比赛日主页"))
+                    else if (FastSymbol("比赛日主页"))
                     {
                         养成流程("比赛日");
                         break;
                     }
-                    else if (FastCheck("粉丝不足") || FastCheck("未达要求") || FastCheck("无法参赛"))
+                    else if (FastSymbol("粉丝不足") || FastSymbol("未达要求") || FastSymbol("无法参赛"))
                     {
                         比赛处理("不满足参赛要求");
                         养成流程("每日总结");
                         break;
                     }
-                    else if (FastCheck("继续") || FastCheck("抓娃娃"))
+                    else if (FastSymbol("继续") || FastSymbol("抓娃娃"))
                     {
                         Click("比赛结束3");
                     }
-                    else if (FastCheck("OK"))
+                    else if (FastSymbol("OK"))
                     {
                         Click("比赛结束1");
                     }
-                    else if (FastCheck("因子继承"))
+                    else if (FastSymbol("因子继承"))
                     {
                         Click("继续");
                     }
-                    else if (FastCheck("养成结束"))
+                    else if (FastSymbol("养成结束"))
                     {
                         养成流程("结束");
                         break;
