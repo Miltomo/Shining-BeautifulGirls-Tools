@@ -215,7 +215,7 @@ namespace Shining_BeautifulGirls
             while (remain > 0)
             {
                 if (_stop)
-                    throw new UserStopException();
+                    throw new StopException();
 
                 int step = remain > 1000 ? 1000 : remain;
                 remain -= step;

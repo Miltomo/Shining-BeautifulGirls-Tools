@@ -142,7 +142,7 @@ namespace Shining_BeautifulGirls
         /// 进行一次养成的标准流程
         /// </summary>
         /// <returns>true,当成功进行了完整养成; false,当且仅当训练值不足时</returns>
-        /// <exception cref="UserStopException"></exception>
+        /// <exception cref="StopException"></exception>
         private bool 养成流程()
         {
             bool 已存在养成 = false;
@@ -158,7 +158,7 @@ namespace Shining_BeautifulGirls
                     ], sec: 0))
                 {
                     Log("⚠️请先自行选好继承优俊少女再尝试养成⚠️");
-                    throw new UserStopException();
+                    throw new StopException();
                 }
 
                 var card = UserConfig is null ? "北部玄驹" : UserConfig.SupportCard;
@@ -167,7 +167,7 @@ namespace Shining_BeautifulGirls
                 else
                 {
                     Log($"⚠️未找到目标协助卡\"{card}\"⚠️");
-                    throw new UserStopException();
+                    throw new StopException();
                 }
 
                 // 训练值不足时的处理
