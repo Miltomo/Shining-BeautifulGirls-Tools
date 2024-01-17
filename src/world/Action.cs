@@ -28,6 +28,7 @@ namespace Shining_BeautifulGirls
                         }
                         state = "选队";
                         break;
+
                     case "选队":
                         Pause(1000);
                         string target = $"第{(UserConfig is null ? 1 : UserConfig.TeamNumber)}队";
@@ -43,29 +44,17 @@ namespace Shining_BeautifulGirls
                             }
                         }
                         MoveTo(["VS", target]);
-                        MoveTo(["选择道具", "继续"]);
-                        MoveTo(["VS", "JJC3"]);
-                        state = "跳跃处理";
+                        Click("继续");
+                        PageDown(["选择道具", "JJC3"]);
+                        state = "比赛处理";
                         break;
-                    case "跳跃处理":
-                        Pause(300);
-                        if (CheckSymbol("未全跳"))
-                        {
-                            Click("JJC4");
-                            state = "查看结果";
-                        }
-                        else if (CheckSymbol("已全跳"))
-                            state = "查看结果";
-                        else
-                            state = "跳跃处理";
-                        break;
-                    case "查看结果":
-                        PageDown(["返回"]);
-                        Click("比赛结束1", 1000);
-                        Click("快进");
-                        PageDown(["赛事结束", "比赛结束3"]);
+
+                    case "比赛处理":
+                        MoveTo(["赛事结束", "比赛结束2"], sec: 0);
+                        Click("比赛结束3");
                         state = "循环处理";
                         break;
+
                     case "循环处理":
                         if (CheckSymbol("竞技值不足"))
                         {
@@ -81,9 +70,11 @@ namespace Shining_BeautifulGirls
                         else
                             Click("竞技场连点");
                         break;
+
                     case "结束":
                         Aw = false;
                         break;
+
                     default:
                         break;
                 }
