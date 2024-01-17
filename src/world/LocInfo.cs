@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static Shining_BeautifulGirls.World.NamePool;
 
 namespace Shining_BeautifulGirls
 {
@@ -41,6 +42,155 @@ namespace Shining_BeautifulGirls
 {"技能点",[0.8333,0.9653,0.7188,0.7539]},
 {"技能点2",[0.7222,0.9028,0.3125,0.3438]},
         };
+
+        public static class NamePool
+        {
+            public enum Button
+            {
+                强化编成,
+                剧情,
+                主页,
+                赛事,
+                JJC1,
+                JJC2,
+                第1队,
+                第2队,
+                第3队,
+                JJC3,
+                JJC4,
+                竞技场连点,
+                日常赛事,
+                日1,
+                日2,
+                日3,
+                取消,
+                扭蛋,
+                养成,
+                继续,
+                大弹窗确认,
+                优先活动卡,
+                自动编成确认,
+                使用宝石,
+                使用能量饮料,
+                加号,
+                刷新协助卡,
+                开始养成,
+                快进,
+                弹窗勾选,
+                弹窗确认,
+                跳过,
+                缩短所有事件,
+                缩短事件确定,
+                休息,
+                训练,
+                技能,
+                医务室,
+                外出,
+                返回,
+                速度,
+                耐力,
+                力量,
+                毅力,
+                智力,
+                参赛,
+                查看结果,
+                前往赛事,
+                比赛快进,
+                比赛结束1,
+                比赛结束2,
+                比赛结束3,
+                选择倒二,
+                选择末尾,
+                选卡,
+                卡1,
+                卡2,
+                卡3,
+                卡4,
+                卡5,
+                技能获取,
+                结束养成,
+                养成结束,
+                结束连点,
+                不弹赛事推荐,
+            }
+        }
+
+        private static void InitLocInfo()
+        {
+            MakeButton(Button.强化编成, 75, 1225);
+            MakeButton(Button.剧情, 190, 1225);
+            MakeButton(Button.主页, 360, 1225);
+            MakeButton(Button.赛事, 520, 1225);
+            MakeButton(Button.JJC1, 208, 864);
+            MakeButton(Button.JJC2, 360, 810);
+            MakeButton(Button.第1队, 360, 350);
+            MakeButton(Button.第2队, 360, 620);
+            MakeButton(Button.第3队, 360, 890);
+            MakeButton(Button.JJC3, 510, 913);
+            MakeButton(Button.JJC4, 457, 1063);
+            MakeButton(Button.竞技场连点, 320, 1180);
+            MakeButton(Button.日常赛事, 210, 1040);
+            MakeButton(Button.日1, 360, 690);
+            MakeButton(Button.日2, 360, 840);
+            MakeButton(Button.日3, 360, 980);
+            MakeButton(Button.取消, 200, 1180);
+            MakeButton(Button.扭蛋, 640, 1225);
+            MakeButton(Button.养成, 540, 1080);
+            MakeButton(Button.继续, 360, 1080);
+            MakeButton(Button.大弹窗确认, 515, 915);
+            MakeButton(Button.优先活动卡, 233, 657);
+            MakeButton(Button.自动编成确认, 515, 830);
+            MakeButton(Button.使用宝石, 610, 180);
+            MakeButton(Button.使用能量饮料, 610, 320);
+            MakeButton(Button.加号, 523, 670);
+            MakeButton(Button.刷新协助卡, 650, 1005);
+            MakeButton(Button.开始养成, 515, 1174);
+            MakeButton(Button.快进, 651, 1209);
+            MakeButton(Button.弹窗勾选, 245, 705);
+            MakeButton(Button.弹窗确认, 515, 833);
+            MakeButton(Button.跳过, 258, 1244);
+            MakeButton(Button.缩短所有事件, 68, 623);
+            MakeButton(Button.缩短事件确定, 360, 915);
+            MakeButton(Button.休息, 115, 985);
+            MakeButton(Button.训练, 355, 985);
+            MakeButton(Button.技能, 210, 1075);
+            MakeButton(Button.医务室, 160, 1125);
+            MakeButton(Button.外出, 400, 1125);
+            MakeButton(Button.返回, 85, 1200);
+            MakeButton(Button.速度, 100, 1080);
+            MakeButton(Button.耐力, 230, 1080);
+            MakeButton(Button.力量, 360, 1080);
+            MakeButton(Button.毅力, 490, 1080);
+            MakeButton(Button.智力, 620, 1080);
+            MakeButton(Button.参赛, 505, 1080);
+            MakeButton(Button.查看结果, 252, 1172);
+            MakeButton(Button.前往赛事, 465, 1170);
+            MakeButton(Button.比赛快进, 560, 1225);
+            MakeButton(Button.比赛结束1, 360, 1180);
+            MakeButton(Button.比赛结束2, 430, 1180);
+            MakeButton(Button.比赛结束3, 360, 1110);
+            MakeButton(Button.选择倒二, 360, 715);
+            MakeButton(Button.选择末尾, 360, 830);
+            MakeButton(Button.选卡, 570, 680);
+            MakeButton(Button.卡1, 360, 200);
+            MakeButton(Button.卡2, 360, 375);
+            MakeButton(Button.卡3, 360, 545);
+            MakeButton(Button.卡4, 360, 720);
+            MakeButton(Button.卡5, 360, 900);
+            MakeButton(Button.技能获取, 520, 1180);
+            MakeButton(Button.结束养成, 205, 915);
+            MakeButton(Button.养成结束, 510, 1050);
+            MakeButton(Button.结束连点, 360, 1145);
+            MakeButton(Button.不弹赛事推荐, 260, 1035);
+        }
+
+        private static void MakeButton(Button bt, double x, double y)
+        {
+            var rX = x / STANDARD_WIDTH;
+            var rY = y / STANDARD_HEIGHT;
+            ButtonLocation.Add(bt.ToString(), [rX, rY]);
+        }
+
 
         private static Dictionary<string, double[]> ButtonLocation { get; } = new()
             {

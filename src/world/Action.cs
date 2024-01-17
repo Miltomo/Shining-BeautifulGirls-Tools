@@ -6,7 +6,6 @@ namespace Shining_BeautifulGirls
 {
     partial class World
     {
-        //TODO 重构竞技场流程
         private bool 竞技场流程()
         {
             var state = "初入";
