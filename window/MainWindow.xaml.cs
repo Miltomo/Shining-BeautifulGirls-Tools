@@ -47,6 +47,7 @@ namespace Shining_BeautifulGirls
             World.CardDir = @$"{resources}\card\";
             World.ScreenshotDir = @$"{path}\screenshot";
             World.CacheDir = cache;
+            World.CreateLocInfo();
 
             ShiningGirl.SkillDir = @$"{resources}\skill\";
             ShiningGirl.RecordDir = @$"{path}\养成记录";

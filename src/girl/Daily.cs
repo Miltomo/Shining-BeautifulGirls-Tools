@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static Shining_BeautifulGirls.World.NP;
 
 namespace Shining_BeautifulGirls
 {
@@ -51,6 +52,7 @@ namespace Shining_BeautifulGirls
             }
         }
 
+        //TODO 准备大概此处逻辑
         private void System__relex__()
         {
             _lastAction = "休息";
@@ -58,7 +60,7 @@ namespace Shining_BeautifulGirls
             {
                 if (Check("养成主页"))
                     break;
-                Click("返回", 300);
+                Click(Button.返回, 300);
             }
 
             Mnt.ClickEx("休息", "休息确认", ["弹窗勾选", "弹窗确认"]);
@@ -79,7 +81,7 @@ namespace Shining_BeautifulGirls
             {
                 if (Check("养成主页"))
                     break;
-                Click("返回", 300);
+                Click(Button.返回, 300);
             }
 
             Mnt.ClickEx("外出", "外出确认", ["弹窗勾选", "弹窗确认"]);

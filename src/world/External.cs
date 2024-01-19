@@ -92,26 +92,26 @@ namespace Shining_BeautifulGirls
         //========屏幕裁剪========
         //========================
 
-        public Mat CropScreen(string zone)
+        public Mat CropScreen(object zone)
         {
             return CropImage(Screen, GetRectangle(zone));
         }
 
-        public string CropScreen(string zone, string saveFileName)
+        public string CropScreen(object zone, string saveFileName)
         {
             string path = MakeUniqueCacheFile(saveFileName);
             CropScreen(zone).SaveImage(path);
             return path;
         }
 
-        public Mat MaskScreen(string zone)
+        public Mat MaskScreen(object zone)
         {
             var rt = GetRectangle(zone);
             var bg = new Mat(Screen);
             return ApplyRectangleMask(bg, new(0, rt.minY, bg.Width, rt.height));
         }
 
-        public string MaskScreen(string zone, string saveFileName)
+        public string MaskScreen(object zone, string saveFileName)
         {
             string path = MakeUniqueCacheFile(saveFileName);
             MaskScreen(zone).SaveImage(path);
@@ -133,8 +133,11 @@ namespace Shining_BeautifulGirls
                 );
         }
 
-        public Rectangle GetRectangle(string name)
+        public Rectangle GetRectangle(object zone)
         {
+            var name = zone.ToString();
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("这不是正确的Zone");
             var rates = ZoneLocation[name];
             return new(
                 (int)(rates[0] * Width),
@@ -146,12 +149,12 @@ namespace Shining_BeautifulGirls
         //========================
         //========文字识别========
         //========================
-        public string ExtractZoneText(string zone)
+        public string ExtractZoneText(object zone)
         {
             return ExtractText(CropScreen(zone, "extract"));
         }
 
-        public string ExtractZoneInteger(string zone)
+        public string ExtractZoneInteger(object zone)
         {
             var target = MakeUniqueCacheFile("extract");
             //得到区域图像(灰度)
