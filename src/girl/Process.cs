@@ -1,5 +1,6 @@
 ﻿using MHTools;
 using System;
+using static Shining_BeautifulGirls.World.NP;
 
 namespace Shining_BeautifulGirls
 {
@@ -34,15 +35,15 @@ namespace Shining_BeautifulGirls
                     }
                     else if (FastSymbol("继续") || FastSymbol("抓娃娃"))
                     {
-                        Click("比赛结束3");
+                        Click(Button.低继续);
                     }
                     else if (FastSymbol("OK"))
                     {
-                        Click("比赛结束1");
+                        Click(Button.比赛结束);
                     }
                     else if (FastSymbol("因子继承"))
                     {
-                        Click("继续");
+                        Click(Button.继续);
                     }
                     else if (FastSymbol("养成结束"))
                     {
@@ -50,7 +51,7 @@ namespace Shining_BeautifulGirls
                         break;
                     }
 
-                    Click("选择末尾", 300);
+                    Click(Button.选择末尾, 300);
                     养成流程("转场处理");
                     break;
 
@@ -92,7 +93,7 @@ namespace Shining_BeautifulGirls
                 case "比赛日":
                     Log($"###############第 {Turn} 回合###############");
 
-                    SkPoints = ExtractValue("技能点");
+                    SkPoints = ExtractValue(Zone.技能点);
 
                     Log($"★今天是比赛日★");
                     Log($"技能点：{SkPoints}");
@@ -119,23 +120,23 @@ namespace Shining_BeautifulGirls
                 case "结束":
                     技能学习过程("结束学习");
                     Log("结束养成");
-                    Click("养成结束");
-                    PageDown(["养成结束弹窗", "大弹窗确认"]);
+                    Click(Button.养成结束);
+                    PageDown(["养成结束弹窗", $"{Button.大弹窗确认}"]);
                     EndTraining = true;
 
                     var dir = GetTodayRecordDir();
                     var name = FileManagerHelper.SetDir(dir).NextName();
 
-                    PageDown(["下一页", "结束连点"]);
+                    PageDown(["下一页", $"{Button.结束连点}"]);
                     PageDown(["下一页"]);
                     Mnt.SaveScreen(dir, $"{name}_因子");
                     Log("已保存因子信息截图");
-                    Click("结束连点", 1000);
+                    Click(Button.结束连点, 1000);
                     PageDown(["优俊少女详情"]);
                     Mnt.SaveScreen(dir, name);
                     Log("已保存养成信息截图");
 
-                    MoveTo(["主界面", "结束连点"], sec: 0, sim: 0.7);
+                    MoveTo(["主界面", $"{Button.结束连点}"], sec: 0, sim: 0.7);
                     break;
                 default:
                     throw new NotImplementedException($"养成流程不存在此过程:{stage}");
@@ -153,47 +154,46 @@ namespace Shining_BeautifulGirls
             switch (state)
             {
                 case "正常比赛":
-                    // 比赛日主页的「赛事」
-                    Click("参赛", 1000);
+                    Click(Button.参赛, 1000);
                     return 比赛处理("参赛");
                 case "不满足参赛要求":
-                    Click("大弹窗确认", 1000);
+                    Click(Button.大弹窗确认, 1000);
                     return 比赛处理("参赛");
                 case "参赛":
                     _lastAction = "比赛";
                     _dqRemakeTimes = 0;
                     if (Check("连续参赛"))
-                        Click("弹窗确认", 1000);
+                        Click(Button.弹窗确认, 1000);
                     if (Check("赛事推荐弹窗", sim: 0.8))
                     {
-                        Click("不弹赛事推荐");
-                        Click("比赛结束1");
+                        Click(Button.不弹赛事推荐);
+                        Click(Button.比赛结束);
                     }
                     Log("参加比赛");
-                    Click("参赛");
-                    PageDown(["参赛确认", "大弹窗确认"]);
+                    Click(Button.参赛);
+                    PageDown(["参赛确认", $"{Button.大弹窗确认}"]);
 
                 StartNewRace:
                     PageDown(["前往赛事"]);
                     if (Match("查看结果") < 0.99)
                     {
-                        Click("前往赛事");
-                        PageDown(["参赛!", "比赛结束1"]);
-                        Mnt.MoveToEx([["下一页"], ["比赛快进"]], [
+                        Click(Button.前往赛事);
+                        PageDown(["参赛!", $"{Button.比赛结束}"]);
+                        Mnt.MoveToEx([["下一页"], [$"{Button.比赛快进}"]], [
                             ["重新挑战"]
                             ], sec: 0);
                     }
                     else
                     {
-                        Click("查看结果");
-                        Click("查看结果");
+                        Click(Button.查看结果);
+                        Click(Button.查看结果);
 
-                        if (Mnt.MoveToEx([["下一页"], ["继续"]],
+                        if (Mnt.MoveToEx([["下一页"], [$"{Button.继续}"]],
                             [["重新挑战"]
                             ], sec: 0))
                         {
-                            Click("比赛结束2");
-                            PageDown(["赛果", "比赛结束2"]);
+                            Click(Button.比赛结束);
+                            PageDown(["赛果", $"{Button.比赛结束}"]);
 
                             Log("比赛结束，已达成目标");
                             return true;
@@ -226,7 +226,7 @@ namespace Shining_BeautifulGirls
                             {
                                 _dqRemakeTimes++;
                                 Log($"选择重新挑战，这是第 {_dqRemakeTimes} 次重新挑战");
-                                Click("大弹窗确认");
+                                Click(Button.大弹窗确认);
                                 goto StartNewRace;
                             }
                             Log("放弃重新挑战");
@@ -235,8 +235,8 @@ namespace Shining_BeautifulGirls
                     return 比赛处理("比赛失败");
                 case "比赛失败":
                     Log("比赛失败");
-                    Click("结束养成");
-                    MoveTo(["养成结束", "比赛结束2"], 0);
+                    Click(Button.结束养成);
+                    MoveTo(["养成结束", $"{Button.比赛结束}"], 0);
                     return false;
                 default:
                     return false;
@@ -266,7 +266,7 @@ namespace Shining_BeautifulGirls
                     技能学习过程("进入");
                     break;
                 case "进入":
-                    Click("技能");
+                    Click(Button.技能);
                     PageDown(["技能获取"]);
                     技能学习过程("学习");
                     break;
@@ -274,7 +274,7 @@ namespace Shining_BeautifulGirls
                     //
                     //Mnt.SaveScreen();
                     //
-                    var orin = ExtractValue("技能点2");
+                    var orin = ExtractValue(Zone.技能点2);
                     for (int i = 1; i < 4; i++)
                     {
                         var mask = MaskScreen($"技{i}");
@@ -289,7 +289,7 @@ namespace Shining_BeautifulGirls
                             for (int k = 0; k < 2; k++)
                                 Mnt.Click(pt.X + 20, pt.Y + 20, 200);
                             Mnt.Refresh();
-                            var ch = ExtractValue("技能点2");
+                            var ch = ExtractValue(Zone.技能点2);
                             if (ch != orin)
                             {
                                 orin = ch;
@@ -301,7 +301,7 @@ namespace Shining_BeautifulGirls
                     技能学习过程("翻页");
                     break;
                 case "翻页":
-                    if (Match("技白", CropScreen("技白")) > 0.9)
+                    if (Match("技白", CropScreen(Zone.技白)) > 0.9)
                         技能学习过程("结束");
                     else
                     {
@@ -310,11 +310,11 @@ namespace Shining_BeautifulGirls
                     }
                     break;
                 case "结束":
-                    ClickEx("继续", "技能获取确认", ["技能获取"]);
+                    Mnt.ClickEx(Button.继续, "技能获取确认", [Button.技能获取]);
 
                     while (true)
                     {
-                        Click("返回");
+                        Click(Button.返回);
                         if (Match("比赛日主页") > 0.7 || Match("养成结束") > 0.8)
                             break;
                     }

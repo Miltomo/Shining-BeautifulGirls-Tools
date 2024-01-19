@@ -9,7 +9,7 @@ namespace Shining_BeautifulGirls
         private List<TrainInfo> T { get; } = [];
         public bool TryTrain()
         {
-            if (Mnt.WaitTo(["返回", "训练"], 0.8))
+            if (Mnt.WaitTo(["返回", $"{World.NP.Button.训练}"], 0.8))
             {
                 Subject巡视();
 

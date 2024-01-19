@@ -1,6 +1,7 @@
 ﻿using MHTools;
 using System.Collections.Generic;
 using static ComputerVision.ImageRecognition;
+using static Shining_BeautifulGirls.World.NP;
 
 namespace Shining_BeautifulGirls
 {
@@ -16,13 +17,13 @@ namespace Shining_BeautifulGirls
                 {
                     case "初入":
                         Log("开始自动竞技场");
-                        MoveTo(["赛事", "赛事"], 1);
-                        Click("JJC1");
-                        MoveTo(["竞技场", "继续"], 1);
-                        Click("JJC2");
+                        MoveTo(["赛事", $"{Button.赛事}"], 1);
+                        Click(Button.JJC1);
+                        MoveTo(["竞技场", $"{Button.继续}"], 1);
+                        Click(Button.JJC2);
                         if (!PageDownEx(["选队"], ["竞技值不足"]))
                         {
-                            Click("主页");
+                            Click(Button.主页);
                             return false;
                         }
                         state = "选队";
@@ -43,21 +44,22 @@ namespace Shining_BeautifulGirls
                             }
                         }
                         MoveTo(["VS", target]);
-                        Click("继续");
-                        PageDown(["选择道具", "JJC3"]);
+                        Click(Button.继续);
+                        PageDown(["选择道具", $"{Button.JJC3}"]);
                         state = "比赛处理";
                         break;
 
                     case "比赛处理":
-                        MoveTo(["赛事结束", "比赛结束2"], sec: 0);
-                        Click("比赛结束3");
+                        Pause(2000);
+                        MoveTo(["赛事结束", $"{Button.比赛结束}", $"{Button.快进}"], sec: 0);
+                        Click(Button.低继续);
                         state = "循环处理";
                         break;
 
                     case "循环处理":
                         if (CheckSymbol("竞技值不足"))
                         {
-                            MoveTo(["主界面", "主页"], 0, 0.8);
+                            MoveTo(["主界面", $"{Button.主页}"], 0, 0.8);
                             state = "结束";
                             break;
                         }
@@ -67,7 +69,7 @@ namespace Shining_BeautifulGirls
                             state = "选队";
                         }
                         else
-                            Click("竞技场连点");
+                            Click(Button.竞技场连点);
                         break;
 
                     case "结束":
@@ -87,8 +89,8 @@ namespace Shining_BeautifulGirls
             switch (state)
             {
                 case "进入":
-                    MoveTo(["赛事", "赛事"], 1);
-                    MoveTo(["金币", "日常赛事"], 6, 0.8);
+                    MoveTo(["赛事", $"{Button.赛事}"], 1);
+                    MoveTo(["金币", $"{Button.日常赛事}"], 6, 0.8);
                     日常赛事流程("赛事选择");
                     break;
                 case "赛事选择":
@@ -99,14 +101,14 @@ namespace Shining_BeautifulGirls
                     {
                         if (CheckSymbol("多次参赛ON", delta: 0.99))
                         {
-                            Click("比赛结束2");
+                            Click(Button.比赛结束);
                             PageDown(["返回"]);
                             日常赛事流程("参赛");
                         }
                         else
                         {
                             Log("⚠️未开启多次参赛，自行开启后再尝试⚠️");
-                            Click("取消");
+                            Click(Button.取消);
                             日常赛事流程("退出");
                         }
                     }
@@ -118,12 +120,12 @@ namespace Shining_BeautifulGirls
                     break;
                 case "参赛":
                     Log("进行日常赛事比赛");
-                    ClickEx("继续", "多次参赛", ["弹窗确认"]);
-                    MoveTo(["返回", "比赛结束1"], sec: 1);
+                    ClickEx(Button.继续, "多次参赛", [Button.弹窗确认]);
+                    MoveTo(["返回", $"{Button.比赛结束}"], sec: 1);
                     日常赛事流程("退出");
                     break;
                 case "退出":
-                    MoveTo(["主界面", "主页"], 0, 0.8);
+                    MoveTo(["主界面", $"{Button.主页}"], 0, 0.8);
                     break;
             }
         }
@@ -138,12 +140,12 @@ namespace Shining_BeautifulGirls
             bool 已存在养成 = false;
 
             Click("主页");
-            if (PageDownEx(["养成", "养成"], ["养成2"], sim: 0.8))
+            if (PageDownEx(["养成", $"{Button.养成}"], ["养成2"], sim: 0.8))
             {
                 PageDown(["继续"]);
                 Pause(1000);
-                ClickEx("继续", "选择养成难度", ["比赛结束2"]);
-                if (!MoveToEx([["选卡"], ["继续"]], [
+                ClickEx(Button.继续, "选择养成难度", [Button.比赛结束]);
+                if (!MoveToEx([["选卡"], [$"{Button.继续}"]], [
                     ["未选继承"]
                     ], sec: 0))
                 {
@@ -153,7 +155,7 @@ namespace Shining_BeautifulGirls
 
                 var card = UserConfig is null ? "北部玄驹" : UserConfig.SupportCard;
                 if (寻找协助卡(card))
-                    PageDown(["选卡", "继续"]);
+                    PageDown(["选卡", $"{Button.继续}"]);
                 else
                 {
                     Log($"⚠️未找到目标协助卡\"{card}\"⚠️");
@@ -165,46 +167,46 @@ namespace Shining_BeautifulGirls
                 {
                     if (UserConfig is not null && (UserConfig.CultivateCount > 0))
                     {
-                        Click("弹窗确认");
+                        Click(Button.弹窗确认);
                         PageDown(["回复训练值"]);
 
                         if (UserConfig.CultivateUseProp)
                         {
                             if (FastSymbol("能量饮料"))
-                                Click("使用能量饮料");
+                                Click(Button.使用能量饮料);
                             else goto UseMoney;
-                            PageDown(["回复选条", "大弹窗确认"]);
+                            PageDown(["回复选条", $"{Button.大弹窗确认}"]);
                             goto End;
                         }
 
                     UseMoney:
                         if (UserConfig.CultivateUseMoney)
                         {
-                            Click("使用宝石");
+                            Click(Button.使用宝石);
                             PageDown(["回复选条"]);
-                            Click("加号");
-                            Click("大弹窗确认");
+                            Click(Button.加号);
+                            Click(Button.大弹窗确认);
                         }
                         else
                         {
                             // 关闭
-                            Click("比赛结束1");
+                            Click(Button.比赛结束);
                             return false;
                         }
 
                     End:
-                        MoveTo(["最终确认", "继续"], sec: 0);
+                        MoveTo(["最终确认", $"{Button.继续}"], sec: 0);
                     }
                     else
                         return false;
                 };
 
                 Log("确定养成");
-                Click("开始养成");
+                Click(Button.开始养成);
                 PageDown(["快进"]);
-                ClickEx("快进", "快进确认", ["弹窗勾选", "弹窗确认"]);
+                ClickEx(Button.快进, "快进确认", [Button.弹窗勾选, Button.弹窗确认]);
                 PageDown(["缩短事件"]);
-                Click(["跳过", "跳过", "缩短所有事件", "缩短事件确定"]);
+                Click([Button.跳过, Button.跳过, Button.缩短所有事件, Button.缩短事件确定]);
                 PageDown(["养成主页"], 0.8);
                 Log("到达界面，正式开始");
                 Girl = default;
@@ -212,8 +214,8 @@ namespace Shining_BeautifulGirls
             else
             {
                 已存在养成 = true;
-                Click("养成");
-                PageDown(["继续养成", "大弹窗确认"]);
+                Click(Button.养成);
+                PageDown(["继续养成", $"{Button.大弹窗确认}"]);
                 Log("继续上次养成");
             }
 
@@ -271,7 +273,7 @@ namespace Shining_BeautifulGirls
                             if (养成流程())
                                 break;
                             else
-                                MoveTo(["养成", "主页"], 0);
+                                MoveTo(["养成", $"{Button.主页}"], 0);
                             // 等待十分钟
                             Pause(10 * 60 * 1000);
                         }
@@ -294,7 +296,7 @@ namespace Shining_BeautifulGirls
         private bool 寻找协助卡(string card)
         {
             Log("正在选择好友协助卡");
-            Click("选卡");
+            Click(Button.选卡);
 
             Queue<string> queue = new();
             queue.Enqueue("移到合适位置");
@@ -324,7 +326,7 @@ namespace Shining_BeautifulGirls
                         break;
 
                     case "刷新":
-                        Click("刷新协助卡", 1000);
+                        Click(Button.刷新协助卡, 1000);
                         break;
 
                     case "比对":
@@ -352,7 +354,7 @@ namespace Shining_BeautifulGirls
         {
             Start();
             Log("正在检测位置......");
-            return WaitTo(["主界面", "主页"]);
+            return WaitTo(["主界面", $"{Button.主页}"]);
         }
 
         public void Start()

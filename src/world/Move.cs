@@ -33,7 +33,7 @@ namespace Shining_BeautifulGirls
                 bool Aw = false;
                 while (waitting < maxTime)
                 {
-                    Pause(300);
+                    Pause();
                     Refresh();
 
                     if (FastSymbol(symbol, sim))
@@ -95,7 +95,7 @@ namespace Shining_BeautifulGirls
                 int waitting = -1;
                 while (true)
                 {
-                    Pause(300);
+                    Pause();
                     Refresh();
 
                     foreach (var symbol in symbols)
@@ -192,14 +192,6 @@ namespace Shining_BeautifulGirls
         public void Refresh()
         {
             ADB.GetScreen(DeviceID);
-            /*if (CheckSymbol("主界面"))
-            {
-                Location = "主界面";
-
-                Trace.WriteLine("当前在主界面");
-            }
-            else
-                Location = "未知";*/
         }
 
 
@@ -246,9 +238,10 @@ namespace Shining_BeautifulGirls
             Pause(pauseTime);
         }
 
-        public void Click(string? buttonName, int pauseTime = 200)
+        public void Click(object? bt, int pauseTime = 200)
         {
-            if (buttonName == null || buttonName == "")
+            string? buttonName = bt?.ToString();
+            if (string.IsNullOrWhiteSpace(buttonName))
                 return;
             _lastClick = buttonName;
             Click(
@@ -258,15 +251,15 @@ namespace Shining_BeautifulGirls
                 );
         }
 
-        public void Click(string[] bts)
+        public void Click(object[] bts)
         {
             for (int i = 0; i < bts.Length; i++)
                 Click(bts[i]);
         }
 
-        public void ClickEx(string buttonName, string occur, string[] bts)
+        public void ClickEx(object bt, string occur, object[] bts)
         {
-            Click(buttonName, 1000);
+            Click(bt.ToString(), 1000);
             if (CheckSymbol(occur))
                 Click(bts);
         }

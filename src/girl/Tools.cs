@@ -4,16 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static ComputerVision.ImageRecognition;
+using static Shining_BeautifulGirls.World.NP;
 
 namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
-        private string MaskScreen(string zone, string name = "mask")
+        private string MaskScreen(object zone, string name = "mask")
         {
             return Mnt.MaskScreen(zone, name);
         }
-        private string CropScreen(string zone, string name = "zone")
+        private string CropScreen(object zone, string name = "zone")
         {
             return Mnt.CropScreen(zone, name);
         }
@@ -22,7 +23,7 @@ namespace Shining_BeautifulGirls
         {
             Rectangle 实值 = new(0, 0, 0, 0);
             int 边界 = int.MaxValue;
-            var @out = CropScreen("体力");
+            var @out = CropScreen(Zone.体力);
             var contours = GetContours(
                 ConnectLines(Binary(Laplacian(
                         Gray(new(@out)),
@@ -78,7 +79,7 @@ namespace Shining_BeautifulGirls
 
         private int GetMood()
         {
-            var saveFileName = CropScreen("心情");
+            var saveFileName = CropScreen(Zone.心情);
 
             string mood = MoodClassification.Predict(new()
             {
@@ -294,7 +295,7 @@ namespace Shining_BeautifulGirls
             return int.Parse(number);
         }
 
-        private int ExtractValue(string zone)
+        private int ExtractValue(object zone)
         {
             if (int.TryParse(Mnt.ExtractZoneInteger(zone), out var value))
                 return value;

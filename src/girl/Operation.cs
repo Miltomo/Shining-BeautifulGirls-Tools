@@ -4,18 +4,13 @@ namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
-        private void Click(string buttonName, int wait = 200)
+        private void Click(World.NP.Button button, int wait = 200)
+        {
+            Mnt.Click(button, wait);
+        }
+        private void Choose(object buttonName, int wait = 200)
         {
             Mnt.Click(buttonName, wait);
-        }
-
-        private void ClickEx(string buttonName, string occur, string[] bts)
-        {
-            Mnt.ClickEx(buttonName, occur, bts);
-        }
-        private void Choose(string buttonName, int wait = 200)
-        {
-            Click(buttonName, wait);
             Mnt.Refresh();
         }
 
