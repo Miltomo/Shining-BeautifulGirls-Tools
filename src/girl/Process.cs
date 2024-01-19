@@ -62,12 +62,7 @@ namespace Shining_BeautifulGirls
                     Log(基本信息);
 
                     // 判断要去训练还是干别的
-                    if (Check("医务室", sim: 0.8))
-                    {
-                        Log("已受伤，进行治疗");
-                        System__treat__();
-                    }
-                    else if (Vitality < 26)
+                    if (Vitality < 26)
                     {
                         Log("体力过低，放松休息");
                         System__relex__();

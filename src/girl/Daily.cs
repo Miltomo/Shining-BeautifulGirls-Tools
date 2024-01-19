@@ -52,7 +52,6 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        //TODO 准备大概此处逻辑
         private void System__relex__()
         {
             _lastAction = "休息";
@@ -63,7 +62,10 @@ namespace Shining_BeautifulGirls
                 Click(Button.返回, 300);
             }
 
-            Mnt.ClickEx("休息", "休息确认", ["弹窗勾选", "弹窗确认"]);
+            if (!InSummer)
+                Mnt.ClickEx(Button.医务室, "医务室确认", [Button.弹窗勾选, Button.弹窗确认]);
+
+            Mnt.ClickEx(Button.休息, "休息确认", [Button.弹窗勾选, Button.弹窗确认]);
             Mnt.Pause(1000);
         }
 
@@ -84,15 +86,11 @@ namespace Shining_BeautifulGirls
                 Click(Button.返回, 300);
             }
 
-            Mnt.ClickEx("外出", "外出确认", ["弹窗勾选", "弹窗确认"]);
-            Mnt.Pause(1000);
-        }
+            if (!InSummer)
+                Mnt.ClickEx(Button.医务室, "医务室确认", [Button.弹窗勾选, Button.弹窗确认]);
 
-        //TODO 删除治疗判断?
-        private void System__treat__()
-        {
-            _lastAction = "治疗";
-            Mnt.ClickEx("医务室", "医务室确认", ["弹窗勾选", "弹窗确认"]);
+
+            Mnt.ClickEx(Button.外出, "外出确认", [Button.弹窗勾选, Button.弹窗确认]);
             Mnt.Pause(1000);
         }
     }
