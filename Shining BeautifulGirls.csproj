@@ -35,6 +35,10 @@
       <DependentUpon>HeadDetection.mbconfig</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="src\Symbol.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Symbol.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup Label="HeadClassification">
     <None Include="HeadClassification.consumption.cs">
@@ -95,9 +99,26 @@
       <DependentUpon>MoodClassification.mbconfig</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="src\Symbol.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Symbol.tt</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="src\Symbol.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Symbol.tt</DependentUpon>
+    </Compile>
+    <Compile Update="src\TextTemplate1.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TextTemplate1.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(ProjectDir)resources&quot; &quot;$(TargetDir)resources&quot; /E /I /Y&#xD;&#xA;xcopy &quot;$(ProjectDir)tessdata&quot; &quot;$(TargetDir)tessdata&quot; /E /I /Y" />

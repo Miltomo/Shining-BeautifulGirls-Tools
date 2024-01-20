@@ -1,0 +1,67 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ output extension=".cs" #>
+//===自动生成的代码===
+using System.IO;
+namespace Shining_BeautifulGirls
+{
+    static class Symbol
+    {
+<#
+    // 指定目标文件夹的相对路径
+    string relativeFolderPath = @"resources\symbol";
+    string folderPath = Path.Combine(GetParentDirectory(this.Host.TemplateFile,2), relativeFolderPath);
+
+    if (Directory.Exists(folderPath))
+    {
+        string[] files = Directory.GetFiles(folderPath);
+
+        foreach (var filePath in files)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            string exName = Path.GetFileName(filePath);
+#>
+        public static string <#= NormalizePropertyName(fileName) #> => Path.Combine(World.SymbolDir, "<#= exName #>");
+<#
+        }
+    }
+    else
+    {
+#>
+        找不到 <#= folderPath #>
+<#
+    }
+#>
+    }
+}
+
+<#+   
+        static string NormalizePropertyName(string name)
+        {
+            // 根据需要定制化属性名的规范化过程
+            return name.Replace(" ", "_").Replace("-", "_"); 
+        }
+
+        static string GetParentDirectory(string path, int levels)
+        {
+            // 确保levels不为负数
+            levels = Math.Max(levels, 0);
+
+            // 获取父目录
+            for (int i = 0; i < levels; i++)
+            {
+                path = Path.GetDirectoryName(path);
+
+                // 如果已经到达根目录，直接返回
+                if (path == null)
+                    return null;
+            }
+
+            return path;
+        }
+#>

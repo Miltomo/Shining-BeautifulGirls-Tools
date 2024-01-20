@@ -130,6 +130,20 @@ namespace MHTools
             return instance;
         }
 
+        /// <summary>
+        /// 将object表示的<b>文件绝对路径</b>还原为string
+        /// </summary>
+        /// <param name="fp"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static string ToPath(object fp)
+        {
+            var path = fp.ToString();
+            if (Path.IsPathRooted(path))
+                return path!;
+            throw new ArgumentException($"参数 {nameof(fp)} 错误，应为文件绝对路径");
+        }
+
         //=================================
         //========SimpleFileManager========
         //=================================

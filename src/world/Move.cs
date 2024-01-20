@@ -1,6 +1,7 @@
 ﻿using MHTools;
 using NumSharp.Utilities;
 using System;
+using System.Linq;
 using System.Threading;
 
 namespace Shining_BeautifulGirls
@@ -18,10 +19,10 @@ namespace Shining_BeautifulGirls
         /// </summary>
         /// <param name="data"></param>
         /// <param name="sec"></param>
-        public void MoveTo(string[] data, int sec = 3, double sim = 0.9)
+        public void MoveTo(object[] data, int sec = 3, double sim = 0.9)
         {
             var symbol = data[0];
-            var bts = data.Slice(1, data.Length);
+            var bts = data[1..];
 
             int maxTime = sec * 1000;
 
@@ -36,7 +37,7 @@ namespace Shining_BeautifulGirls
                     Pause();
                     Refresh();
 
-                    if (FastSymbol(symbol, sim))
+                    if (FastCheck(symbol, sim: sim))
                     {
                         Aw = true;
                         break;
@@ -55,10 +56,10 @@ namespace Shining_BeautifulGirls
         /// <param name="sim"></param>
         /// <param name="maxWait"></param>
         /// <returns>true,成功移动到目标; false,未能移动到目标</returns>
-        public bool WaitTo(string[] data, double sim = 0.9, int maxWait = 5)
+        public bool WaitTo(object[] data, double sim = 0.9, int maxWait = 5)
         {
             var symbol = data[0];
-            var bts = data.Slice(1, data.Length);
+            var bts = data[1..];
             var count = maxWait * 2;
 
             for (int i = 0; i < count; i++)
@@ -66,7 +67,7 @@ namespace Shining_BeautifulGirls
                 Click(bts);
                 Pause(300);
                 Refresh();
-                if (FastSymbol(symbol, sim))
+                if (FastCheck(symbol, sim: sim))
                     return true;
             }
             return false;
@@ -80,7 +81,7 @@ namespace Shining_BeautifulGirls
         /// <param name="sec"></param>
         /// <param name="sim"></param>
         /// <returns>true，当成功移动到目标页面时；false，当意外情况出现时。</returns>
-        public bool MoveToEx(string[][] data, string[][]? occurs = default, int sec = 1, double sim = 0.9)
+        public bool MoveToEx(object[][] data, object[][]? occurs = default, int sec = 1, double sim = 0.9)
         {
             var symbols = data[0];
             var bts = data[1];
@@ -99,7 +100,7 @@ namespace Shining_BeautifulGirls
                     Refresh();
 
                     foreach (var symbol in symbols)
-                        if (FastSymbol(symbol, sim))
+                        if (FastCheck(symbol, sim: sim))
                             return true;
                     waitting += refreshGAP;
                     if (waitting > maxTime)
@@ -112,11 +113,11 @@ namespace Shining_BeautifulGirls
                     for (int i = 0; i < occurs.Length; i++)
                     {
                         var dq = occurs[i];
-                        if (FastSymbol(dq[0], sim))
+                        if (FastCheck(dq[0], sim: sim))
                         {
                             if (dq.Length == 1)
                                 return false;
-                            Click(dq.Slice(1, dq.Length));
+                            Click(dq[1..]);
                         }
                     }
                 }//if occurs
@@ -128,12 +129,10 @@ namespace Shining_BeautifulGirls
         /// </summary>
         /// <param name="data"></param>
         /// <param name="sim"></param>
-        public void PageDown(string[] data, double sim = 0.9)
+        public void PageDown(object[] data, double sim = 0.9)
         {
             var symbol = data[0];
-            var bt = "";
-            if (data.Length > 1)
-                bt = data[1];
+            var bts = data[1..];
 
             int waitting = 0;
             while (true)
@@ -141,9 +140,12 @@ namespace Shining_BeautifulGirls
                 Pause(500);
                 Refresh();
 
-                if (FastSymbol(symbol, sim))
+                if (FastCheck(symbol, sim: sim))
                 {
-                    Click(bt, 20);
+                    if (bts.Length < 2)
+                        Click(bts.FirstOrDefault(), 20);
+                    else
+                        Click(bts);
                     break;
                 }
                 waitting += refreshGAP;
@@ -155,12 +157,10 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        public bool PageDownEx(string[] data, string[] ex, double sim = 0.9)
+        public bool PageDownEx(object[] data, object[] ex, double sim = 0.9)
         {
             var symbol = data[0];
-            var bt = "";
-            if (data.Length > 1)
-                bt = data[1];
+            var bts = data[1..];
 
             int waitting = 0;
             while (true)
@@ -169,15 +169,18 @@ namespace Shining_BeautifulGirls
                 Refresh();
 
                 // 检测目标象征图
-                if (FastSymbol(symbol, sim))
+                if (FastCheck(symbol, sim: sim))
                 {
-                    Click(bt, 20);
+                    if (bts.Length < 2)
+                        Click(bts.FirstOrDefault(), 20);
+                    else
+                        Click(bts);
                     return true;
                 }
 
                 // 若出现意外象征图
                 for (int i = 0; i < ex.Length; i++)
-                    if (FastSymbol(ex[i], sim))
+                    if (FastCheck(ex[i], sim: sim))
                         return false;
 
                 waitting += refreshGAP;
@@ -257,10 +260,10 @@ namespace Shining_BeautifulGirls
                 Click(bts[i]);
         }
 
-        public void ClickEx(object bt, string occur, object[] bts)
+        public void ClickEx(object bt, string occur_file, object[] bts)
         {
             Click(bt.ToString(), 1000);
-            if (CheckSymbol(occur))
+            if (Check(occur_file))
                 Click(bts);
         }
 
