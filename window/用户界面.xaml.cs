@@ -213,10 +213,11 @@ namespace Shining_BeautifulGirls
 
             Monitor = new(
                 new AdbHelper(App.AdbPath, World.CacheDir)
-                .Connect(emulator.Name),
-                OutPut
+                .Connect(emulator.Name)
                 );
-
+            Monitor.LogEvent += OutPut;
+            Monitor.LogUpdateEvent += UpdateLogInfo;
+            Monitor.LogDeleteEvent += DeleteLogInfo;
             Refresh();
         }
 
@@ -230,7 +231,7 @@ namespace Shining_BeautifulGirls
             Load用户设置(_json用户设置);
         }
 
-        void OutPut(object logInfo)
+        private void OutPut(object logInfo)
         {
             var text = logInfo.ToString();
             Dispatcher.Invoke(() =>
@@ -245,6 +246,41 @@ namespace Shining_BeautifulGirls
                 App.GetScrollViewer(滚动包装器)?.ScrollToEnd();
             });
         }
+
+        private void UpdateLogInfo(object logInfo)
+        {
+            // 更新最后一个 Paragraph 的内容
+            Dispatcher.Invoke(() =>
+            {
+                if (运行记录.Blocks.Count > 0 && 运行记录.Blocks.LastBlock is Paragraph p)
+                {
+                    // 清空原有的内容
+                    p.Inlines.Clear();
+
+                    // 添加新的内容
+                    Run newRun = new(logInfo.ToString());
+                    p.Inlines.Add(newRun);
+                }
+            });
+        }
+
+        private void DeleteLogInfo(int count = 1)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var B = 运行记录.Blocks;
+
+                for (int i = 0; i < count; i++)
+                {
+                    // 删除最后一个LogInfo
+                    if (B.Count > 0)
+                        B.Remove(B.LastBlock);
+                    else
+                        break;
+                }
+            });
+        }
+
         protected override void OnClosed(EventArgs e)
         {
             Monitor.Stop();

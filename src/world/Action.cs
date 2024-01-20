@@ -140,7 +140,7 @@ namespace Shining_BeautifulGirls
         {
             bool 已存在养成 = false;
 
-            Click("主页");
+            MoveTo([Symbol.主界面, Button.主页], 0, 0.8);
             if (PageDownEx([Symbol.养成, Button.养成], [Symbol.养成2], sim: 0.8))
             {
                 PageDown([Symbol.继续]);
@@ -273,8 +273,9 @@ namespace Shining_BeautifulGirls
                         {
                             if (养成流程())
                                 break;
-                            else
-                                MoveTo([Symbol.养成, Button.主页], 0);
+
+                            MoveTo([Symbol.养成, Button.主页], 0);
+                            DeleteLog(2);
                             // 等待十分钟
                             Pause(10 * 60 * 1000);
                         }
@@ -355,7 +356,7 @@ namespace Shining_BeautifulGirls
         {
             Start();
             Log("正在检测位置......");
-            return WaitTo([Symbol.主界面, Button.主页]);
+            return WaitTo([Symbol.主界面, Button.主页], 0.8);
         }
 
         public void Start()

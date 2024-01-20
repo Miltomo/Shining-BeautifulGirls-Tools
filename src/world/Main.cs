@@ -19,6 +19,10 @@ namespace Shining_BeautifulGirls
         public string Screen { get; init; }
         public string DeviceID { get; init; }
 
+        public Action<string> Log { get; init; }
+        public Action<string> UpdateLog { get; init; }
+        public Action<int> DeleteLog { get; init; }
+
         AdbHelper ADB { get; init; }
 
         public ShiningGirl? Girl { get; set; }
@@ -37,23 +41,14 @@ namespace Shining_BeautifulGirls
             public ShiningGirl.Config? SBGConfig { get; set; }
         }
 
-        public World(AdbHelper adb, Action<string>? op = null)
+        public World(AdbHelper adb)
         {
             ADB = adb;
             DeviceID = ADB.EmulatorName;
             Screen = Path.Combine(CacheDir, $"{DeviceID}.png");
-            LogEvent += op;
-        }
-
-        public void Log(string text)
-        {
-            OnLog(text);
-        }
-
-        public void Log(string[] texts)
-        {
-            for (int i = 0; i < texts.Length; i++)
-                Log(texts[i]);
+            Log = OnLog;
+            UpdateLog = OnUpdateLog;
+            DeleteLog = OnDeleteLog;
         }
 
         public string MakeUniqueCacheFile(string name)

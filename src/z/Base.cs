@@ -7,6 +7,8 @@ namespace MHTools
     public abstract class Base
     {
         public event Action<string>? LogEvent;
+        public event Action<string>? LogUpdateEvent;
+        public event Action<int>? LogDeleteEvent;
         private bool _stoptimer = true;
         private readonly object _timerlock = new();
         private Thread? threadTimer;
@@ -14,6 +16,16 @@ namespace MHTools
         protected virtual void OnLog(string text)
         {
             LogEvent?.Invoke(text);
+        }
+
+        protected virtual void OnUpdateLog(string text)
+        {
+            LogUpdateEvent?.Invoke(text);
+        }
+
+        protected virtual void OnDeleteLog(int count)
+        {
+            LogDeleteEvent?.Invoke(count);
         }
 
         /// <summary>

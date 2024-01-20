@@ -10,7 +10,7 @@ namespace Shining_BeautifulGirls
     partial class World
     {
         private bool _stop = false;
-        private string _lastClick;
+        private string _lastClick = string.Empty;
         private static readonly Random _random = new();
         private static readonly int refreshGAP = 500;
 
@@ -207,6 +207,12 @@ namespace Shining_BeautifulGirls
             // 关闭超时计时器
             StopOverTimer();
             int remain = time;
+            bool Aw = false;
+            if (remain > 2000)
+            {
+                Log($"等待剩余：{TimeTool.FormatMS(remain)}");
+                Aw = true;
+            }
             while (remain > 0)
             {
                 if (_stop)
@@ -219,7 +225,12 @@ namespace Shining_BeautifulGirls
                 if (step > 100)
                     step += _random.Next(200) - 100;
                 Thread.Sleep(step);
+
+                if (Aw)
+                    UpdateLog($"等待剩余：{TimeTool.FormatMS(remain)}");
             }
+            if (Aw)
+                DeleteLog(1);
             // 启动超时计时器
             try
             {
