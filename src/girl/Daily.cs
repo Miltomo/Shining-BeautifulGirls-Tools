@@ -33,7 +33,7 @@ namespace Shining_BeautifulGirls
             Mood = GetMood();
 
             // 检查日期
-            InSummer = Check("夏日");
+            InSummer = Check(Symbol.夏日);
 
             // 读取当前属性值
             List<int> property = [];
@@ -57,15 +57,15 @@ namespace Shining_BeautifulGirls
             _lastAction = "休息";
             while (true)
             {
-                if (Check("养成主页"))
+                if (Check(Symbol.养成主页))
                     break;
                 Click(Button.返回, 300);
             }
 
             if (!InSummer)
-                Mnt.ClickEx(Button.医务室, "医务室确认", [Button.弹窗勾选, Button.弹窗确认]);
+                Mnt.ClickEx(Button.医务室, Symbol.医务室确认, [Button.弹窗勾选, Button.弹窗确认]);
 
-            Mnt.ClickEx(Button.休息, "休息确认", [Button.弹窗勾选, Button.弹窗确认]);
+            Mnt.ClickEx(Button.休息, Symbol.休息确认, [Button.弹窗勾选, Button.弹窗确认]);
             Mnt.Pause(1000);
         }
 
@@ -81,16 +81,16 @@ namespace Shining_BeautifulGirls
             _lastAction = "外出";
             while (true)
             {
-                if (Check("养成主页"))
+                if (Check(Symbol.养成主页))
                     break;
                 Click(Button.返回, 300);
             }
 
             if (!InSummer)
-                Mnt.ClickEx(Button.医务室, "医务室确认", [Button.弹窗勾选, Button.弹窗确认]);
+                Mnt.ClickEx(Button.医务室, Symbol.医务室确认, [Button.弹窗勾选, Button.弹窗确认]);
 
 
-            Mnt.ClickEx(Button.外出, "外出确认", [Button.弹窗勾选, Button.弹窗确认]);
+            Mnt.ClickEx(Button.外出, Symbol.外出确认, [Button.弹窗勾选, Button.弹窗确认]);
             Mnt.Pause(1000);
         }
     }

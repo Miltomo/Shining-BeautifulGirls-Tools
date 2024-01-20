@@ -41,6 +41,13 @@ namespace Shining_BeautifulGirls
             return FeatureJudge(file, background ?? Screen);
         }*/
 
+        /// <summary>
+        /// (刷新) 检测目标物是否存在: 使用模板匹配
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="background"></param>
+        /// <param name="delta"></param>
+        /// <returns></returns>
         private bool Check(string file, string? background = default, double delta = 0.9)
         {
             if (Match(file, background) > delta)
@@ -59,33 +66,14 @@ namespace Shining_BeautifulGirls
         /// <param name="bgPath"></param>
         /// <param name="sim"></param>
         /// <returns></returns>
-        public bool FastCheck(string targetPath, string? bgPath = default, double sim = 0.9)
+        public bool FastCheck(object targetPath, string? bgPath = default, double sim = 0.9)
         {
-            return
-                MatchImage(targetPath,
+            return MatchImage(
+                FileManagerHelper.ToPath(targetPath),
                 bgPath ?? Screen,
                 out _)
                 >
                 sim;
-        }
-
-
-        public bool CheckSymbol(string name, string? background = default, double delta = 0.9)
-        {
-            return Check(Path.Combine(SymbolDir, $"{name}.png"), background, delta);
-        }
-
-        /// <summary>
-        /// (不刷新) 直接开始匹配目标象征物
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="sim"></param>
-        /// <returns></returns>
-        public bool FastSymbol(string symbol, double sim = 0.9)
-        {
-            return FastCheck(
-                FileManagerHelper.SetDir(SymbolDir).Find(symbol)!,
-                sim: sim);
         }
 
         //========================

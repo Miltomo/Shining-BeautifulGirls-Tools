@@ -9,7 +9,7 @@ namespace Shining_BeautifulGirls
         private List<TrainInfo> T { get; } = [];
         public bool TryTrain()
         {
-            if (Mnt.WaitTo(["返回", $"{World.NP.Button.训练}"], 0.8))
+            if (Mnt.WaitTo([Symbol.返回, World.NP.Button.训练], 0.8))
             {
                 Subject巡视();
 
@@ -33,7 +33,7 @@ namespace Shining_BeautifulGirls
             if (index > -1)
             {
                 _lastAction = plan;
-                while (Match("返回") > 0.7)
+                while (Match(Symbol.返回) > 0.7)
                     Choose(plan);
             }
             else
@@ -52,7 +52,7 @@ namespace Shining_BeautifulGirls
 
         private void Subject巡视()
         {
-            Match(out OpenCvSharp.Point point, "决定");
+            Match(out OpenCvSharp.Point point, Symbol.决定);
             var index = point.X switch
             {
                 < 100 => 0,

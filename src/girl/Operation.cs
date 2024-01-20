@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Shining_BeautifulGirls
+﻿namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
@@ -15,50 +13,50 @@ namespace Shining_BeautifulGirls
         }
 
         /// <summary>
-        /// (刷新) 检查是否包含目标象征图
+        /// (刷新) 检查是否包含目标图
         /// </summary>
-        /// <param name="symbol"></param>
+        /// <param name="targetPath"></param>
         /// <param name="bg"></param>
         /// <param name="sim"></param>
         /// <returns></returns>
-        private bool Check(string symbol, string? bg = default, double sim = 0.9)
+        private bool Check(string targetPath, string? bg = default, double sim = 0.9)
         {
-            return Match(symbol, bg) > sim;
+            return Match(targetPath, bg) > sim;
         }
 
         /// <summary>
-        /// (不刷新) 直接检查背景图是否包含目标象征物
+        /// (不刷新) 直接检查背景图是否包含目标
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="sim"></param>
         /// <returns></returns>
-        private bool FastSymbol(string symbol, double sim = 0.9)
+        private bool FastCheck(string targetPath, double sim = 0.9)
         {
-            return Mnt.FastSymbol(symbol, sim);
+            return Mnt.FastCheck(targetPath, sim: sim);
         }
 
         /// <summary>
-        /// (刷新) 匹配象征图像
+        /// (刷新) 匹配目标图
         /// </summary>
-        /// <param name="symbol"></param>
+        /// <param name="file"></param>
         /// <param name="bg"></param>
         /// <returns>相关度</returns>
-        private double Match(string symbol, string? bg = default)
+        private double Match(string file, string? bg = default)
         {
-            return Match(out _, symbol, bg);
+            return Match(out _, file, bg);
         }
 
-        private double Match(out OpenCvSharp.Point loc, string symbol, string? bg = default)
+        private double Match(out OpenCvSharp.Point loc, string file, string? bg = default)
         {
-            return Mnt.Match(out loc, Path.Combine(World.SymbolDir, $"{symbol}.png"), bg);
+            return Mnt.Match(out loc, file, bg);
         }
 
-        private void MoveTo(string[] data, int sec = 1, double sim = 0.9)
+        private void MoveTo(object[] data, int sec = 1, double sim = 0.9)
         {
             Mnt.MoveTo(data, sec, sim);
         }
 
-        private void PageDown(string[] data)
+        private void PageDown(object[] data)
         {
             Mnt.PageDown(data);
         }
