@@ -8,6 +8,10 @@ namespace Shining_BeautifulGirls
     {
         private int _dqRemakeTimes = 0;
 
+        //TODO 重构是否需要比赛的判断，可进行提前判断了。
+        //TODO 重构对技能的判断: 大改 + 重构
+
+        //TODO 比赛算法可以考虑实施了
         private void 养成流程(string stage)
         {
             Stage = stage;
@@ -62,7 +66,12 @@ namespace Shining_BeautifulGirls
                     Log(基本信息);
 
                     // 判断要去训练还是干别的
-                    if (Vitality < 26)
+                    if (InAilment)
+                    {
+                        Log("已受伤，进行治疗");
+                        System__treat__();
+                    }
+                    else if (Vitality < 26)
                     {
                         Log("体力过低，放松休息");
                         System__relex__();
@@ -133,6 +142,7 @@ namespace Shining_BeautifulGirls
 
                     MoveTo([Symbol.主界面, Button.结束连点], sec: 0, sim: 0.7);
                     break;
+
                 default:
                     throw new NotImplementedException($"养成流程不存在此过程:{stage}");
             }

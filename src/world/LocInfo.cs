@@ -81,6 +81,7 @@ namespace Shining_BeautifulGirls
                 日历,
                 心情,
                 体力,
+                医务室,
                 协助1,
                 协助2,
                 协助3,
@@ -190,6 +191,7 @@ namespace Shining_BeautifulGirls
             MakeZone(Zone.日历, 0, 150, 65, 190);
             MakeZone(Zone.心情, 530, 700, 138, 183);
             MakeZone(Zone.体力, 223, 600, 145, 177);
+            MakeZone(Zone.医务室, 110, 220, 1090, 1170);
             MakeZone(Zone.协助1, 580, 700, 185, 290);
             MakeZone(Zone.协助2, 580, 700, 290, 410);
             MakeZone(Zone.协助3, 580, 700, 410, 530);

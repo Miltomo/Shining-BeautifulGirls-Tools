@@ -250,6 +250,23 @@ namespace ComputerVision
         }
 
 
+        public static double AvgBrightness(string imagePath)
+        {
+            // 读取图像
+            Mat image = new(imagePath, ImreadModes.Color);
+
+            // 转换图像为灰度图
+            Mat grayImage = new();
+            Cv2.CvtColor(image, grayImage, ColorConversionCodes.BGR2GRAY);
+
+            // 计算图像的平均亮度
+            Scalar averageBrightness = Cv2.Mean(grayImage);
+
+            // 返回平均亮度值
+            return averageBrightness.Val0;
+        }
+
+
         /// <summary>
         /// 获取图像所有的轮廓信息
         /// </summary>
