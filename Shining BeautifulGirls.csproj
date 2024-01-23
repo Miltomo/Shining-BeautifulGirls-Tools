@@ -8,6 +8,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <LangVersion>preview</LangVersion>
     <BaseIntermediateOutputPath />
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="original\**" />
@@ -24,8 +25,8 @@
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.8.0.20230708" />
     <PackageReference Include="OpenCvSharp4.Windows" Version="4.8.0.20230708" />
     <PackageReference Include="OpenCvSharp4.WpfExtensions" Version="4.8.0.20230708" />
+    <PackageReference Include="PaddleOCRSharp" Version="4.1.0" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.3.1" />
-    <PackageReference Include="Tesseract" Version="5.2.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="adb\adb.exe">
@@ -120,8 +121,9 @@
       <DependentUpon>TextTemplate1.tt</DependentUpon>
     </Compile>
   </ItemGroup>
+	
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)resources&quot; &quot;$(TargetDir)resources&quot; /E /I /Y&#xD;&#xA;xcopy &quot;$(ProjectDir)tessdata&quot; &quot;$(TargetDir)tessdata&quot; /E /I /Y" />
+    <Exec Command="xcopy &quot;$(ProjectDir)resources&quot; &quot;$(TargetDir)resources&quot; /E /I /Y" />
   </Target>
 	
 	<Target Name="CleanUnusedFiles" BeforeTargets="BeforeBuild">

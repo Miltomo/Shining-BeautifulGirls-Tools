@@ -218,6 +218,7 @@ namespace Shining_BeautifulGirls
             Monitor.LogEvent += OutPut;
             Monitor.LogUpdateEvent += UpdateLogInfo;
             Monitor.LogDeleteEvent += DeleteLogInfo;
+
             Refresh();
         }
 

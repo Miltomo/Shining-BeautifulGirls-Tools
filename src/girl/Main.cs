@@ -22,6 +22,7 @@ namespace Shining_BeautifulGirls
         public int[] Property => _hproperty ?? [0, 0, 0, 0, 0];
         public int Vitality { get; private set; }
         public int Mood { get; private set; } = 3;//普通
+
         [ToSave]
         public int Turn { get; private set; } = 1;
         [ToSave]
@@ -32,7 +33,7 @@ namespace Shining_BeautifulGirls
         [ToSave]
         private int _lastHP = 100;
         [ToSave]
-        private string _lastAction = "";
+        private string _lastAction = "休息";
 
         public string[] 基本信息 =>
                 [

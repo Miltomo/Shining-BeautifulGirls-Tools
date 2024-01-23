@@ -1,10 +1,10 @@
-﻿using MHTools;
+﻿using ComputerVision;
+using MHTools;
 using OpenCvSharp;
 using System;
 using System.Diagnostics;
 using System.IO;
 using static ComputerVision.ImageRecognition;
-using static ComputerVision.TextDetection;
 
 namespace Shining_BeautifulGirls
 {
@@ -137,19 +137,20 @@ namespace Shining_BeautifulGirls
         //========================
         //========文字识别========
         //========================
-        public string ExtractZoneText(object zone)
+        public string[] ExtractZoneTextLineS(object zone)
         {
-            return ExtractText(CropScreen(zone, "extract"));
+            return PaddleOCR
+                .SetImage(CropScreen(zone, "extractText"))
+                .Extract()
+                .TextAsLines;
         }
 
-        public string ExtractZoneInteger(object zone)
+        public double[] ExtractZoneNumberS(object zone)
         {
-            var target = MakeUniqueCacheFile("extract");
-            //得到区域图像(灰度)
-            Gray(CropScreen(zone))
-                .SaveImage(target);
-
-            return ExtractDigits(target);
+            return PaddleOCR
+                .SetImage(CropScreen(zone, "extractNumber"))
+                .Extract()
+                .NumericLines;
         }
     }
 }

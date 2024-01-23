@@ -23,10 +23,10 @@ namespace Shining_BeautifulGirls
         {
             Rectangle 实值 = new(0, 0, 0, 0);
             int 边界 = int.MaxValue;
-            var @out = CropScreen(Zone.体力);
+            var target = CropScreen(Zone.体力);
             var contours = GetContours(
                 ConnectLines(Binary(Laplacian(
-                        Gray(new(@out)),
+                        Gray(new(target)),
                         delta: 350,
                         scale: 2,
                         ksize: 5
@@ -97,6 +97,7 @@ namespace Shining_BeautifulGirls
             };
         }
 
+        [Obsolete]
         private int GetIncreaseValue(string property)
         {
             var zone = property + "增加";
@@ -195,7 +196,7 @@ namespace Shining_BeautifulGirls
 
             return int.Parse(number);
         }
-
+        [Obsolete]
         private int GetPropertyValue(string property)
         {
             var zone = property;
@@ -297,9 +298,7 @@ namespace Shining_BeautifulGirls
 
         private int ExtractValue(object zone)
         {
-            if (int.TryParse(Mnt.ExtractZoneInteger(zone), out var value))
-                return value;
-            return 0;
+            return (int)Mnt.ExtractZoneNumberS(zone).FirstOrDefault();
         }
 
         private HeadInfo GetHeadInfo()

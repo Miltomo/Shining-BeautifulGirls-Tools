@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static ComputerVision.ImageRecognition;
 using static Shining_BeautifulGirls.World.NP;
 
 namespace Shining_BeautifulGirls
@@ -9,11 +10,19 @@ namespace Shining_BeautifulGirls
     //TODO 修改比赛逻辑
     partial class ShiningGirl
     {
+        /// <summary>
+        /// 指示当前是否为夏季特训时期
+        /// </summary>
         private bool InSummer { get; set; } = false;
+
+        /// <summary>
+        /// 指示是否处于生病状态(需要治疗)
+        /// </summary>
+        private bool InAilment { get; set; } = false;
 
         public void Start()
         {
-            养成流程("普通日");
+            养成流程("转场处理");
         }
 
         public void Continue()
@@ -26,7 +35,7 @@ namespace Shining_BeautifulGirls
             Mnt.Refresh();
             // 刷新体力
             Vitality = GetHP();
-            Vitality = Vitality > 95 && _lastHP < 45 && _lastAction != "休息" ? 0 : Vitality;
+            Vitality = Vitality > 95 && _lastHP < 50 && _lastAction != "休息" ? 0 : Vitality;
             _lastHP = Vitality;
 
             // 获取心情
@@ -35,10 +44,21 @@ namespace Shining_BeautifulGirls
             // 检查日期
             InSummer = Check(Symbol.夏日);
 
-            // 读取当前属性值
+            // 判断是否需要治疗
+            InAilment = (!InSummer) && (AvgBrightness(CropScreen(Zone.医务室)) > 160);
+
+            // 读取当前属性值 TODO 测试
             List<int> property = [];
             for (int i = 0; i < SubjectS.Count; i += 1)
-                property.Add(GetPropertyValue(SubjectS[i]));
+                property.Add(ExtractValue(i switch
+                {
+                    0 => Zone.速度,
+                    1 => Zone.耐力,
+                    2 => Zone.力量,
+                    3 => Zone.毅力,
+                    4 => Zone.智力,
+                    _ => throw new KeyNotFoundException()
+                })); //GetPropertyValue(SubjectS[i])
 
             _hproperty ??= [.. property];
 
@@ -62,9 +82,6 @@ namespace Shining_BeautifulGirls
                 Click(Button.返回, 300);
             }
 
-            if (!InSummer)
-                Mnt.ClickEx(Button.医务室, Symbol.医务室确认, [Button.弹窗勾选, Button.弹窗确认]);
-
             Mnt.ClickEx(Button.休息, Symbol.休息确认, [Button.弹窗勾选, Button.弹窗确认]);
             Mnt.Pause(1000);
         }
@@ -86,11 +103,14 @@ namespace Shining_BeautifulGirls
                 Click(Button.返回, 300);
             }
 
-            if (!InSummer)
-                Mnt.ClickEx(Button.医务室, Symbol.医务室确认, [Button.弹窗勾选, Button.弹窗确认]);
-
-
             Mnt.ClickEx(Button.外出, Symbol.外出确认, [Button.弹窗勾选, Button.弹窗确认]);
+            Mnt.Pause(1000);
+        }
+
+        private void System__treat__()
+        {
+            _lastAction = "治疗";
+            Mnt.ClickEx(Button.医务室, Symbol.医务室确认, [Button.弹窗勾选, Button.弹窗确认]);
             Mnt.Pause(1000);
         }
     }

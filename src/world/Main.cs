@@ -51,6 +51,11 @@ namespace Shining_BeautifulGirls
             DeleteLog = OnDeleteLog;
         }
 
+        /// <summary>
+        /// 通过简单文件名制作独属于设备的cache文件路径
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>文件绝对路径</returns>
         public string MakeUniqueCacheFile(string name)
         {
             return Path.Combine(CacheDir, $"{DeviceID}_{name}.png");

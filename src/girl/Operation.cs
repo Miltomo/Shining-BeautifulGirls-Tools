@@ -2,14 +2,9 @@
 {
     partial class ShiningGirl
     {
-        private void Click(World.NP.Button button, int wait = 200)
+        private void Click(object button, int wait = 200)
         {
             Mnt.Click(button, wait);
-        }
-        private void Choose(object buttonName, int wait = 200)
-        {
-            Mnt.Click(buttonName, wait);
-            Mnt.Refresh();
         }
 
         /// <summary>
