@@ -9,7 +9,7 @@ namespace Shining_BeautifulGirls
     //TODO 继续重构M/P方法。增加原子操作
     partial class World
     {
-        private bool _stop = false;
+        private bool _stop = true;
         private string _lastClick = string.Empty;
         private static readonly Random _random = new();
         private static readonly int refreshGAP = 500;
@@ -232,21 +232,30 @@ namespace Shining_BeautifulGirls
             if (Aw)
                 DeleteLog(1);
             // 启动超时计时器
-            try
+            if (!_stop)
             {
-                StartOverTimer();
-            }
-            catch (Exception)
-            {
-                throw;
+                try
+                {
+                    StartOverTimer();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
         }
 
-        public void Click(double x, double y, int pauseTime)
+        public void Click(
+            double x, double y,
+            double dx = 0, double dy = 0,
+            int pauseTime = 200
+            )
         {
+            var rx = _random.Next(2) == 0 ? _random.NextDouble() * dx : -_random.NextDouble() * dx;
+            var ry = _random.Next(2) == 0 ? _random.NextDouble() * dy : -_random.NextDouble() * dy;
             while (true)
             {
-                if (ADB.Click(x, y))
+                if (ADB.Click(x + rx, y + ry))
                     break;
             }
             Pause(pauseTime);
@@ -261,6 +270,8 @@ namespace Shining_BeautifulGirls
             Click(
                 Width * ButtonLocation[buttonName][0],
                 Height * ButtonLocation[buttonName][1],
+                Width * ButtonLocation[buttonName][2],
+                Height * ButtonLocation[buttonName][3],
                 pauseTime
                 );
         }

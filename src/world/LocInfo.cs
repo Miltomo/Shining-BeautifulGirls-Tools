@@ -15,11 +15,10 @@ namespace Shining_BeautifulGirls
                 赛事,
                 JJC1,
                 JJC2,
+                JJC3,
                 第1队,
                 第2队,
                 第3队,
-                JJC3,
-                JJC4,
                 竞技场连点,
                 日常赛事,
                 日1,
@@ -30,8 +29,8 @@ namespace Shining_BeautifulGirls
                 养成,
                 继续,
                 大弹窗确认,
-                优先活动卡,
-                自动编成确认,
+                //优先活动卡,
+                //自动编成确认,
                 使用宝石,
                 使用能量饮料,
                 加号,
@@ -111,6 +110,12 @@ namespace Shining_BeautifulGirls
                 技白,
                 技能点,
                 技能点2,
+                适应性,
+                赛事Name1, 赛事Fans1, 赛事Type1,
+                赛事Name2, 赛事Fans2, 赛事Type2,
+                Rank草地, Rank泥地,
+                Rank短距离, Rank英里, Rank中距离, Rank长距离,
+                Rank领跑, Rank跟前, Rank居中, Rank后追,
             }
         }
 
@@ -129,8 +134,7 @@ namespace Shining_BeautifulGirls
             MakeButton(Button.第2队, 360, 620);
             MakeButton(Button.第3队, 360, 890);
             MakeButton(Button.JJC3, 510, 913);
-            MakeButton(Button.JJC4, 457, 1063);
-            MakeButton(Button.竞技场连点, 320, 1180);
+            MakeButton(Button.竞技场连点, 275, 1165, 40); // last 320 1180
             MakeButton(Button.日常赛事, 210, 1040);
             MakeButton(Button.日1, 360, 690);
             MakeButton(Button.日2, 360, 840);
@@ -140,8 +144,6 @@ namespace Shining_BeautifulGirls
             MakeButton(Button.养成, 540, 1080);
             MakeButton(Button.继续, 360, 1080);
             MakeButton(Button.大弹窗确认, 515, 915);
-            MakeButton(Button.优先活动卡, 233, 657);
-            MakeButton(Button.自动编成确认, 515, 830);
             MakeButton(Button.使用宝石, 610, 180);
             MakeButton(Button.使用能量饮料, 610, 320);
             MakeButton(Button.加号, 523, 670);
@@ -150,8 +152,8 @@ namespace Shining_BeautifulGirls
             MakeButton(Button.快进, 651, 1209);
             MakeButton(Button.弹窗勾选, 245, 705);
             MakeButton(Button.弹窗确认, 515, 833);
-            MakeButton(Button.跳过, 258, 1244);
-            MakeButton(Button.缩短所有事件, 68, 623);
+            MakeButton(Button.跳过, 260, 1248, 60);
+            MakeButton(Button.缩短所有事件, 360, 625, 250); // last is 70
             MakeButton(Button.缩短事件确定, 360, 915);
             MakeButton(Button.休息, 115, 985);
             MakeButton(Button.训练, 355, 985);
@@ -159,16 +161,19 @@ namespace Shining_BeautifulGirls
             MakeButton(Button.医务室, 160, 1125);
             MakeButton(Button.外出, 400, 1125);
             MakeButton(Button.返回, 85, 1200);
-            MakeButton(Button.速度, 100, 1080);
-            MakeButton(Button.耐力, 230, 1080);
-            MakeButton(Button.力量, 360, 1080);
-            MakeButton(Button.毅力, 490, 1080);
-            MakeButton(Button.智力, 620, 1080);
+
+            int trainY = 1055, train_d = 25;
+            MakeButton(Button.速度, 105, trainY, train_d, train_d);
+            MakeButton(Button.耐力, 233, trainY, train_d, train_d);
+            MakeButton(Button.力量, 360, trainY, train_d, train_d);
+            MakeButton(Button.毅力, 488, trainY, train_d, train_d);
+            MakeButton(Button.智力, 615, trainY, train_d, train_d);
+
             MakeButton(Button.参赛, 505, 1080);
             MakeButton(Button.查看结果, 252, 1172);
             MakeButton(Button.前往赛事, 465, 1170);
             MakeButton(Button.比赛快进, 560, 1225);
-            MakeButton(Button.比赛结束, 460, 1200);// 作了下调调整
+            MakeButton(Button.比赛结束, 435, 1200, 55, 10);// last is 460 maybe => [1230 , 30] ???
             MakeButton(Button.低继续, 360, 1110);
             MakeButton(Button.选择倒二, 360, 715);
             MakeButton(Button.选择末尾, 360, 830);
@@ -181,10 +186,12 @@ namespace Shining_BeautifulGirls
             MakeButton(Button.技能获取, 520, 1180);
             MakeButton(Button.结束养成, 205, 915);
             MakeButton(Button.养成结束, 510, 1050);
-            MakeButton(Button.结束连点, 360, 1145);
+            MakeButton(Button.结束连点, 360, 1145, 30, 5);// 中心点在1140 - 1145 之间
             MakeButton(Button.不弹赛事推荐, 260, 1035);
 
             //============================================
+            double L = 0, R = STANDARD_WIDTH;
+            double U = 0, D = STANDARD_HEIGHT;
 
             MakeZone(Zone.事件类型, 110, 325, 210, 235);
             MakeZone(Zone.事件名, 110, 550, 245, 275);
@@ -215,28 +222,63 @@ namespace Shining_BeautifulGirls
             MakeZone(Zone.卡3, 35, 160, 430, 655);
             MakeZone(Zone.卡4, 35, 160, 600, 830);
             MakeZone(Zone.卡5, 35, 160, 780, 1000);
-            MakeZone(Zone.技1, 10, 500, 465, 660);
-            MakeZone(Zone.技2, 10, 500, 620, 840);
-            MakeZone(Zone.技3, 10, 500, 800, 1000);
+            MakeZone(Zone.技1, L, R, 465, 660);
+            MakeZone(Zone.技2, L, R, 620, 840);
+            MakeZone(Zone.技3, L, R, 800, 1000);
             MakeZone(Zone.技白, 10, 300, 950, 1025);
             MakeZone(Zone.技能点, 600, 695, 920, 965);
             MakeZone(Zone.技能点2, 520, 650, 400, 440);
+
+            MakeZone(Zone.适应性, 140, 700, 385, 540);
+
+            int ssNameL = 30, ssNameR = 250;
+            int ssFansL = 295, ssFansR = 530;
+            int ssTypeL = 560, ssTypeR = 690;
+
+            MakeZone(Zone.赛事Name1, ssNameL, ssNameR, 680, 870);
+            MakeZone(Zone.赛事Fans1, ssFansL, ssFansR, 750, 870);
+            MakeZone(Zone.赛事Type1, ssTypeL, ssTypeR, 750, 870);
+
+            MakeZone(Zone.赛事Name2, ssNameL, ssNameR, 830, 1030);
+            MakeZone(Zone.赛事Fans2, ssFansL, ssFansR, 905, 1030);
+            MakeZone(Zone.赛事Type2, ssTypeL, ssTypeR, 905, 1030);
+
+            int rC1L = 230, rC1R = 280, rC2L = 365, rC2R = 410,
+                rC3L = 500, rC3R = 540, rC4L = 630, rC4R = 675;
+            int rR1U = 390, rR1D = 445, rR2U = 435, rR2D = 480,
+                rR3U = 480, rR3D = 520;
+            // 场地适应性
+            MakeZone(Zone.Rank草地, rC1L, rC1R, rR1U, rR1D);
+            MakeZone(Zone.Rank泥地, rC2L, rC2R, rR1U, rR1D);
+            // 距离适应性
+            MakeZone(Zone.Rank短距离, rC1L, rC1R, rR2U, rR2D);
+            MakeZone(Zone.Rank英里, rC2L, rC2R, rR2U, rR2D);
+            MakeZone(Zone.Rank中距离, rC3L, rC3R, rR2U, rR2D);
+            MakeZone(Zone.Rank长距离, rC4L, rC4R, rR2U, rR2D);
+            // 跑法适应性
+            MakeZone(Zone.Rank领跑, rC1L, rC1R, rR3U, rR3D);
+            MakeZone(Zone.Rank跟前, rC2L, rC2R, rR3U, rR3D);
+            MakeZone(Zone.Rank居中, rC3L, rC3R, rR3U, rR3D);
+            MakeZone(Zone.Rank后追, rC4L, rC4R, rR3U, rR3D);
         }
 
-        private static void MakeButton(Button bt, double x, double y)
+        private static void MakeButton(Button bt, double x, double y, double dx = 15, double dy = 15)
         {
-            var rX = x / STANDARD_WIDTH;
-            var rY = y / STANDARD_HEIGHT;
-            ButtonLocation.Add(bt.ToString(), [rX, rY]);
+            x /= STANDARD_WIDTH;
+            y /= STANDARD_HEIGHT;
+            dx /= STANDARD_WIDTH;
+            dy /= STANDARD_HEIGHT;
+
+            ButtonLocation.Add(bt.ToString(), [x, y, dx, dy]);
         }
 
         private static void MakeZone(Zone zone, double x1, double x2, double y1, double y2)
         {
-            var rX1 = x1 / STANDARD_WIDTH;
-            var rX2 = x2 / STANDARD_WIDTH;
-            var rY1 = y1 / STANDARD_HEIGHT;
-            var rY2 = y2 / STANDARD_HEIGHT;
-            ZoneLocation.Add(zone.ToString(), [rX1, rX2, rY1, rY2]);
+            x1 /= STANDARD_WIDTH;
+            x2 /= STANDARD_WIDTH;
+            y1 /= STANDARD_HEIGHT;
+            y2 /= STANDARD_HEIGHT;
+            ZoneLocation.Add(zone.ToString(), [x1, x2, y1, y2]);
         }
 
 
