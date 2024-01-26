@@ -4,6 +4,7 @@ using OpenCvSharp;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
@@ -137,7 +138,31 @@ namespace Shining_BeautifulGirls
         //========================
         //========文字识别========
         //========================
-        public string[] ExtractZoneTextLineS(object zone)
+
+        public PaddleOCR.Result ExtractZone(object zone)
+        {
+            return PaddleOCR
+                .SetImage(CropScreen(zone, "extractText"))
+                .Extract();
+        }
+
+        public string ExtractZoneText(object zone)
+        {
+            return PaddleOCR
+                .SetImage(CropScreen(zone, "extractText"))
+                .Extract()
+                .Text;
+        }
+
+        public string[] ExtractZoneLike(object zone, Regex regex)
+        {
+            return PaddleOCR
+                .SetImage(CropScreen(zone, "extractText"))
+                .Extract()
+                .Like(regex);
+        }
+
+        public string[] ExtractZoneLineS(object zone)
         {
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extractText"))
@@ -151,6 +176,14 @@ namespace Shining_BeautifulGirls
                 .SetImage(CropScreen(zone, "extractNumber"))
                 .Extract()
                 .NumericLines;
+        }
+
+        public bool ExtractZoneAndContains(object zone, string target)
+        {
+            return PaddleOCR
+                .SetImage(CropScreen(zone, "extractNumber"))
+                .Extract()
+                .Contains(target);
         }
     }
 }

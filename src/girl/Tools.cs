@@ -296,9 +296,14 @@ namespace Shining_BeautifulGirls
             return int.Parse(number);
         }
 
-        private int ExtractValue(object zone)
+        private int ExtractValue(Zone zone)
         {
             return (int)Mnt.ExtractZoneNumberS(zone).FirstOrDefault();
+        }
+
+        private bool IsZoneContains(Zone zone, object target)
+        {
+            return Mnt.ExtractZoneAndContains(zone, target.ToString()!);
         }
 
         private HeadInfo GetHeadInfo()
