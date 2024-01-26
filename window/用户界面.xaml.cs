@@ -1,10 +1,12 @@
 ﻿using MHTools;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -135,6 +137,8 @@ namespace Shining_BeautifulGirls
                         // UI变动
                         Dispatcher.Invoke(() =>
                         {
+                            Topmost = true;
+                            Topmost = false;
                             LinearGradientBrush brush = new()
                             {
                                 StartPoint = new Point(0.5, 0),
@@ -172,7 +176,7 @@ namespace Shining_BeautifulGirls
             }
         }
 
-
+        readonly BlockingCollection<Action> TipQueue = [];
         Queue<Action> PlanQueue { get; set; } = new();
         World Monitor { get; init; }
         class 协助卡Item
@@ -211,6 +215,13 @@ namespace Shining_BeautifulGirls
             Width = 600;
             App.UserWindow = this;
 
+            // 启动处理消息队列的后台线程
+            Task.Run(() =>
+            {
+                foreach (var task in TipQueue.GetConsumingEnumerable())
+                    task();
+            });
+
             Monitor = new(
                 new AdbHelper(App.AdbPath, World.CacheDir)
                 .Connect(emulator.Name)
@@ -220,6 +231,10 @@ namespace Shining_BeautifulGirls
             Monitor.LogDeleteEvent += DeleteLogInfo;
 
             Refresh();
+#if DEBUG
+            右键测试.Visibility = Visibility.Visible;
+#endif
+            //TODO 使用异步更新技能名列表
         }
 
         public void Refresh()
@@ -279,6 +294,30 @@ namespace Shining_BeautifulGirls
                     else
                         break;
                 }
+            });
+        }
+
+        private void Toast(string msg)
+        {
+            TipQueue.Add(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    提示信息.Text = msg;
+                    提示信息.Opacity = 1;
+                });
+                Thread.Sleep(1000);
+
+                int sum = 500, step = 20;
+                int count = sum / step;
+                var bias = 1d / count;
+                for (int i = 0; i < count; i++)
+                {
+                    Dispatcher.Invoke(() => 提示信息.Opacity -= bias);
+                    Thread.Sleep(step);
+                }
+
+                Dispatcher.Invoke(() => 提示信息.Opacity = 0);
             });
         }
 
@@ -460,6 +499,7 @@ namespace Shining_BeautifulGirls
 
                     if (PlanQueue.Count == 0)
                     {
+                        Toast("!未选择任何任务");
                         return;
                     }
 
@@ -523,6 +563,53 @@ namespace Shining_BeautifulGirls
         private void 右键截图_Click(object sender, RoutedEventArgs e)
         {
             Monitor.SaveScreen();
+            Toast($"已保存截图：前往 {World.ScreenshotDir} 查看");
+        }
+
+        private void 右键测试_Click(object sender, RoutedEventArgs e)
+        {
+            Thread thread = new(() =>
+            {
+                var files = Directory.GetFiles(@"Z:\C#练习\Shining BeautifulGirls\resources\skill");
+                List<string[]> list = [];
+
+                // 创建 Stopwatch 实例
+                Stopwatch stopwatch = new();
+
+                // 启动计时器
+                stopwatch.Start();
+
+                // 调用需要计时的函数
+                var dir = @"C:\Users\Administrator\Desktop\mlData\data\Rank";
+                Monitor.Refresh();
+                Func<object, OpenCvSharp.Mat> func = Monitor.CropScreen;
+                func(World.NP.Zone.Rank草地).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank泥地).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank短距离).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank英里).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank中距离).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank长距离).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank领跑).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank跟前).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank居中).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank后追).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+
+
+                // 停止计时器
+                stopwatch.Stop();
+
+                // 获取经过的时间（毫秒）
+                long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+                var one = (double)elapsedMilliseconds / files.Length;
+
+                Debug.WriteLine($"Function took {elapsedMilliseconds} milliseconds to execute.");
+                //Debug.WriteLine($"一个图片平均 {one} 毫秒\n一个训练6次判断，需要用 {one * 6} 毫秒");
+
+
+                //new ShiningGirl(Monitor).测试();
+                ;
+            });
+            thread.Start();
         }
     }
 }

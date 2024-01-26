@@ -106,6 +106,7 @@
         <Grid.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="截图" Cursor="Hand" Click="右键截图_Click"/>
+                <MenuItem x:Name="右键测试" Header="测试" Cursor="Hand" Click="右键测试_Click" Visibility="Collapsed"/>
             </ContextMenu>
         </Grid.ContextMenu>
 
@@ -330,11 +331,15 @@
             </Grid>
         </Canvas>
         <!--下部-->
-        <Grid x:Name="控制面板" Grid.Row="1">
+        <Grid x:Name="控制面板" Grid.Row="1" ClipToBounds="False">
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="3*"/>
             </Grid.RowDefinitions>
+            <Viewbox Stretch="None" ClipToBounds="False">
+                <TextBlock x:Name="提示信息" Text="未选择任何任务" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Microsoft YaHei" FontSize="22" FontWeight="Bold" Opacity="0" TextWrapping="Wrap" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"/>
+            </Viewbox>
+
             <Button x:Name="Button执行" Grid.Row="1" Style="{DynamicResource ButtonStyle}" FontSize="30" Height="60" Width="150"
                     Click="Button执行_Click"
                     >
