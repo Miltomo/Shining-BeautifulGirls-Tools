@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using static MHTools.数据工具;
+using static Shining_BeautifulGirls.World.NP;
 
 namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
-        public static string SkillDir { get; set; } = @"./skill/";
-
         public List<List<string>> PrioritySkillList
         {
             get =>
@@ -27,21 +26,29 @@ namespace Shining_BeautifulGirls
         public int SkTurns { get; private set; } = 0;
         private int SkPoints { get; set; } = 0;
 
-        private string? LearnName;
-        private bool IsNecessarySkill(string skillBackground)
+        private string? theLearnName;
+        private int theLearnCost = 0;
+
+        private bool IsNecessarySkill(Zone zone)
         {
+            var result = Mnt.ExtractZone(zone);
+
             for (int i = 0; i < SkList.Count; i++)
             {
-                if (Mnt.FastCheck(
-                    Path.Combine(SkillDir, $"{SkList[i]}.png"),
-                    skillBackground,
-                    0.95))
+                var skill = SkList[i];
+                if (result.Contains(skill))
                 {
-                    LearnName = SkList[i];
+                    theLearnCost = (int)result.NumericLines.FirstOrDefault();
+                    theLearnName = skill;
                     return true;
                 }
             }
             return false;
+        }
+
+        private bool IsHadSkill(string? background = null)
+        {
+            return Check(Symbol.已获得, background, 0.8);
         }
 
         private void SkillScroll(int distance)

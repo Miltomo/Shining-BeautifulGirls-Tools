@@ -97,6 +97,7 @@ namespace Shining_BeautifulGirls
                 case "比赛日":
                     Log($"###############第 {Turn} 回合###############");
 
+                    Vitality = GetHP();
                     SkPoints = ExtractValue(Zone.技能点);
 
                     Log($"★今天是比赛日★");
@@ -161,9 +162,11 @@ namespace Shining_BeautifulGirls
                 case "正常比赛":
                     Click(Button.参赛, 1000);
                     return 比赛处理("参赛");
+
                 case "不满足参赛要求":
                     Click(Button.大弹窗确认, 1000);
                     return 比赛处理("参赛");
+
                 case "参赛":
                     _lastAction = "比赛";
                     _dqRemakeTimes = 0;
@@ -238,11 +241,13 @@ namespace Shining_BeautifulGirls
                         }
                     }
                     return 比赛处理("比赛失败");
+
                 case "比赛失败":
                     Log("比赛失败");
                     Click(Button.结束养成);
                     MoveTo([Symbol.养成结束, Button.比赛结束], 0);
                     return false;
+
                 default:
                     return false;
             }
@@ -258,53 +263,97 @@ namespace Shining_BeautifulGirls
                     Log($"=====>准备进行第 {SkTurns} 次技能学习<=====");
                     技能学习过程("进入");
                     break;
+
                 case "最终学习":
                     while (SkIndex < 3)
                         SkList.AddRange(PrioritySkillList[SkIndex++]);
                     Log($"=====>准备进行最后一次技能学习<=====");
                     技能学习过程("进入");
                     break;
+
                 case "结束学习":
                     while (SkIndex < 4)
                         SkList.AddRange(PrioritySkillList[SkIndex++]);
                     Log($"=====>开始进行养成结束的技能学习<=====");
                     技能学习过程("进入");
                     break;
+
                 case "进入":
                     Click(Button.技能);
                     PageDown([Symbol.技能获取]);
                     技能学习过程("学习");
                     break;
+
                 case "学习":
                     //
                     //Mnt.SaveScreen();
                     //
-                    var orin = ExtractValue(Zone.技能点2);
                     for (int i = 1; i < 4; i++)
                     {
-                        var mask = MaskScreen($"技{i}");
+                        Zone zone = i switch
+                        {
+                            1 => Zone.技1,
+                            2 => Zone.技2,
+                            3 => Zone.技3,
+                            _ => throw new NotImplementedException()
+                        };
 
-                        // 加速
-                        if (Check(Symbol.已获得, mask, 0.8))
+                        bool Aw = false;
+
+                        var mask = MaskScreen(zone);
+
+                        // 加速：若已获得则跳过
+                        if (IsHadSkill(mask))
                             continue;
 
-                        if (IsNecessarySkill(mask))
+                        // 处理
+                        if (IsNecessarySkill(zone))
                         {
+                            // 加速：若不够学习则跳过
+                            if (theLearnCost > SkPoints)
+                                continue;
+
+                            Aw = true;
+                            //TODO 测试
+
                             Match(out OpenCvSharp.Point pt, Symbol.技能加, mask);
-                            for (int k = 0; k < 2; k++)
-                                Mnt.Click(pt.X + 20, pt.Y + 20, 200);
+                            Mnt.Click(pt.X + 20, pt.Y + 20, pauseTime: 300);
                             Mnt.Refresh();
-                            var ch = ExtractValue(Zone.技能点2);
-                            if (ch != orin)
+
+                            // 增加额外判断
+                            // 学完后变为「已获得」？还是能继续点？
+                            // 需要立即继续点吗？
+
+                            // 二次学习检测
+                            if (!IsHadSkill(CropScreen(zone)) && (SkPoints >= 2 * theLearnCost))
                             {
-                                orin = ch;
-                                Log($"学习技能「{LearnName}」");
-                                SkList.Remove(LearnName!);
+                                Mnt.Click(pt.X + 20, pt.Y + 20, pauseTime: 200);
+                                Mnt.Refresh();
+                            }
+
+                            if (Aw)
+                            {
+                                Log($"学习技能「{theLearnName}」");
+                                if (IsHadSkill(CropScreen(zone)))
+                                    SkList.Remove(theLearnName!);
                             }
                         }
-                    }
+
+                        // 更新技能点
+                        // 加速：只在变化时更新
+                        if (Aw) SkPoints = ExtractValue(Zone.技能点2);
+
+                        // 加速：若技能点过小则结束
+                        if (SkPoints < 71)
+                        {
+                            技能学习过程("结束");
+                            return;
+                        }
+                    }//for
+
                     技能学习过程("翻页");
                     break;
+                //TODO 考虑重构
                 case "翻页":
                     if (Match(Symbol.技白, CropScreen(Zone.技白)) > 0.9)
                         技能学习过程("结束");
@@ -314,6 +363,7 @@ namespace Shining_BeautifulGirls
                         技能学习过程("学习");
                     }
                     break;
+
                 case "结束":
                     Mnt.ClickEx(Button.继续, Symbol.技能获取确认, [Button.技能获取]);
 

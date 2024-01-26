@@ -7,6 +7,7 @@ namespace Shining_BeautifulGirls
     partial class World : Base
     {
         public static string SymbolDir { get; set; } = @"./symbol/";
+        public static string SkillDir { get; set; } = @"./skill/";
         public static string CardDir { get; set; } = @"./card/";
         public static string CacheDir { get; set; } = @"./cache/";
         public static string ScreenshotDir { get; set; } = @"./screenshot/";

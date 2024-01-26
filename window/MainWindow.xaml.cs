@@ -44,12 +44,12 @@ namespace Shining_BeautifulGirls
             var cache = @$"{path}\cache";
 
             World.SymbolDir = @$"{resources}\symbol\";
+            World.SkillDir = @$"{resources}\skill\";
             World.CardDir = @$"{resources}\card\";
             World.ScreenshotDir = @$"{path}\screenshot";
             World.CacheDir = cache;
             World.CreateLocInfo();
 
-            ShiningGirl.SkillDir = @$"{resources}\skill\";
             ShiningGirl.RecordDir = @$"{path}\养成记录";
 
             Directory.CreateDirectory(cache);
