@@ -194,6 +194,7 @@ namespace Shining_BeautifulGirls
 
         public void Refresh()
         {
+            //TODO 准备增加断线续联功能！
             ADB.GetScreen(DeviceID);
         }
 

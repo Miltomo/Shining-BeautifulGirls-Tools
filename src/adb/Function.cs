@@ -14,19 +14,13 @@ namespace Shining_BeautifulGirls
             return this;
         }
 
-        public void CopyPicture(string filePath)
-        {
-            PSI.Arguments = $"-s {EmulatorName} pull /sdcard/{filePath}";
-            Execute();
-        }
-
         public string[][] SearchDevices()
         {
             PSI.Arguments = $"devices";
             Execute();
 
-            var nameS = DeviceNameRegex().Matches(输出).ToArray();
-            var stateS = DeviceStateRegex().Matches(输出).ToArray();
+            var nameS = DeviceNameRegex().Matches(Result).ToArray();
+            var stateS = DeviceStateRegex().Matches(Result).ToArray();
 
             string[][] result = new string[nameS.Length][];
             for (int i = 0; i < nameS.Length; i += 1)
@@ -42,7 +36,7 @@ namespace Shining_BeautifulGirls
             Execute();
 
             return
-                DeviceSizeRegex().Matches(输出).ToArray()
+                DeviceSizeRegex().Matches(Result).ToArray()
                 .Select(x => int.Parse(x.Value))
                 .ToArray();
         }

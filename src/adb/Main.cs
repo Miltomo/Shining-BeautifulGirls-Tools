@@ -12,6 +12,8 @@ namespace Shining_BeautifulGirls
         // 进程启动信息
         ProcessStartInfo PSI { get; init; }
 
+        private AdbHelper(string k) { }
+
         public AdbHelper(string program, string workspace)
         {
             PSI = new()
@@ -70,6 +72,27 @@ namespace Shining_BeautifulGirls
             catch (Exception ex)
             {
                 Debug.WriteLine($"结束进程时出错：{ex.Message}");
+            }
+        }
+
+
+        public static AdbMaker SetConfig()
+        {
+            return new AdbMaker();
+        }
+
+        public class AdbMaker
+        {
+
+            internal AdbMaker() { }
+
+            /// <summary>
+            /// 生成ADB实例，只在第一次调用时创建
+            /// </summary>
+            /// <returns></returns>
+            public AdbHelper Make()
+            {
+                return new AdbHelper("1");
             }
         }
     }
