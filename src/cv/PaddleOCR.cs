@@ -56,7 +56,7 @@ namespace ComputerVision
             Engine = new PaddleOCREngine(null, Parameter ?? new OCRParameter()
             {
                 use_gpu = false,
-                cpu_math_library_num_threads = 20
+                cpu_math_library_num_threads = 10
             });
         }
 #pragma warning restore CS8618 // 恢复类成员的构造null检查
