@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using MHTools;
+using OpenCvSharp;
 using OpenCvSharp.Features2D;
 using System;
 using System.Collections.Generic;
@@ -23,10 +24,10 @@ namespace ComputerVision
             using Mat backgroundImage = Cv2.ImRead(bgPath);
 
             if (targetImage.Empty() || backgroundImage.Empty())
-                throw new Exception();
+                throw new ResourcesNotFindException();
 
             // 使用模板匹配进行图像匹配
-            using Mat resultImage = new();
+            Mat resultImage = new();
             Cv2.MatchTemplate(backgroundImage, targetImage, resultImage, TemplateMatchModes.CCoeffNormed);
             Cv2.MinMaxLoc(resultImage, out _, out double maxVal, out _, out Point maxLoc);
 

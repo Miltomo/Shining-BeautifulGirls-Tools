@@ -85,6 +85,10 @@ namespace Shining_BeautifulGirls
                                 OutPut("⚠️由于长时间未响应，程序已结束⚠️");
                                 OutPut("请检查网络或ADB连接");
                             }
+                            catch (ResourcesNotFindException)
+                            {
+                                OutPut("⚠️图片或背景不存在⚠️");
+                            }
                             catch (Exception)
                             {
                                 throw;
@@ -580,10 +584,6 @@ namespace Shining_BeautifulGirls
                 stopwatch.Start();
 
                 // 调用需要计时的函数
-
-                var v = Emulator.CheckConnection(port: 16384);
-
-                Trace.WriteLine(v);
 
                 /*var dir = @"C:\Users\Administrator\Desktop\mlData\data\Rank";
                 Monitor.Refresh();

@@ -144,6 +144,24 @@ namespace MHTools
             throw new ArgumentException($"参数 {nameof(fp)} 错误，应为文件绝对路径");
         }
 
+        /// <summary>
+        /// 将目标字符串转换为符合文件名规范的形式
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string SanitizeFileName(string input)
+        {
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+
+            // 替换不符合文件名规范的字符为下划线
+            foreach (char invalidChar in invalidChars)
+            {
+                input = input.Replace(invalidChar, '_');
+            }
+
+            return input;
+        }
+
         //=================================
         //========SimpleFileManager========
         //=================================

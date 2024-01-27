@@ -23,6 +23,8 @@ namespace Shining_BeautifulGirls
             public static bool AutoConnect { get; set; } = false;
             public static string? LastEmulator { get; set; }
         }
+
+        //TODO 移动到Emulator.cs
         public class EmulatorItem
         {
             public string Name { get; set; }
@@ -65,6 +67,9 @@ namespace Shining_BeautifulGirls
 
         private List<EmulatorItem>? GetEmulators()
         {
+            // 结束所有ADB进程
+            AdbHelper.KillAll();
+
             // 寻找能被ADB发现的设备
             var r = ADB.SearchDevices();
 

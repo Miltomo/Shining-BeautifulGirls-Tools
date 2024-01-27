@@ -45,7 +45,7 @@ namespace Shining_BeautifulGirls
         public World(AdbHelper adb)
         {
             ADB = adb;
-            DeviceID = ADB.EmulatorName;
+            DeviceID = FileManagerHelper.SanitizeFileName(adb.EmulatorName);
             Screen = Path.Combine(CacheDir, $"{DeviceID}.png");
             Log = OnLog;
             UpdateLog = OnUpdateLog;
@@ -59,7 +59,7 @@ namespace Shining_BeautifulGirls
         /// <returns>文件绝对路径</returns>
         public string MakeUniqueCacheFile(string name)
         {
-            return Path.Combine(CacheDir, $"{DeviceID}_{name}.png");
+            return Path.Combine(CacheDir, $"{DeviceID}_{FileManagerHelper.SanitizeFileName(name)}.png");
         }
     }
 }
