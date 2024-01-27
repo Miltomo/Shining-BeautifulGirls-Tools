@@ -580,7 +580,12 @@ namespace Shining_BeautifulGirls
                 stopwatch.Start();
 
                 // 调用需要计时的函数
-                var dir = @"C:\Users\Administrator\Desktop\mlData\data\Rank";
+
+                var v = Emulator.CheckConnection(port: 16384);
+
+                Trace.WriteLine(v);
+
+                /*var dir = @"C:\Users\Administrator\Desktop\mlData\data\Rank";
                 Monitor.Refresh();
                 Func<object, OpenCvSharp.Mat> func = Monitor.CropScreen;
                 func(World.NP.Zone.Rank草地).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
@@ -592,7 +597,7 @@ namespace Shining_BeautifulGirls
                 func(World.NP.Zone.Rank领跑).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
                 func(World.NP.Zone.Rank跟前).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
                 func(World.NP.Zone.Rank居中).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank后追).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
+                func(World.NP.Zone.Rank后追).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));*/
 
 
                 // 停止计时器

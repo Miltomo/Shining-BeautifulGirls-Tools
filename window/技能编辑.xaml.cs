@@ -26,6 +26,7 @@ namespace Shining_BeautifulGirls
 
         TextBlock? textBlockInEdit;
         TextBox? textBoxInEdit;
+
         class SkillItem
         {
             public string Name { get; set; }
@@ -45,6 +46,7 @@ namespace Shining_BeautifulGirls
                 return Name.GetHashCode() ^ Path.GetHashCode();
             }
         }
+
         public static List<List<string>> GetPrioritySkillList(string name)
         {
             List<List<string>> pslist = [];
@@ -73,7 +75,7 @@ namespace Shining_BeautifulGirls
             Width = 1200;
             技能组 = [级别1, 级别2, 级别3, 级别4];
 
-            foreach (var skill in Directory.GetFiles(ShiningGirl.SkillDir))
+            foreach (var skill in Directory.GetFiles(World.SkillDir))
                 DefaultList.Add(new SkillItem { Name = Path.GetFileNameWithoutExtension(skill), Path = skill });
 
             文件列表.ItemsSource = FileManager.Names;

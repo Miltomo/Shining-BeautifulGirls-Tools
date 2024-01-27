@@ -61,7 +61,7 @@
 
         <TextBlock Style="{DynamicResource TextBlockStyle}"
                    x:Name="提示"
-                   Text=""
+                   Text="提示信息"
                    FontSize="35"
                    FontFamily="楷体"
                    Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
@@ -107,6 +107,7 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
+
         <Button Style="{DynamicResource ButtonStyle}" Grid.Row="1" Grid.RowSpan="2" Grid.Column="3"
                 Height="30" Width="70"
                 FontSize="20"
@@ -115,7 +116,14 @@
                 >
             刷新
         </Button>
-        <CheckBox x:Name="自动连接CheckBox" Visibility="Collapsed" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Content="下次启动时自动连接该设备" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5" FontFamily="楷体">
+
+        <Button Style="{DynamicResource ButtonStyle}" Grid.Row="3" Grid.Column="3" Height="30" Width="100" FontSize="20"
+        x:Name="Button输入端口" Background="#FFF7B485" BorderBrush="#FFEDC63E" Click="Button输入端口_Click" VerticalAlignment="Top"
+        >
+            配置端口
+        </Button>
+
+        <CheckBox x:Name="自动连接CheckBox" Visibility="Visible" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Content="下次启动时自动连接该设备" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5" FontFamily="楷体">
             <CheckBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>

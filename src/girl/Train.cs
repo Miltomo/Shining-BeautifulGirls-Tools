@@ -95,7 +95,7 @@ namespace Shining_BeautifulGirls
             };
 
             // 定义读值次数：通过多次判断纠正错误
-            int count = 2;
+            int count = 2; // 一次约0.35s
             List<int[]> vList = [];
             while (true)
             {

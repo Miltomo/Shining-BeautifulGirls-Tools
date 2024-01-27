@@ -15,6 +15,7 @@ namespace Shining_BeautifulGirls
         private readonly string _jsonEmulator = Path.Combine(App.UserDataDir, "emulator.json");
         EmulatorItem? CurrentItem { get => (EmulatorItem)模拟器列表.SelectedItem; }
         AdbHelper ADB { get; } = new(App.AdbPath, App.ProgramDir);
+        int NotFindCount { get; set; } = 0;
 
         [SaveAll]
         private static class Config
@@ -38,6 +39,7 @@ namespace Shining_BeautifulGirls
             Height = 600;
             Width = 800;
             版本信息.Text = $"{App.Version}  byGithub@Miltomo";
+            App.StartWindow = this;
             // ===定义文件路径===
             var path = App.ProgramDir;
             var resources = @$"{path}\resources";
@@ -56,13 +58,29 @@ namespace Shining_BeautifulGirls
             Directory.CreateDirectory(World.ScreenshotDir);
             Directory.CreateDirectory(ShiningGirl.RecordDir);
             // =======
+            提示.Text = "";
+            自动连接CheckBox.Visibility = Visibility.Collapsed;
             Load();
         }
+
         private List<EmulatorItem>? GetEmulators()
         {
+            // 寻找能被ADB发现的设备
             var r = ADB.SearchDevices();
+
+            // 寻找其他可能的设备
+            var others = Emulator.GetPotentialDevices();
+
+            // 连接用户定义的端口
+            var uPts = 端口配置.GetPortsInfo();
+
             foreach (var item in r)
                 ADB.Connect(item[0]);
+            foreach (var other in others)
+                ADB.Connect(other);
+            foreach (var port in uPts)
+                ADB.Connect($"127.0.0.1:{port}");
+
             r = ADB.SearchDevices();
             if (r.Length > 0)
             {
@@ -174,18 +192,28 @@ namespace Shining_BeautifulGirls
                 {
                     if (emulators is not null)
                     {
+                        NotFindCount = 0;
                         模拟器列表.ItemsSource = emulators;
                         模拟器列表.SelectedIndex = 0;
                     }
                     else
                     {
+                        NotFindCount++;
                         模拟器列表.ItemsSource = default;
-                        提示.Text = $"未检测到设备，尝试刷新或重启";
+                        提示.Text = NotFindCount > 2 ?
+                        $"找不到设备？试试配置端口" :
+                        $"未检测到设备，尝试刷新或重启";
                     }
                     IsEnabled = true;
                 });
             });
             thread.Start();
+        }
+
+        private void Button输入端口_Click(object sender, RoutedEventArgs e)
+        {
+            IsEnabled = false;
+            new 端口配置().Show();
         }
     }
 }

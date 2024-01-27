@@ -67,12 +67,12 @@ namespace Shining_BeautifulGirls
                 foreach (Process process in processes)
                 {
                     process.Kill();
-                    Console.WriteLine($"进程 {process.ProcessName} 已结束");
+                    Debug.WriteLine($"进程 {process.ProcessName} 已结束");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"结束进程时出错：{ex.Message}");
+                Debug.WriteLine($"结束进程时出错：{ex.Message}");
             }
         }
     }

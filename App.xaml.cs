@@ -12,10 +12,11 @@ namespace Shining_BeautifulGirls
     /// </summary>
     public partial class App : Application
     {
+        public static Window? StartWindow { get; set; }
         public static Window? UserWindow { get; set; }
         public static Window? SkillWindow { get; set; }
 
-        public static readonly string Version = "v0.10.0";
+        public static readonly string Version = "v0.10.1";
 
         public static string AdbPath => Path.Combine(ProgramDir, @"adb/adb.exe");
         public static string ProgramDir { get; private set; } = Environment.CurrentDirectory;
@@ -37,6 +38,8 @@ namespace Shining_BeautifulGirls
                 return dir;
             }
         }
+
+
 
         protected override void OnStartup(StartupEventArgs e)
         {
