@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using static MHTools.数据工具;
+using static Shining_BeautifulGirls.Emulator;
 
 namespace Shining_BeautifulGirls
 {
@@ -28,14 +29,6 @@ namespace Shining_BeautifulGirls
             public static string? LastEmulator { get; set; }
         }
 
-        //TODO 移动到Emulator.cs
-        public class EmulatorItem
-        {
-            public string Name { get; set; }
-            public string State { get; set; }
-            public string Type { get; set; }
-            public int[] Size { get; set; }
-        }
         public MainWindow()
         {
             InitializeComponent();
@@ -83,7 +76,7 @@ namespace Shining_BeautifulGirls
             var r = ADB.SearchDevices();
 
             // 寻找其他可能的设备
-            var others = Emulator.GetPotentialDevices();
+            var others = GetPotentialDevices();
 
             // 连接用户定义的端口
             var uPts = 端口配置.GetPortsInfo();
@@ -105,12 +98,13 @@ namespace Shining_BeautifulGirls
                     var name = dq[0];
                     list.Add(new EmulatorItem
                     {
-                        Name = name,
+                        ID = name,
                         State = dq[1] switch
                         {
                             "device" => "已连接",
                             _ => "离线"
                         },
+                        Type = TypePredict(name),
                         Size = (ADB.EmulatorName = name, ADB.GetSize()).Item2
                     });
                 }
@@ -122,7 +116,7 @@ namespace Shining_BeautifulGirls
         private void Save()
         {
             Config.AutoConnect = 自动连接CheckBox.IsChecked ?? false;
-            Config.LastEmulator = CurrentItem?.Name;
+            Config.LastEmulator = CurrentItem?.ID;
             SaveAllToSaveAsJSON(typeof(Config), _jsonEmulator);
         }
 
@@ -141,7 +135,7 @@ namespace Shining_BeautifulGirls
                     模拟器列表.ItemsSource = emulators;
                     模拟器列表.SelectedIndex = ((IEnumerable<EmulatorItem>)模拟器列表.ItemsSource)
                         .ToList()
-                        .FindIndex(x => x.Name == Config.LastEmulator);
+                        .FindIndex(x => x.ID == Config.LastEmulator);
                     // 直接显示用户界面
                     if (Button确定.IsEnabled)
                     {
@@ -165,7 +159,7 @@ namespace Shining_BeautifulGirls
                 {
                     if (CurrentItem.Size.Min() == World.STANDARD_WIDTH && CurrentItem.Size.Max() == World.STANDARD_HEIGHT)
                     {
-                        提示.Text = $"选择操作设备 {CurrentItem.Name}";
+                        提示.Text = CurrentItem.ToString();
                         Button确定.IsEnabled = true;
                         自动连接CheckBox.Visibility = Visibility.Visible;
                         return;

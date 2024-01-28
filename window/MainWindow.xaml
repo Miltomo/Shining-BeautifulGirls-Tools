@@ -85,7 +85,7 @@
                         <TextBlock
                             Grid.Column="0"
                             Style="{DynamicResource TextBlockStyle}" 
-                            Text="{Binding Name}"
+                            Text="{Binding ID}"
                             FontSize="25"
                             FontFamily="Consolas"
                             />

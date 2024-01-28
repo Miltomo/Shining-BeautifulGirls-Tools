@@ -24,8 +24,6 @@ namespace Shining_BeautifulGirls
         public Action<string> UpdateLog { get; init; }
         public Action<int> DeleteLog { get; init; }
 
-        AdbHelper ADB { get; init; }
-
         public ShiningGirl? Girl { get; set; }
 
         public Config? UserConfig { get; set; }
@@ -42,10 +40,12 @@ namespace Shining_BeautifulGirls
             public ShiningGirl.Config? SBGConfig { get; set; }
         }
 
-        public World(AdbHelper adb)
+        private static AdbHelper ADB => AdbHelper.Instance;
+
+        public World(string emulator)
         {
-            ADB = adb;
-            DeviceID = FileManagerHelper.SanitizeFileName(adb.EmulatorName);
+            ADB.EmulatorName = emulator;
+            DeviceID = FileManagerHelper.SanitizeFileName(emulator);
             Screen = Path.Combine(CacheDir, $"{DeviceID}.png");
             Log = OnLog;
             UpdateLog = OnUpdateLog;

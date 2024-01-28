@@ -210,12 +210,12 @@ namespace Shining_BeautifulGirls
             public static bool 需要日常赛事 { get; set; } = true;
         }
 
-        public 用户界面(MainWindow.EmulatorItem emulator)
+        public 用户界面(Emulator.EmulatorItem emulator)
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             ResizeMode = ResizeMode.CanMinimize;
-            Title = $"操作设备：（{emulator.Name}）";
+            Title = $"操作设备：{emulator}";
             Height = 800;
             Width = 600;
             App.UserWindow = this;
@@ -226,9 +226,7 @@ namespace Shining_BeautifulGirls
                 foreach (var task in TipQueue.GetConsumingEnumerable())
                     task();
             });
-            var adb = AdbHelper.Instance;
-            adb.EmulatorName = emulator.Name;
-            Monitor = new(adb);
+            Monitor = new(emulator.ID);
             Monitor.LogEvent += OutPut;
             Monitor.LogUpdateEvent += UpdateLogInfo;
             Monitor.LogDeleteEvent += DeleteLogInfo;
