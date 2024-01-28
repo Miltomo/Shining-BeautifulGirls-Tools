@@ -94,6 +94,7 @@
         <Style x:Key="启用CheckBoxStyle" TargetType="{x:Type CheckBox}">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="RenderTransformOrigin" Value="0,0.5"/>
             <Setter Property="RenderTransform">
                 <Setter.Value>

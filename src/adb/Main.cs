@@ -3,26 +3,40 @@ using System.Diagnostics;
 
 namespace Shining_BeautifulGirls
 {
-    //TODO 改为单例类。修改所有函数，全部变为bool！
+    /// <summary>
+    /// (单例) ADB程序助手类：创建、管理、调用、控制
+    /// </summary>
     public partial class AdbHelper
     {
+        /// <summary>
+        /// 输出结果
+        /// </summary>
         public string Result { get; private set; } = string.Empty;
+
+        /// <summary>
+        /// 操作设备名
+        /// </summary>
         public string EmulatorName { get; set; } = string.Empty;
+        private ProcessStartInfo PSI { get; init; }
 
-        // 进程启动信息
-        ProcessStartInfo PSI { get; init; }
+        private static AdbHelper? _instance;
+        public static AdbHelper Instance
+        {
+            get
+            {
+                _instance ??= new AdbHelper();
+                return _instance;
+            }
+        }
 
-        private AdbHelper(string k) { }
-
-        public AdbHelper(string program, string workspace)
+        private AdbHelper()
         {
             PSI = new()
             {
-                FileName = program,
+                FileName = "adb",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
-                CreateNoWindow = true,
-                WorkingDirectory = workspace
+                CreateNoWindow = true
             };
         }
 
@@ -55,6 +69,27 @@ namespace Shining_BeautifulGirls
             }
         }
 
+        /// <summary>
+        /// 设置ADB程序所在目录
+        /// </summary>
+        /// <param name="path"></param>
+        public static void SetProgramPath(string path)
+        {
+            Instance.PSI.FileName = path;
+        }
+
+        /// <summary>
+        /// 设置工作目录/输出目录
+        /// </summary>
+        /// <param name="dir"></param>
+        public static void SetWorkDir(string dir)
+        {
+            Instance.PSI.WorkingDirectory = dir;
+        }
+
+        /// <summary>
+        /// 强制结束所有正在运行的ADB进程；这有助于减少offline异常
+        /// </summary>
         public static void KillAll()
         {
             try
@@ -72,27 +107,6 @@ namespace Shining_BeautifulGirls
             catch (Exception ex)
             {
                 Debug.WriteLine($"结束进程时出错：{ex.Message}");
-            }
-        }
-
-
-        public static AdbMaker SetConfig()
-        {
-            return new AdbMaker();
-        }
-
-        public class AdbMaker
-        {
-
-            internal AdbMaker() { }
-
-            /// <summary>
-            /// 生成ADB实例，只在第一次调用时创建
-            /// </summary>
-            /// <returns></returns>
-            public AdbHelper Make()
-            {
-                return new AdbHelper("1");
             }
         }
     }

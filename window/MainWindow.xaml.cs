@@ -14,7 +14,11 @@ namespace Shining_BeautifulGirls
     {
         private readonly string _jsonEmulator = Path.Combine(App.UserDataDir, "emulator.json");
         EmulatorItem? CurrentItem { get => (EmulatorItem)模拟器列表.SelectedItem; }
-        AdbHelper ADB { get; } = new(App.AdbPath, App.ProgramDir);
+
+#pragma warning disable CA1822 // 禁用提示将成员标记为 static
+        AdbHelper ADB => AdbHelper.Instance;
+#pragma warning restore CA1822 // 启用提示将成员标记为 static
+
         int NotFindCount { get; set; } = 0;
 
         [SaveAll]
@@ -42,6 +46,7 @@ namespace Shining_BeautifulGirls
             Width = 800;
             版本信息.Text = $"{App.Version}  byGithub@Miltomo";
             App.StartWindow = this;
+
             // ===定义文件路径===
             var path = App.ProgramDir;
             var resources = @$"{path}\resources";
@@ -59,7 +64,11 @@ namespace Shining_BeautifulGirls
             Directory.CreateDirectory(cache);
             Directory.CreateDirectory(World.ScreenshotDir);
             Directory.CreateDirectory(ShiningGirl.RecordDir);
+
+            AdbHelper.SetProgramPath(App.AdbPath);
+            AdbHelper.SetWorkDir(World.CacheDir);
             // =======
+
             提示.Text = "";
             自动连接CheckBox.Visibility = Visibility.Collapsed;
             Load();

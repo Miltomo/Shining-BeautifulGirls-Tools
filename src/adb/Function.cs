@@ -5,15 +5,24 @@ namespace Shining_BeautifulGirls
 {
     partial class AdbHelper
     {
-        public AdbHelper Connect(string emulator)
+        public bool Connect(string emulator)
         {
             EmulatorName = emulator;
+            return Connect();
+        }
+
+        public bool Connect()
+        {
             PSI.Arguments = $"connect {EmulatorName}";
             Execute();
 
-            return this;
+            return DeviceErrorRegex().Match(Result).Success == false;
         }
 
+        /// <summary>
+        /// 搜索、获取所有已连接设备
+        /// </summary>
+        /// <returns></returns>
         public string[][] SearchDevices()
         {
             PSI.Arguments = $"devices";
@@ -43,15 +52,32 @@ namespace Shining_BeautifulGirls
 
 
         /// <summary>
-        /// 获取目标设备的屏幕截图
+        /// 获取目标设备的屏幕截图，复制到工作目录下
         /// </summary>
         /// <param name="pictureName"></param>
-        public void GetScreen(string pictureName = "background")
+        /// <returns>true，成功获取；false，连接失败</returns>
+        public bool CopyScreen(string pictureName = "background")
         {
-            PSI.Arguments = $"-s {EmulatorName} shell screencap -p /sdcard/{pictureName}.png";
-            Execute();
-            PSI.Arguments = $"-s {EmulatorName} pull /sdcard/{pictureName}.png";
-            Execute();
+            bool Aw = false;
+
+            for (int i = 0; i < 3; i++)
+            {
+                PSI.Arguments = $"-s {EmulatorName} shell screencap -p /sdcard/{pictureName}.png";
+                Execute();
+                PSI.Arguments = $"-s {EmulatorName} pull /sdcard/{pictureName}.png";
+                Execute();
+
+                // 断线续连
+                if (DeviceErrorRegex().Match(Result).Success)
+                {
+                    Connect();
+                    continue;
+                }
+                Aw = true;
+                break;
+            }
+
+            return Aw;
         }
 
         /// <summary>
@@ -59,10 +85,10 @@ namespace Shining_BeautifulGirls
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public bool Click(double x, double y)
+        public void Click(double x, double y)
         {
             PSI.Arguments = $"-s {EmulatorName} shell input tap {x} {y}";
-            return Execute();
+            Execute();
         }
 
         /// <summary>
@@ -86,5 +112,7 @@ namespace Shining_BeautifulGirls
         private static partial Regex DeviceStateRegex();
         [GeneratedRegex("(\\d+(?=x))|((?<=x)\\d+)")]
         private static partial Regex DeviceSizeRegex();
+        [GeneratedRegex("error|cannot", RegexOptions.IgnoreCase)]
+        private static partial Regex DeviceErrorRegex();
     }
 }

@@ -194,8 +194,9 @@ namespace Shining_BeautifulGirls
 
         public void Refresh()
         {
-            //TODO 准备增加断线续联功能！
-            ADB.GetScreen(DeviceID);
+            if (ADB.CopyScreen(DeviceID))
+                return;
+            throw new LongTimeNoOperationException();
         }
 
 
@@ -254,11 +255,7 @@ namespace Shining_BeautifulGirls
         {
             var rx = _random.Next(2) == 0 ? _random.NextDouble() * dx : -_random.NextDouble() * dx;
             var ry = _random.Next(2) == 0 ? _random.NextDouble() * dy : -_random.NextDouble() * dy;
-            while (true)
-            {
-                if (ADB.Click(x + rx, y + ry))
-                    break;
-            }
+            ADB.Click(x + rx, y + ry);
             Pause(pauseTime);
         }
 
