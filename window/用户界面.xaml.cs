@@ -82,8 +82,9 @@ namespace Shining_BeautifulGirls
                             }
                             catch (LongTimeNoOperationException)
                             {
+                                AdbHelper.KillAll();
                                 OutPut("⚠️由于长时间未响应，程序已结束⚠️");
-                                OutPut("请检查网络或ADB连接");
+                                OutPut("⚠️请检查设备状态或ADB连接⚠️");
                             }
                             catch (ResourcesNotFindException)
                             {
@@ -209,12 +210,12 @@ namespace Shining_BeautifulGirls
             public static bool 需要日常赛事 { get; set; } = true;
         }
 
-        public 用户界面(MainWindow.EmulatorItem emulator)
+        public 用户界面(Emulator.EmulatorItem emulator)
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             ResizeMode = ResizeMode.CanMinimize;
-            Title = $"操作设备：（{emulator.Name}）";
+            Title = $"操作设备：{emulator}";
             Height = 800;
             Width = 600;
             App.UserWindow = this;
@@ -225,11 +226,7 @@ namespace Shining_BeautifulGirls
                 foreach (var task in TipQueue.GetConsumingEnumerable())
                     task();
             });
-
-            Monitor = new(
-                new AdbHelper(App.AdbPath, World.CacheDir)
-                .Connect(emulator.Name)
-                );
+            Monitor = new(emulator.ID);
             Monitor.LogEvent += OutPut;
             Monitor.LogUpdateEvent += UpdateLogInfo;
             Monitor.LogDeleteEvent += DeleteLogInfo;
@@ -574,9 +571,6 @@ namespace Shining_BeautifulGirls
         {
             Thread thread = new(() =>
             {
-                var files = Directory.GetFiles(@"Z:\C#练习\Shining BeautifulGirls\resources\skill");
-                List<string[]> list = [];
-
                 // 创建 Stopwatch 实例
                 Stopwatch stopwatch = new();
 
@@ -584,6 +578,7 @@ namespace Shining_BeautifulGirls
                 stopwatch.Start();
 
                 // 调用需要计时的函数
+
 
                 /*var dir = @"C:\Users\Administrator\Desktop\mlData\data\Rank";
                 Monitor.Refresh();
@@ -605,14 +600,10 @@ namespace Shining_BeautifulGirls
 
                 // 获取经过的时间（毫秒）
                 long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
-                var one = (double)elapsedMilliseconds / files.Length;
-
                 Debug.WriteLine($"Function took {elapsedMilliseconds} milliseconds to execute.");
-                //Debug.WriteLine($"一个图片平均 {one} 毫秒\n一个训练6次判断，需要用 {one * 6} 毫秒");
 
 
                 //new ShiningGirl(Monitor).测试();
-                ;
             });
             thread.Start();
         }

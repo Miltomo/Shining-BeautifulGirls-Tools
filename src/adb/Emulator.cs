@@ -1,21 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Shining_BeautifulGirls
 {
-    public static class Emulator
+    public static partial class Emulator
     {
-        public enum Name
+        public class EmulatorItem
         {
-            MUMU = 16384,
+            public string ID { get; set; }
+            public string State { get; set; }
+            public string Type { get; set; }
+            public int[] Size { get; set; }
+
+            public override string ToString()
+            {
+                return $"{Type} ({ID}) [{Size.Min()}x{Size.Max()}]";
+            }
+        }
+
+        public enum Type
+        {
+            MuMu = 16384,
         }
 
         public static string[] GetPotentialDevices()
         {
             List<string> others = [];
-            var emS = Enum.GetValues<Name>();
+            var emS = Enum.GetValues<Type>();
             foreach (var em in emS)
             {
                 var start = (int)em;
@@ -29,10 +43,34 @@ namespace Shining_BeautifulGirls
                     break;
                 }
             }
+
             return [.. others];
         }
 
-        public static bool CheckConnection(string ip = "127.0.0.1", int port = 0)
+        public static string TypePredict(string id)
+        {
+            if (雷电Regex().IsMatch(id))
+                return "雷电模拟器";
+            else
+            {
+                var m = PortRegex().Match(id);
+                if (m.Success)
+                {
+                    int port = int.Parse(m.Value);
+                    var all = Enum.GetValues<Type>();
+
+                    foreach (var em in all)
+                    {
+                        int v = (int)em;
+                        if (port >= v && port < (v + 1000))
+                            return em.ToString();
+                    }
+                }
+            }
+            return "未知设备";
+        }
+
+        private static bool CheckConnection(string ip = "127.0.0.1", int port = 0)
         {
             try
             {
@@ -71,5 +109,10 @@ namespace Shining_BeautifulGirls
                 return false;
             }
         }
+
+        [GeneratedRegex("^emulator-55")]
+        private static partial Regex 雷电Regex();
+        [GeneratedRegex("(?<=:)\\d+$")]
+        private static partial Regex PortRegex();
     }
 }
