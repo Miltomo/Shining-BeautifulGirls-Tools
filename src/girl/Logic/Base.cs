@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Shining_BeautifulGirls
+﻿namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
@@ -31,9 +27,37 @@ namespace Shining_BeautifulGirls
             var headScore = PlanToDo.HeadInfo.Count;
             var failLine = 25;
 
+            switch (headScore)
+            {
+                case < 2:
+                    if (Mood < 5)
+                        去外出();
+                    break;
+                case < 3:
+                    if (Mood < 4 && Vitality < 90)
+                        去外出();
+                    break;
+            }
+
+
             if (CurrentFail > failLine)
             {
-                switch (headScore)
+                if (headScore > 2 && (CurrentFail < 5 * (headScore - 2) + failLine))
+                    return;
+
+                去休息();
+                switch (CurrentFail)
+                {
+                    case < 31:
+                        if (Mood < 5)
+                            去外出();
+                        break;
+                    case < 41:
+                        if (Mood < 4)
+                            去外出();
+                        break;
+                }
+                /*switch (headScore)
                 {
                     case < 3:
                         if (Mood < 5)
@@ -45,11 +69,10 @@ namespace Shining_BeautifulGirls
                         if (CurrentFail > 5 * (headScore - 2) + failLine)
                             去休息();
                         break;
-                }
+                }*/
             }
-            if (headScore < 2 && Mood < 5)
-                去外出();
         }
+
         private void PrimaryLogicPart2()
         {
             var targetV = UserConfig?.TargetProperty ??
