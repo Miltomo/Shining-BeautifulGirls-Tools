@@ -1,12 +1,19 @@
-﻿using System.Collections.Generic;
-using static Shining_BeautifulGirls.World.NP;
-
-namespace Shining_BeautifulGirls
+﻿namespace Shining_BeautifulGirls
 {
+    //TODO Button也是Zone，重构
     partial class World
     {
         public static class NP
         {
+            public enum ZButton
+            {
+                通用参赛,
+                查看结果,
+
+
+                群英联赛报名,
+                群英联赛_赛事与奖励,
+            }
             public enum Button
             {
                 强化编成,
@@ -29,8 +36,6 @@ namespace Shining_BeautifulGirls
                 养成,
                 继续,
                 大弹窗确认,
-                //优先活动卡,
-                //自动编成确认,
                 使用宝石,
                 使用能量饮料,
                 加号,
@@ -53,10 +58,9 @@ namespace Shining_BeautifulGirls
                 力量,
                 毅力,
                 智力,
-                参赛,
-                查看结果,
-                前往赛事,
-                比赛快进,
+                能力详情,
+                赛事位置1,
+                赛事位置2,
                 比赛结束,
                 低继续,
                 选择倒二,
@@ -72,6 +76,10 @@ namespace Shining_BeautifulGirls
                 养成结束,
                 结束连点,
                 不弹赛事推荐,
+                赛事活动,
+                群英联赛,
+                比赛连点,
+                传奇赛事,
             }
             public enum Zone
             {
@@ -110,12 +118,14 @@ namespace Shining_BeautifulGirls
                 技白,
                 技能点,
                 技能点2,
-                适应性,
+
                 赛事Name1, 赛事Fans1, 赛事Type1,
                 赛事Name2, 赛事Fans2, 赛事Type2,
                 Rank草地, Rank泥地,
                 Rank短距离, Rank英里, Rank中距离, Rank长距离,
                 Rank领跑, Rank跟前, Rank居中, Rank后追,
+
+                上部, 中部, 下部,
             }
         }
 
@@ -169,10 +179,11 @@ namespace Shining_BeautifulGirls
             MakeButton(Button.毅力, 488, trainY, train_d, train_d);
             MakeButton(Button.智力, 615, trainY, train_d, train_d);
 
-            MakeButton(Button.参赛, 505, 1080);
-            MakeButton(Button.查看结果, 252, 1172);
-            MakeButton(Button.前往赛事, 465, 1170);
-            MakeButton(Button.比赛快进, 560, 1225);
+            MakeButton(Button.能力详情, 645, 772, 20, 20);
+            MakeButton(Button.赛事位置1, 360, 765, 200, 30);
+            MakeButton(Button.赛事位置2, 360, 917, 200, 30);
+
+            MakeButton(Button.比赛连点, 562, 1260);
             MakeButton(Button.比赛结束, 435, 1200, 55, 10);// last is 460 maybe => [1230 , 30] ???
             MakeButton(Button.低继续, 360, 1110);
             MakeButton(Button.选择倒二, 360, 715);
@@ -189,9 +200,19 @@ namespace Shining_BeautifulGirls
             MakeButton(Button.结束连点, 360, 1145, 30, 5);// 中心点在1140 - 1145 之间
             MakeButton(Button.不弹赛事推荐, 260, 1035);
 
+            int ssjdx = 130, ssjdy = 90;
+
+            MakeButton(Button.赛事活动, 505, 850, ssjdx, ssjdy);
+            MakeButton(Button.群英联赛, 210, 925, ssjdx, ssjdy);
+            MakeButton(Button.传奇赛事, 505, 925, ssjdx, ssjdy);
+
             //============================================
             double L = 0, R = STANDARD_WIDTH;
             double U = 0, D = STANDARD_HEIGHT;
+            MakeZone(Zone.上部, L, R, U, 300);
+            MakeZone(Zone.中部, L, R, 300, 1000);
+            MakeZone(Zone.下部, L, R, 1000, D);
+
 
             MakeZone(Zone.事件类型, 110, 325, 210, 235);
             MakeZone(Zone.事件名, 110, 550, 245, 275);
@@ -229,8 +250,6 @@ namespace Shining_BeautifulGirls
             MakeZone(Zone.技能点, 600, 695, 920, 965);
             MakeZone(Zone.技能点2, 520, 650, 400, 440);
 
-            MakeZone(Zone.适应性, 140, 700, 385, 540);
-
             int ssNameL = 30, ssNameR = 250;
             int ssFansL = 295, ssFansR = 530;
             int ssTypeL = 560, ssTypeR = 690;
@@ -260,25 +279,50 @@ namespace Shining_BeautifulGirls
             MakeZone(Zone.Rank跟前, rC2L, rC2R, rR3U, rR3D);
             MakeZone(Zone.Rank居中, rC3L, rC3R, rR3U, rR3D);
             MakeZone(Zone.Rank后追, rC4L, rC4R, rR3U, rR3D);
+
+            //============================================
+
+            BuildZB(ZButton.通用参赛, 495, 1085, 605, 1115);
+            BuildZB(ZButton.查看结果, 165, 1145, 340, 1200);
+
+            BuildZB(ZButton.群英联赛报名, 170, 875, 550, 970);
+            BuildZB(ZButton.群英联赛_赛事与奖励, 255, 1045, 465, 1130);
         }
 
         private static void MakeButton(Button bt, double x, double y, double dx = 15, double dy = 15)
+        {
+            MakeButton(bt.ToString(), x, y, dx, dy);
+        }
+        private static void MakeButton(string bt, double x, double y, double dx = 15, double dy = 15)
         {
             x /= STANDARD_WIDTH;
             y /= STANDARD_HEIGHT;
             dx /= STANDARD_WIDTH;
             dy /= STANDARD_HEIGHT;
 
-            ButtonLocation.Add(bt.ToString(), [x, y, dx, dy]);
+            ButtonLocation.Add(bt, [x, y, dx, dy]);
         }
 
         private static void MakeZone(Zone zone, double x1, double x2, double y1, double y2)
+        {
+            MakeZone(zone.ToString(), x1, x2, y1, y2);
+        }
+        private static void MakeZone(string zone, double x1, double x2, double y1, double y2)
         {
             x1 /= STANDARD_WIDTH;
             x2 /= STANDARD_WIDTH;
             y1 /= STANDARD_HEIGHT;
             y2 /= STANDARD_HEIGHT;
-            ZoneLocation.Add(zone.ToString(), [x1, x2, y1, y2]);
+            ZoneLocation.Add(zone, [x1, x2, y1, y2]);
+        }
+
+        private static void BuildZB(ZButton zb, double x1_left, double y1_up, double x2_right, double y2_down)
+        {
+            var cx = (x1_left + x2_right) / 2;
+            var cy = (y1_up + y2_down) / 2;
+
+            MakeButton(zb.ToString(), cx, cy, Math.Floor(x2_right - cx), Math.Floor(y2_down - cy));
+            MakeZone(zb.ToString(), x1_left, x2_right, y1_up, y2_down);
         }
 
 

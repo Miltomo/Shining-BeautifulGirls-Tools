@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using static ComputerVision.ImageRecognition;
-using static Shining_BeautifulGirls.World.NP;
-
-namespace Shining_BeautifulGirls
+﻿namespace Shining_BeautifulGirls
 {
     //TODO 比赛后选择第一个选项
     //TODO 保留每次养成的日志和成果记录
@@ -33,21 +29,20 @@ namespace Shining_BeautifulGirls
         public void ReadInfo()
         {
             Mnt.Refresh();
+
             // 刷新体力
-            Vitality = GetHP();
-            Vitality = Vitality > 95 && _lastHP < 50 && _lastAction != "休息" ? 0 : Vitality;
-            _lastHP = Vitality;
+            UpdateHP();
 
             // 获取心情
-            Mood = GetMood();
+            UpdateMood();
 
             // 检查日期
             InSummer = Check(Symbol.夏日);
 
             // 判断是否需要治疗
-            InAilment = (!InSummer) && (AvgBrightness(CropScreen(Zone.医务室)) > 160);
+            InAilment = !(InSummer || Mnt.IsNoLight(Zone.医务室, 160));
 
-            // 读取当前属性值 TODO 测试
+            // 读取当前属性值
             List<int> property = [];
             for (int i = 0; i < SubjectS.Count; i += 1)
                 property.Add(ExtractValue(i switch
@@ -70,6 +65,24 @@ namespace Shining_BeautifulGirls
                 // 识别值正常时，更新历史记录
                 if (hdq - dq < 100) _hproperty[i] = dq;
             }
+        }
+
+        /// <summary>
+        /// (不刷新) 检测是否在主页（包括普通日和比赛日）
+        /// </summary>
+        /// <returns></returns>
+        public bool AtMainPage()
+        {
+            return FastCheck(Symbol.养成主页) || FastCheck(Symbol.比赛日主页);
+        }
+
+        /// <summary>
+        /// (不刷新) 检测是否在赛事选择界面
+        /// </summary>
+        /// <returns></returns>
+        public bool AtRacePage()
+        {
+            return FastCheck(Symbol.预测);
         }
 
         private void System__relex__()

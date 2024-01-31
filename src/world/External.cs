@@ -1,7 +1,6 @@
 ﻿using ComputerVision;
 using MHTools;
 using OpenCvSharp;
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -9,8 +8,7 @@ using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
 {
-    //TODO 更换检测方法 => 需要重构Symbol图像
-    //TODO 若要更换，必须得会文字识别才行，否则还是没用
+    //TODO 更换检测方法 => 重构Symbol图像
     partial class World
     {
         //========================
@@ -75,6 +73,11 @@ namespace Shining_BeautifulGirls
                 out _)
                 >
                 sim;
+        }
+
+        public bool IsNoLight(object zone, int limit = 155)
+        {
+            return AvgBrightness(CropScreen(zone, "brightness")) < limit;
         }
 
         //========================
@@ -142,14 +145,14 @@ namespace Shining_BeautifulGirls
         public PaddleOCR.Result ExtractZone(object zone)
         {
             return PaddleOCR
-                .SetImage(CropScreen(zone, "extractText"))
+                .SetImage(CropScreen(zone, "extract"))
                 .Extract();
         }
 
         public string ExtractZoneText(object zone)
         {
             return PaddleOCR
-                .SetImage(CropScreen(zone, "extractText"))
+                .SetImage(CropScreen(zone, "extract"))
                 .Extract()
                 .Text;
         }
@@ -157,7 +160,7 @@ namespace Shining_BeautifulGirls
         public string[] ExtractZoneLike(object zone, Regex regex)
         {
             return PaddleOCR
-                .SetImage(CropScreen(zone, "extractText"))
+                .SetImage(CropScreen(zone, "extract"))
                 .Extract()
                 .Like(regex);
         }
@@ -165,7 +168,7 @@ namespace Shining_BeautifulGirls
         public string[] ExtractZoneLineS(object zone)
         {
             return PaddleOCR
-                .SetImage(CropScreen(zone, "extractText"))
+                .SetImage(CropScreen(zone, "extract"))
                 .Extract()
                 .TextAsLines;
         }
@@ -181,7 +184,7 @@ namespace Shining_BeautifulGirls
         public bool ExtractZoneAndContains(object zone, string target)
         {
             return PaddleOCR
-                .SetImage(CropScreen(zone, "extractNumber"))
+                .SetImage(CropScreen(zone, "extractAc"))
                 .Extract()
                 .Contains(target);
         }
