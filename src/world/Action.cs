@@ -1,7 +1,5 @@
 ﻿using MHTools;
-using System.Collections.Generic;
 using static ComputerVision.ImageRecognition;
-using static Shining_BeautifulGirls.World.NP;
 
 namespace Shining_BeautifulGirls
 {
@@ -131,6 +129,78 @@ namespace Shining_BeautifulGirls
             }
         }
 
+        private void 群英联赛流程()
+        {
+            MoveTo([Symbol.赛事, Button.赛事], 1);
+            Click(Button.赛事活动);
+            PageDown([Symbol.赛事活动, Button.群英联赛]);
+
+        入场判定:
+            PageDown([Symbol.返回]);
+            if (ExtractZoneAndContains(Zone.中部, PText.Extravaganza.决赛))
+            {
+                Log("⚠️已进入决赛，请自行操作⚠️");
+                goto 退出;
+            }
+
+            // 无法报名
+            if (IsNoLight(ZButton.群英联赛报名))
+            {
+                goto 退出;
+            }
+            Click(ZButton.群英联赛报名);
+            goto 开始分歧;
+
+        开始分歧:
+            Pause(1000);
+            Refresh();
+            var zb = ExtractZone(Zone.中部);
+
+            if (zb.Equals("报名确认"))
+            {
+                Click(Button.弹窗确认);
+                goto 开始分歧;
+            }
+            else if (zb.Contains("适应性"))
+            {
+                MoveTo(() => ExtractZoneAndContains(Zone.中部, "参赛登记确认"), [Button.继续]);
+                Click(Button.弹窗确认);
+                goto 开始分歧;
+            }
+            else if (zb.Contains("奖励"))
+            {
+                if (IsNoLight(ZButton.群英联赛_赛事与奖励))
+                    goto 退出;
+
+                var xb = ExtractZone(Zone.下部);
+                // 参赛
+                if (xb.Contains("赛事"))
+                    goto 比赛处理;
+                // 结束
+                else if (xb.Contains("获得奖励"))
+                    goto 结果处理;
+            }
+            goto 开始分歧;
+
+        比赛处理:
+            Click(ZButton.群英联赛_赛事与奖励);
+            if (WaitTo([Symbol.继续], maxWait: 299))
+            {
+                MoveTo([Symbol.快进, Button.比赛结束], 0);
+                MoveTo([Symbol.继续, Button.比赛连点], 0);
+                Click(Button.比赛结束);
+                goto 开始分歧;
+            }
+            goto 退出;
+
+        结果处理:
+            Click(ZButton.群英联赛_赛事与奖励);
+            PageDown([Symbol.继续, Button.比赛结束]);
+            goto 入场判定;
+
+        退出:;
+        }
+
         /// <summary>
         /// 进行一次养成的标准流程
         /// </summary>
@@ -256,6 +326,11 @@ namespace Shining_BeautifulGirls
         {
             日常赛事流程();
             Log("结束日常赛事任务");
+        }
+
+        public void 标准群英联赛()
+        {
+            群英联赛流程();
         }
 
         public void 自定义养成()
