@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text.RegularExpressions;
 using static ComputerVision.ImageRecognition;
-using static Shining_BeautifulGirls.World.NP;
 
 namespace Shining_BeautifulGirls
 {
@@ -19,6 +15,12 @@ namespace Shining_BeautifulGirls
             return Mnt.CropScreen(zone, name);
         }
 
+        public void UpdateHP()
+        {
+            Vitality = GetHP();
+            Vitality = Vitality > 95 && _lastHP < 50 && _lastAction != "休息" ? 0 : Vitality;
+            _lastHP = Vitality;
+        }
         private int GetHP()
         {
             Rectangle 实值 = new(0, 0, 0, 0);
@@ -77,6 +79,10 @@ namespace Shining_BeautifulGirls
             return (int)Math.Round((实值.maxX - 实值.minX) / (double)(边界 - 实值.minX) * 100);
         }
 
+        public void UpdateMood()
+        {
+            Mood = GetMood();
+        }
         private int GetMood()
         {
             var saveFileName = CropScreen(Zone.心情);
@@ -323,6 +329,45 @@ namespace Shining_BeautifulGirls
                 break;
             }
             return head;
+        }
+
+        private RaceInfo[] GetRaceInfos()
+        {
+            List<RaceInfo> races = [];
+
+            foreach (var zones in RaceZoneTable)
+            {
+                RaceInfo info = new();
+                var r = Mnt.ExtractZone(zones[0]);
+                info.Ground = r.FirstIn(AllGround) ?? "";
+                info.Distance = r.FirstIn(AllDistance) ?? "";
+
+                // 如果类型适合
+                if (IsSuitableRace(info))
+                {
+                    // 获取比赛名称
+                    info.Name = Mnt.ExtractZoneText(zones[1]);
+
+                    // 获取粉丝数
+                    var fs = Mnt
+                        .ExtractZoneLike(zones[2], RaceFansRegex())
+                        .FirstOrDefault();
+                    if (fs != null)
+                        info.Fans = int.Parse(RaceFansTransRegex().Replace(fs, ""));
+                }
+
+                races.Add(info);
+            }
+
+            return [.. races];
+        }
+
+        private string GetAdaptability(Zone zone)
+        {
+            return RankClassification.Predict(new()
+            {
+                ImageSource = File.ReadAllBytes(CropScreen(zone)),
+            }).PredictedLabel;
         }
 
         private static string GetTodayRecordDir()

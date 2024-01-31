@@ -1,11 +1,11 @@
 ﻿using MHTools;
-using System;
-using static Shining_BeautifulGirls.World.NP;
 
 namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
+
+
         private int _dqRemakeTimes = 0;
 
         //TODO 重构是否需要比赛的判断，可进行提前判断了。
@@ -33,8 +33,14 @@ namespace Shining_BeautifulGirls
                     }
                     else if (FastCheck(Symbol.粉丝不足) || FastCheck(Symbol.未达要求) || FastCheck(Symbol.无法参赛))
                     {
-                        比赛处理("不满足参赛要求");
-                        养成流程("每日总结");
+                        if (比赛处理(比赛过程Enum.额外比赛))
+                            养成流程("每日总结");
+                        // 没有合适比赛的情况
+                        else
+                        {
+                            MoveTo(AtMainPage, Button.返回);
+                            养成流程("普通日");
+                        }
                         break;
                     }
                     else if (FastCheck(Symbol.继续) || FastCheck(Symbol.抓娃娃))
@@ -60,7 +66,7 @@ namespace Shining_BeautifulGirls
                     break;
 
                 case "普通日":
-                    Log($"###############第 {Turn} 回合###############");
+                    Log(回合开始);
 
                     ReadInfo();
                     Log(基本信息);
@@ -95,9 +101,9 @@ namespace Shining_BeautifulGirls
                     break;
 
                 case "比赛日":
-                    Log($"###############第 {Turn} 回合###############");
+                    Log(回合开始);
 
-                    Vitality = GetHP();
+                    UpdateHP();
                     SkPoints = ExtractValue(Zone.技能点);
 
                     Log($"★今天是比赛日★");
@@ -111,7 +117,7 @@ namespace Shining_BeautifulGirls
                             技能学习过程("普通学习");
                     }
 
-                    if (比赛处理("正常比赛"))
+                    if (比赛处理(比赛过程Enum.目标比赛))
                         养成流程("每日总结");
                     else
                         养成流程("结束");
@@ -149,100 +155,135 @@ namespace Shining_BeautifulGirls
             }
         }
 
+
+        private enum 比赛过程Enum
+        {
+            目标比赛,
+            额外比赛,
+            进入,
+            新比赛,
+            重赛处理,
+            比赛成功,
+            比赛失败,
+        }
+
         /// <summary>
         /// 比赛的过程处理
         /// </summary>
         /// <param name="state"></param>
-        /// <returns><b>true</b>,比赛成功; <b>false</b>,比赛失败</returns>
-        private bool 比赛处理(string state)
+        /// <returns><b>true</b>,比赛成功; <b>false</b>,比赛失败或未进行比赛</returns>
+        private bool 比赛处理(比赛过程Enum e)
         {
             Mnt.Refresh();
-            switch (state)
+            switch (e)
             {
-                case "正常比赛":
-                    Click(Button.参赛, 1000);
-                    return 比赛处理("参赛");
+                case 比赛过程Enum.目标比赛:
+                    GotoRacePage();
+                    return 比赛处理(比赛过程Enum.进入);
 
-                case "不满足参赛要求":
-                    Click(Button.大弹窗确认, 1000);
-                    return 比赛处理("参赛");
+                case 比赛过程Enum.额外比赛:
+                    MoveTo(AtRacePage, Button.大弹窗确认);
 
-                case "参赛":
+                    if (SelectFirstSuitableRace())
+                    {
+                        UpdateHP();
+                        Log(回合开始);
+                        Log("选择比赛:");
+                        Log($"{"",5}{TargetRace}");
+                        return 比赛处理(比赛过程Enum.进入);
+                    }
+                    return false;
+
+                case 比赛过程Enum.进入:
                     _lastAction = "比赛";
                     _dqRemakeTimes = 0;
-                    if (Check(Symbol.连续参赛))
-                        Click(Button.弹窗确认, 1000);
-                    if (Check(Symbol.赛事推荐弹窗, sim: 0.8))
-                    {
-                        Click(Button.不弹赛事推荐);
-                        Click(Button.比赛结束);
-                    }
                     Log("参加比赛");
-                    Click(Button.参赛);
-                    PageDown([Symbol.参赛确认, Button.大弹窗确认]);
+                    Click(ZButton.通用参赛);
+                    PageDown(Zone.中部, PText.Race.赛事详情, Button.大弹窗确认);
+                    return 比赛处理(比赛过程Enum.新比赛);
 
-                StartNewRace:
-                    PageDown([Symbol.前往赛事]);
-                    if (Match(Symbol.查看结果) < 0.99)
+                //TODO 测试
+                case 比赛过程Enum.新比赛:
+                    PageDown(Zone.下部, PText.Race.前往赛事);
+                    Mnt.Pause(500);
+                    if (IsDimmed(ZButton.查看结果, 160))
                     {
-                        Click(Button.前往赛事);
-                        PageDown([Symbol.参赛, Button.比赛结束]);
-                        Mnt.MoveToEx([[Symbol.下一页], [Button.比赛快进]], [
-                            [Symbol.重新挑战]
-                            ], sec: 0);
+                        MoveTo([Symbol.快进, Button.比赛结束]);
+
+                        while (true)
+                        {
+                            Click(Button.比赛连点, 0);
+                            Mnt.Refresh();
+
+                            var zb = Extract中部();
+                            if (zb.Equals(PText.Race.重新挑战))
+                            {
+                                //相关处理...
+                                return 比赛处理(比赛过程Enum.重赛处理);
+                            }
+                            else if (IsZoneContains(Zone.下部, PText.Race.下一页))
+                                return 比赛处理(比赛过程Enum.比赛成功);
+                        }
                     }
                     else
                     {
-                        Click(Button.查看结果);
-                        Click(Button.查看结果);
-
-                        if (Mnt.MoveToEx([[Symbol.下一页], [Button.继续]],
-                            [[Symbol.重新挑战]
-                            ], sec: 0))
+                        Click(ZButton.查看结果, 1000);
+                        while (true)
                         {
-                            Click(Button.比赛结束);
-                            PageDown([Symbol.赛果, Button.比赛结束]);
+                            Click(Button.继续, 0);
+                            Mnt.Refresh();
 
-                            Log("比赛结束，已达成目标");
-                            return true;
-                        }
-                        // 比赛失败
-                        else
-                        {
-                            bool A = false;
-
-                            Log("比赛未取得良好结果，等待重新挑战......");
-                            if (Check(Symbol.免费闹钟))
-                                A = true;
-                            if (!A && UserConfig is not null)
+                            var zb = Extract中部();
+                            if (zb.Equals(PText.Race.重新挑战))
                             {
-                                switch (UserConfig.ReChallenge)
-                                {
-                                    // 每场比赛一次
-                                    case 1:
-                                        if (_dqRemakeTimes < 1)
-                                            A = true;
-                                        break;
-                                    // 一直重赛
-                                    case 2:
-                                        A = true;
-                                        break;
-                                    default: break;
-                                }
+                                //相关处理...
+                                return 比赛处理(比赛过程Enum.重赛处理);
                             }
-                            if (A)
-                            {
-                                _dqRemakeTimes++;
-                                Log($"选择重新挑战，这是第 {_dqRemakeTimes} 次重新挑战");
-                                Click(Button.大弹窗确认);
-                                goto StartNewRace;
-                            }
-                            Log("放弃重新挑战");
+                            else if (IsZoneContains(Zone.下部, PText.Race.下一页))
+                                return 比赛处理(比赛过程Enum.比赛成功);
                         }
                     }
-                    return 比赛处理("比赛失败");
 
-                case "比赛失败":
+                case 比赛过程Enum.重赛处理:
+                    bool A = false;
+
+                    Log("比赛未取得良好结果，等待重新挑战......");
+                    if (Check(Symbol.免费闹钟))
+                        A = true;
+                    if (!A && UserConfig is not null)
+                    {
+                        switch (UserConfig.ReChallenge)
+                        {
+                            // 每场比赛一次
+                            case 1:
+                                if (_dqRemakeTimes < 1)
+                                    A = true;
+                                break;
+                            // 一直重赛
+                            case 2:
+                                A = true;
+                                break;
+                            default: break;
+                        }
+                    }
+                    if (A)
+                    {
+                        _dqRemakeTimes++;
+                        Log($"选择重新挑战，这是第 {_dqRemakeTimes} 次重新挑战");
+                        Click(Button.大弹窗确认);
+                        return 比赛处理(比赛过程Enum.新比赛);
+                    }
+                    Log("放弃重新挑战");
+                    return 比赛处理(比赛过程Enum.比赛失败);
+
+                case 比赛过程Enum.比赛成功:
+                    Click(Button.比赛结束);
+                    PageDown([Symbol.赛果, Button.比赛结束]);
+
+                    Log("比赛结束，已达成目标");
+                    return true;
+
+                case 比赛过程Enum.比赛失败:
                     Log("比赛失败");
                     Click(Button.结束养成);
                     MoveTo([Symbol.养成结束, Button.比赛结束], 0);
