@@ -1,7 +1,5 @@
 ﻿using MHTools;
 using NumSharp.Utilities;
-using System;
-using System.Linq;
 using System.Threading;
 
 namespace Shining_BeautifulGirls
@@ -49,6 +47,29 @@ namespace Shining_BeautifulGirls
             }
         }
 
+        public void MoveTo(Func<bool> condition, object[] bts, int sec = 1)
+        {
+            int step = 300;
+            int sum = 0;
+            int wait = sec < 1 ? step : sec * 1000;
+
+            Click(bts, 100);
+            while (true)
+            {
+                Pause(step);
+                Refresh();
+                if (condition())
+                    break;
+                sum += step;
+                if (sum >= wait)
+                {
+                    Click(bts);
+                    sum = 0;
+                }
+            }
+        }
+
+
         /// <summary>
         /// 尝试移动到目标场所，等待数秒
         /// </summary>
@@ -68,6 +89,20 @@ namespace Shining_BeautifulGirls
                 Pause(300);
                 Refresh();
                 if (FastCheck(symbol, sim: sim))
+                    return true;
+            }
+            return false;
+        }
+
+        public bool WaitTo(Func<bool> condition, object[] bts, int maxWait = 5)
+        {
+            int count = maxWait * 2;
+            for (int i = 0; i < count; i++)
+            {
+                Click(bts);
+                Pause(300);
+                Refresh();
+                if (condition())
                     return true;
             }
             return false;
@@ -134,7 +169,9 @@ namespace Shining_BeautifulGirls
             var symbol = data[0];
             var bts = data[1..];
 
-            int waitting = 0;
+            PageDown(() => FastCheck(symbol, sim: sim), bts);
+
+            /*int waitting = 0;
             while (true)
             {
                 Pause(500);
@@ -153,6 +190,27 @@ namespace Shining_BeautifulGirls
                 {
                     Click(_lastClick);
                     waitting = 0;
+                }
+            }*/
+        }
+
+        public void PageDown(Func<bool> condition, params object[]? bts)
+        {
+            int sum = 0;
+            while (true)
+            {
+                Pause(500);
+                Refresh();
+                if (condition())
+                {
+                    Click(bts);
+                    break;
+                }
+                sum++;
+                if (sum > 20)
+                {
+                    Click(_lastClick);
+                    sum = 0;
                 }
             }
         }
@@ -206,6 +264,8 @@ namespace Shining_BeautifulGirls
         /// <param name="time"></param>
         public void Pause(int time = 200)
         {
+            if (time < 1)
+                return;
             // 关闭超时计时器
             StopOverTimer();
             int remain = time;
@@ -238,7 +298,7 @@ namespace Shining_BeautifulGirls
             {
                 try
                 {
-                    StartOverTimer();
+                    StartOverTimer(60);
                 }
                 catch (Exception)
                 {
@@ -261,6 +321,7 @@ namespace Shining_BeautifulGirls
 
         public void Click(object? bt, int pauseTime = 200)
         {
+
             string? buttonName = bt?.ToString();
             if (string.IsNullOrWhiteSpace(buttonName))
                 return;
@@ -274,10 +335,13 @@ namespace Shining_BeautifulGirls
                 );
         }
 
-        public void Click(object[] bts)
+        public void Click(object[]? bts, int pauseTime = 200)
         {
-            for (int i = 0; i < bts.Length; i++)
-                Click(bts[i]);
+            if (bts is not null)
+            {
+                for (int i = 0; i < bts.Length; i++)
+                    Click(bts[i], pauseTime);
+            }
         }
 
         public void ClickEx(object bt, string occur_file, object[] bts)
