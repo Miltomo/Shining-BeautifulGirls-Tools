@@ -1,10 +1,7 @@
 ﻿using MHTools;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -84,7 +81,7 @@ namespace Shining_BeautifulGirls
                             {
                                 AdbHelper.KillAll();
                                 OutPut("⚠️由于长时间未响应，程序已结束⚠️");
-                                OutPut("⚠️请检查设备状态或ADB连接⚠️");
+                                OutPut("⚠️请检查设备状态或网络连接⚠️");
                             }
                             catch (ResourcesNotFindException)
                             {
@@ -571,6 +568,8 @@ namespace Shining_BeautifulGirls
         {
             Thread thread = new(() =>
             {
+                //Monitor.Refresh();
+                Monitor.Start();
                 // 创建 Stopwatch 实例
                 Stopwatch stopwatch = new();
 
@@ -579,6 +578,18 @@ namespace Shining_BeautifulGirls
 
                 // 调用需要计时的函数
 
+
+                //Monitor.标准群英联赛();
+                var g = new ShiningGirl(Monitor);
+                g.测试();
+
+
+                /*var result = RankClassification.Predict(new()
+                {
+                    ImageSource = File.ReadAllBytes(Monitor.CropScreen(World.NP.Zone.Rank英里, "测试")),
+                }).PredictedLabel;
+
+                Toast(result);*/
 
                 /*var dir = @"C:\Users\Administrator\Desktop\mlData\data\Rank";
                 Monitor.Refresh();
@@ -597,13 +608,12 @@ namespace Shining_BeautifulGirls
 
                 // 停止计时器
                 stopwatch.Stop();
+                Monitor.Stop();
 
                 // 获取经过的时间（毫秒）
                 long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                 Debug.WriteLine($"Function took {elapsedMilliseconds} milliseconds to execute.");
-
-
-                //new ShiningGirl(Monitor).测试();
+                Toast("测试结束");
             });
             thread.Start();
         }

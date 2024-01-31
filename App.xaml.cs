@@ -1,9 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using static Shining_BeautifulGirls.World.NP;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+
 
 namespace Shining_BeautifulGirls
 {
@@ -44,13 +47,6 @@ namespace Shining_BeautifulGirls
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
-            /*CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding((ICommand)FindResource("截图Command"), (s, e) =>
-            {
-                Trace.WriteLine("已触发");
-            }));*/
-
-
 
             // 订阅未处理异常事件
             // 非UI线程上的异常
@@ -102,19 +98,6 @@ namespace Shining_BeautifulGirls
             return null;
         }
 
-        public static T? FindAncestor<T>(DependencyObject current) where T : DependencyObject
-        {
-            do
-            {
-                if (current is T ancestor)
-                {
-                    return ancestor;
-                }
-                current = VisualTreeHelper.GetParent(current);
-            } while (current != null);
-
-            return null;
-        }
         public static T? FindVisualParent<T>(DependencyObject? child) where T : DependencyObject
         {
             while (child != null)

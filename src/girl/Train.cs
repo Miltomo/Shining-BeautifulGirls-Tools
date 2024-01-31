@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using static Shining_BeautifulGirls.World.NP;
-
-namespace Shining_BeautifulGirls
+﻿namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {

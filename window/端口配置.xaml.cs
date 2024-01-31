@@ -73,7 +73,7 @@ namespace Shining_BeautifulGirls
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Button bt = (Button)sender;
+            System.Windows.Controls.Button bt = (System.Windows.Controls.Button)sender;
             bt.IsEnabled = false;
             var item = App.FindVisualParent<ListBoxItem>(bt);
             var index = theListBox.ItemContainerGenerator.IndexFromContainer(item);

@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
 {
-    partial class ShiningGirl
+    partial class ShiningGirl(World world, ShiningGirl.Config? userConfig = default)
     {
         public static string RecordDir { get; set; } = @"./record/";
         public static string HighLightDir
@@ -34,6 +33,8 @@ namespace Shining_BeautifulGirls
         private int _lastHP = 100;
         [ToSave]
         private string _lastAction = "休息";
+
+        private string 回合开始 => $"###############第 {Turn} 回合###############";
 
         public string[] 基本信息 =>
                 [
@@ -68,8 +69,9 @@ namespace Shining_BeautifulGirls
                 return [.. list];
             }
         }
-        private World Mnt { get; init; }
-        public Config? UserConfig { get; set; } = default;
+
+        private World Mnt { get; init; } = world;
+        public Config? UserConfig { get; set; } = userConfig;
 
         public class Config
         {
@@ -78,20 +80,19 @@ namespace Shining_BeautifulGirls
             public List<List<string>>? PrioritySkillList { get; set; }
         }
 
-        public ShiningGirl(World world, Config? userConfig = default)
+        public void Log(object logInfo)
         {
-            Mnt = world;
-            UserConfig = userConfig;
-        }
-
-        public void Log(string logInfo)
-        {
-            Mnt.Log(logInfo);
+            Mnt.Log(logInfo.ToString()!);
         }
 
         public void Log(string[] logInfoS)
         {
             foreach (string logInfo in logInfoS) { Log(logInfo); }
+        }
+
+        public void 测试()
+        {
+            IsDimmed(ZButton.查看结果);
         }
     }
 }
