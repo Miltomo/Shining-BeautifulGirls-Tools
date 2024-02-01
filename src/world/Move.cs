@@ -35,7 +35,6 @@ namespace Shining_BeautifulGirls
                 while (waitting < maxTime)
                 {
                     Pause();
-                    Refresh();
 
                     if (FastCheck(symbol, sim: sim))
                     {
@@ -59,7 +58,7 @@ namespace Shining_BeautifulGirls
             while (true)
             {
                 Pause(step);
-                Refresh();
+
                 if (condition())
                     break;
                 sum += step;
@@ -89,7 +88,7 @@ namespace Shining_BeautifulGirls
             {
                 Click(bts);
                 Pause(300);
-                Refresh();
+
                 if (FastCheck(symbol, sim: sim))
                     return true;
             }
@@ -103,7 +102,7 @@ namespace Shining_BeautifulGirls
             {
                 Click(bts);
                 Pause(300);
-                Refresh();
+
                 if (condition())
                     return true;
             }
@@ -134,7 +133,6 @@ namespace Shining_BeautifulGirls
                 while (true)
                 {
                     Pause();
-                    Refresh();
 
                     foreach (var symbol in symbols)
                         if (FastCheck(symbol, sim: sim))
@@ -166,7 +164,7 @@ namespace Shining_BeautifulGirls
             while (true)
             {
                 Click(bts, 300);
-                Refresh();
+
                 if (target())
                     return true;
                 foreach (var ex in others)
@@ -195,7 +193,7 @@ namespace Shining_BeautifulGirls
             while (true)
             {
                 Pause(500);
-                Refresh();
+
                 if (condition())
                 {
                     Click(bts);
@@ -219,7 +217,6 @@ namespace Shining_BeautifulGirls
             while (true)
             {
                 Pause(500);
-                Refresh();
 
                 // 检测目标象征图
                 if (FastCheck(symbol, sim: sim))
@@ -245,8 +242,10 @@ namespace Shining_BeautifulGirls
             }
         }
 
-
-
+        /// <summary>
+        /// 获取屏幕最新状态
+        /// </summary>
+        /// <exception cref="LongTimeNoOperationException"></exception>
         public void Refresh()
         {
             if (ADB.CopyScreen(DeviceID))
@@ -254,10 +253,8 @@ namespace Shining_BeautifulGirls
             throw new LongTimeNoOperationException();
         }
 
-        //TODO 暂停后刷新？
-
         /// <summary>
-        /// 暂停等待
+        /// (刷新) 暂停等待一段时间，结束后刷新
         /// </summary>
         /// <param name="time"></param>
         public void Pause(int time = 200)
@@ -303,6 +300,9 @@ namespace Shining_BeautifulGirls
                     throw;
                 }
             }
+
+            // 获取最新界面
+            Refresh();
         }
 
         public void Click(
@@ -345,7 +345,7 @@ namespace Shining_BeautifulGirls
         public void ClickEx(object bt, string occur_file, object[] bts)
         {
             Click(bt.ToString(), 1000);
-            if (Check(occur_file))
+            if (FastCheck(occur_file))
                 Click(bts);
         }
 

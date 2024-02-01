@@ -31,7 +31,7 @@
             if (index > -1)
             {
                 _lastAction = plan;
-                while (Match(Symbol.返回) > 0.7)
+                while (FastCheck(Symbol.返回, 0.7))
                     Click(plan);
             }
             else

@@ -176,7 +176,6 @@ namespace Shining_BeautifulGirls
             while (true)
             {
                 Click(ZButton.通用参赛, 1000);
-                Mnt.Refresh();
 
                 if (FastCheck(Symbol.连续参赛))
                     Click(Button.弹窗确认, 1000);
@@ -194,8 +193,7 @@ namespace Shining_BeautifulGirls
         private void RaceScroll(double distance = 230)
         {
             Mnt.Scroll([360, 1000, distance]);
-            Mnt.Pause(500);
-            Mnt.Refresh();
+            Pause(500);
         }
 
 

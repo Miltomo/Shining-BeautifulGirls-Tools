@@ -37,7 +37,7 @@
             UpdateMood();
 
             // 检查日期
-            InSummer = Check(Symbol.夏日);
+            InSummer = FastCheck(Symbol.夏日);
 
             // 判断是否需要治疗
             InAilment = !(InSummer || IsDimmed(Zone.医务室, 160));
@@ -90,13 +90,13 @@
             _lastAction = "休息";
             while (true)
             {
-                if (Check(Symbol.养成主页))
+                if (FastCheck(Symbol.养成主页))
                     break;
                 Click(Button.返回, 300);
             }
 
             Mnt.ClickEx(Button.休息, Symbol.休息确认, [Button.弹窗勾选, Button.弹窗确认]);
-            Mnt.Pause(1000);
+            Pause(1000);
         }
 
         private void System__out__()
@@ -111,20 +111,20 @@
             _lastAction = "外出";
             while (true)
             {
-                if (Check(Symbol.养成主页))
+                if (FastCheck(Symbol.养成主页))
                     break;
                 Click(Button.返回, 300);
             }
 
             Mnt.ClickEx(Button.外出, Symbol.外出确认, [Button.弹窗勾选, Button.弹窗确认]);
-            Mnt.Pause(1000);
+            Pause(1000);
         }
 
         private void System__treat__()
         {
             _lastAction = "治疗";
             Mnt.ClickEx(Button.医务室, Symbol.医务室确认, [Button.弹窗勾选, Button.弹窗确认]);
-            Mnt.Pause(1000);
+            Pause(1000);
         }
     }
 }

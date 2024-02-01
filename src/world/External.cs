@@ -1,7 +1,6 @@
 ﻿using ComputerVision;
 using MHTools;
 using OpenCvSharp;
-using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using static ComputerVision.ImageRecognition;
@@ -15,7 +14,7 @@ namespace Shining_BeautifulGirls
         //========图像匹配========
         //========================
         /// <summary>
-        /// 图像匹配函数的最原始定义：先刷新，再用"模板匹配"方法进行匹配。
+        /// (不刷新) 图像匹配函数的最原始定义：用"模板匹配"方法进行匹配。
         /// </summary>
         /// <param name="loc"></param>
         /// <param name="file"></param>
@@ -23,7 +22,6 @@ namespace Shining_BeautifulGirls
         /// <returns>相关度</returns>
         public double Match(out Point loc, string file, string? bg = default)
         {
-            Refresh();
             return MatchImage(
                 file,
                 bg == default ? Screen : bg,
@@ -41,21 +39,16 @@ namespace Shining_BeautifulGirls
         }*/
 
         /// <summary>
-        /// (刷新) 检测目标物是否存在: 使用模板匹配
+        /// (刷新) 检测目标物是否存在
         /// </summary>
         /// <param name="file"></param>
         /// <param name="background"></param>
-        /// <param name="delta"></param>
+        /// <param name="sim"></param>
         /// <returns></returns>
-        private bool Check(string file, string? background = default, double delta = 0.9)
+        private bool RCheck(string file, string? background = default, double sim = 0.9)
         {
-            if (Match(file, background) > delta)
-            {
-                Debug.WriteLine("包含" + Path.GetFileName(file));
-                return true;
-            }
-            Debug.WriteLine("不包含" + Path.GetFileName(file));
-            return false;
+            Refresh();
+            return FastCheck(file, background, sim);
         }
 
         /// <summary>
@@ -67,10 +60,9 @@ namespace Shining_BeautifulGirls
         /// <returns></returns>
         public bool FastCheck(object targetPath, string? bgPath = default, double sim = 0.9)
         {
-            return MatchImage(
+            return Match(
                 FileManagerHelper.ToPath(targetPath),
-                bgPath ?? Screen,
-                out _)
+                bgPath ?? Screen)
                 >
                 sim;
         }

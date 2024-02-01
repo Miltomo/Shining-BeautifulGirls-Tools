@@ -35,7 +35,7 @@ namespace Shining_BeautifulGirls
                         {
                             var dq = $"第{i}队";
                             Gray(CropScreen(dq)).SaveImage(gift);
-                            if (Check(Symbol.胜利时必得, gift, 0.7))
+                            if (FastCheck(Symbol.胜利时必得, gift, 0.7))
                             {
                                 target = dq;
                                 break;
@@ -55,7 +55,6 @@ namespace Shining_BeautifulGirls
                         break;
 
                     case "循环处理":
-                        Refresh();
                         if (FastCheck(Symbol.竞技值不足, sim: 0.8))
                         {
                             MoveTo([Symbol.主界面, Button.主页], 0, 0.8);
@@ -68,7 +67,7 @@ namespace Shining_BeautifulGirls
                             state = "选队";
                         }
                         else
-                            Click(Button.竞技场连点);
+                            Click(Button.竞技场连点, 500);
                         break;
 
                     case "结束":
@@ -92,13 +91,15 @@ namespace Shining_BeautifulGirls
                     MoveTo([Symbol.金币, Button.日常赛事], 6, 0.8);
                     日常赛事流程("赛事选择");
                     break;
+
                 case "赛事选择":
-                    while (Check(Symbol.金币))
-                        Click($"日{(UserConfig is not null ? UserConfig.DailyRaceNumber : 2)}", 1000);
+                    Click($"日{(UserConfig is not null ? UserConfig.DailyRaceNumber : 2)}", 1000);
                     Click($"日{(UserConfig is not null ? UserConfig.DRDNumber : 1)}");
+
+                    //TODO 重构为文字检查 => ON字出现
                     if (PageDownEx([Symbol.参赛], [Symbol.日常赛事券不足]))
                     {
-                        if (Check(Symbol.多次参赛ON, delta: 0.99))
+                        if (FastCheck(Symbol.多次参赛ON, sim: 0.99))
                         {
                             Click(Button.比赛结束);
                             PageDown([Symbol.返回]);
@@ -153,7 +154,6 @@ namespace Shining_BeautifulGirls
 
         开始分歧:
             Pause(1000);
-            Refresh();
             var zb = ExtractZone(Zone.中部);
 
             if (zb.Equals("报名确认"))
@@ -407,7 +407,6 @@ namespace Shining_BeautifulGirls
                         break;
 
                     case "比对":
-                        Refresh();
                         for (int i = 1; i < 6; i++)
                         {
                             if (FastCheck(
