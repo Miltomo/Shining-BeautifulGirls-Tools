@@ -75,7 +75,13 @@ namespace Shining_BeautifulGirls
                 sim;
         }
 
-        public bool IsNoLight(object zone, int limit = 155)
+        /// <summary>
+        /// (不刷新) 检测按钮是否处于无效状态
+        /// </summary>
+        /// <param name="zone"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        public bool IsNoLight(Enum zone, int limit = 155)
         {
             return AvgBrightness(CropScreen(zone, "brightness")) < limit;
         }
@@ -142,14 +148,14 @@ namespace Shining_BeautifulGirls
         //========文字识别========
         //========================
 
-        public PaddleOCR.Result ExtractZone(object zone)
+        public PaddleOCR.Result ExtractZone(Enum zone)
         {
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extract"))
                 .Extract();
         }
 
-        public string ExtractZoneText(object zone)
+        public string ExtractZoneText(Enum zone)
         {
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extract"))
@@ -157,7 +163,7 @@ namespace Shining_BeautifulGirls
                 .Text;
         }
 
-        public string[] ExtractZoneLike(object zone, Regex regex)
+        public string[] ExtractZoneLike(Enum zone, Regex regex)
         {
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extract"))
@@ -165,7 +171,7 @@ namespace Shining_BeautifulGirls
                 .Like(regex);
         }
 
-        public string[] ExtractZoneLineS(object zone)
+        public string[] ExtractZoneLineS(Enum zone)
         {
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extract"))
@@ -173,7 +179,7 @@ namespace Shining_BeautifulGirls
                 .TextAsLines;
         }
 
-        public double[] ExtractZoneNumberS(object zone)
+        public double[] ExtractZoneNumberS(Enum zone)
         {
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extractNumber"))
@@ -181,12 +187,12 @@ namespace Shining_BeautifulGirls
                 .NumericLines;
         }
 
-        public bool ExtractZoneAndContains(object zone, string target)
+        public bool ExtractZoneAndContains(Enum zone, Enum ptext)
         {
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extractAc"))
                 .Extract()
-                .Contains(target);
+                .Contains(ptext);
         }
     }
 }

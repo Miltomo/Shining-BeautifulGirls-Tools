@@ -5,6 +5,8 @@ using System.Threading;
 namespace Shining_BeautifulGirls
 {
     //TODO 继续重构M/P方法。增加原子操作
+    //TODO 增加一个行动构建器(工厂)类
+    //TODO ClickEx实质上也是MoveToEx => 重构
     partial class World
     {
         private bool _stop = true;
@@ -159,6 +161,21 @@ namespace Shining_BeautifulGirls
             }//while(true)
         }
 
+        public bool MoveToEx(Func<bool> target, Func<bool>[] others, params object[] bts)
+        {
+            while (true)
+            {
+                Click(bts, 300);
+                Refresh();
+                if (target())
+                    return true;
+                foreach (var ex in others)
+                    if (ex())
+                        return false;
+            }
+        }
+
+
         /// <summary>
         /// 确保一定点击的是某页面下的按钮；也可用于确保跳转到某页面（当按钮置空时）。
         /// </summary>
@@ -170,28 +187,6 @@ namespace Shining_BeautifulGirls
             var bts = data[1..];
 
             PageDown(() => FastCheck(symbol, sim: sim), bts);
-
-            /*int waitting = 0;
-            while (true)
-            {
-                Pause(500);
-                Refresh();
-
-                if (FastCheck(symbol, sim: sim))
-                {
-                    if (bts.Length < 2)
-                        Click(bts.FirstOrDefault(), 20);
-                    else
-                        Click(bts);
-                    break;
-                }
-                waitting += refreshGAP;
-                if (waitting > 10000)
-                {
-                    Click(_lastClick);
-                    waitting = 0;
-                }
-            }*/
         }
 
         public void PageDown(Func<bool> condition, params object[]? bts)
@@ -250,6 +245,8 @@ namespace Shining_BeautifulGirls
             }
         }
 
+
+
         public void Refresh()
         {
             if (ADB.CopyScreen(DeviceID))
@@ -257,6 +254,7 @@ namespace Shining_BeautifulGirls
             throw new LongTimeNoOperationException();
         }
 
+        //TODO 暂停后刷新？
 
         /// <summary>
         /// 暂停等待

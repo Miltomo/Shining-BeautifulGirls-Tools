@@ -54,6 +54,7 @@ namespace Shining_BeautifulGirls
         public static string 能量饮料 => Path.Combine(World.SymbolDir, "能量饮料.png");
         public static string 赛事 => Path.Combine(World.SymbolDir, "赛事.png");
         public static string 赛事推荐弹窗 => Path.Combine(World.SymbolDir, "赛事推荐弹窗.png");
+        public static string 赛事活动 => Path.Combine(World.SymbolDir, "赛事活动.png");
         public static string 赛事结束 => Path.Combine(World.SymbolDir, "赛事结束.png");
         public static string 赛果 => Path.Combine(World.SymbolDir, "赛果.png");
         public static string 返回 => Path.Combine(World.SymbolDir, "返回.png");
@@ -64,6 +65,7 @@ namespace Shining_BeautifulGirls
         public static string 选队 => Path.Combine(World.SymbolDir, "选队.png");
         public static string 重新挑战 => Path.Combine(World.SymbolDir, "重新挑战.png");
         public static string 金币 => Path.Combine(World.SymbolDir, "金币.png");
+        public static string 预测 => Path.Combine(World.SymbolDir, "预测.png");
     }
 }
 

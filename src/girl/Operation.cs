@@ -32,7 +32,13 @@ namespace Shining_BeautifulGirls
         private double Match(string file, string? bg = default) => Match(out _, file, bg);
         private double Match(out OpenCvSharp.Point loc, string file, string? bg = default) => Mnt.Match(out loc, file, bg);
 
-        private bool IsDimmed(object bt, int limit = 155) => Mnt.IsNoLight(bt, limit);
+        /// <summary>
+        /// (不刷新) 检测按钮是否处于无效状态
+        /// </summary>
+        /// <param name="bt"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        private bool IsDimmed(Enum bt, int limit = 155) => Mnt.IsNoLight(bt, limit);
 
 
         private void MoveTo(object[] data, int sec = 1, double sim = 0.9) => Mnt.MoveTo(data, sec, sim);
@@ -41,8 +47,8 @@ namespace Shining_BeautifulGirls
         private void PageDown(object[] data) => Mnt.PageDown(data);
         private void PageDown(Func<bool> condition, params Button[] buttons) =>
              Mnt.PageDown(condition, [.. buttons]);
-        private void PageDown(Zone zone, string text, params Button[] buttons) =>
-            PageDown(() => IsZoneContains(zone, text), buttons);
+        private void PageDown(Zone zone, Enum ptext, params Button[] buttons) =>
+            PageDown(() => IsZoneContains(zone, ptext), buttons);
 
         /// <summary>
         /// (不刷新) 获取上部位置的解析结果

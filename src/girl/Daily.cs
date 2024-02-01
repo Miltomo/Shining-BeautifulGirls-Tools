@@ -40,7 +40,7 @@
             InSummer = Check(Symbol.夏日);
 
             // 判断是否需要治疗
-            InAilment = !(InSummer || Mnt.IsNoLight(Zone.医务室, 160));
+            InAilment = !(InSummer || IsDimmed(Zone.医务室, 160));
 
             // 读取当前属性值
             List<int> property = [];

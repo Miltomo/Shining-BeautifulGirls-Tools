@@ -307,9 +307,9 @@ namespace Shining_BeautifulGirls
             return (int)Mnt.ExtractZoneNumberS(zone).FirstOrDefault();
         }
 
-        private bool IsZoneContains(Zone zone, object target)
+        private bool IsZoneContains(Zone zone, Enum ptext)
         {
-            return Mnt.ExtractZoneAndContains(zone, target.ToString()!);
+            return Mnt.ExtractZoneAndContains(zone, ptext);
         }
 
         private HeadInfo GetHeadInfo()

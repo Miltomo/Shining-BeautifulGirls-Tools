@@ -71,7 +71,7 @@ namespace Shining_BeautifulGirls
             // 移至能力详情页
             MoveTo(AtMainPage, Button.返回);
             Click(Button.能力详情);
-            PageDown(Zone.下部, "关闭");
+            PageDown(Zone.下部, PText.Cultivation.关闭);
 
             // 读取适应性等级值
             AdaptionTable.Clear();
@@ -120,7 +120,6 @@ namespace Shining_BeautifulGirls
 
             RaceInfo? last = default;
 
-            //TODO 测试
             while (true)
             {
                 var races = GetRaceInfos();
@@ -165,11 +164,15 @@ namespace Shining_BeautifulGirls
         {
             _lastAction = "比赛";
 
+            // 判断是否就在赛事界面
             if (AtRacePage())
                 return;
 
-            MoveTo(AtMainPage, Button.返回);
+            // 确保移至主界面
+            if (!AtMainPage())
+                MoveTo(AtMainPage, Button.返回);
 
+            // 移至赛事界面以及处理相关弹窗
             while (true)
             {
                 Click(ZButton.通用参赛, 1000);

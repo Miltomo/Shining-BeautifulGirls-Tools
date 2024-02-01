@@ -8,20 +8,25 @@
         /// <summary>
         /// 群英联赛
         /// </summary>
-        public static class Extravaganza
+        public enum Extravaganza
         {
-            public static string 决赛 => nameof(决赛);
+            参赛登记确认,
+            决赛,
         }
 
         /// <summary>
-        /// (养成中的)比赛流程
+        /// 养成
         /// </summary>
-        public static class Race
+        public enum Cultivation
         {
-            public static string 赛事详情 => nameof(赛事详情);
-            public static string 前往赛事 => nameof(前往赛事);
-            public static string 重新挑战 => nameof(重新挑战);
-            public static string 下一页 => nameof(下一页);
+            关闭,
+
+            // 比赛
+            赛事详情,
+            前往赛事,
+            免费机会,
+            重新挑战,
+            下一页,
         }
     }
 }

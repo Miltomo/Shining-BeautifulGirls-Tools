@@ -1,6 +1,4 @@
 ﻿using PaddleOCRSharp;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 namespace ComputerVision
 {
@@ -116,13 +114,16 @@ namespace ComputerVision
             /// <summary>
             /// 判断识别结果中是否存在某行包含目标文本
             /// </summary>
-            /// <param name="targetText"></param>
+            /// <param name="target"></param>
             /// <returns></returns>
-            public bool Contains(string targetText)
+            public bool Contains(object target)
             {
+                var text = target.ToString();
+                if (string.IsNullOrWhiteSpace(text))
+                    return false;
                 foreach (var b in TB)
                 {
-                    if (b.Text.Contains(targetText))
+                    if (b.Text.Contains(text))
                         return true;
                 }
                 return false;
@@ -131,15 +132,22 @@ namespace ComputerVision
             /// <summary>
             /// 判断识别结果中是否存在某行等于目标文本
             /// </summary>
-            /// <param name="targetText"></param>
+            /// <param name="target"></param>
             /// <returns></returns>
-            public bool Equals(string targetText)
+            public override bool Equals(object? target)
             {
-                foreach (var b in TB)
+                if (target != null)
                 {
-                    if (b.Text.Equals(targetText))
-                        return true;
+                    var text = target.ToString();
+                    if (string.IsNullOrWhiteSpace(text))
+                        return false;
+                    foreach (var b in TB)
+                    {
+                        if (b.Text.Equals(text))
+                            return true;
+                    }
                 }
+
                 return false;
             }
 

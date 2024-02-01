@@ -4,42 +4,48 @@ namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
-
-
+        private bool _havefree = false;
         private int _dqRemakeTimes = 0;
 
-        //TODO 重构是否需要比赛的判断，可进行提前判断了。
-        //TODO 重构对技能的判断: 大改 + 重构
-
         //TODO 比赛算法可以考虑实施了
-        private void 养成流程(string stage)
+
+        private enum 养成过程Enum
         {
-            Stage = stage;
+            转场处理,
+            普通日,
+            比赛日,
+            每日总结,
+            结束,
+        }
+
+        private void 养成流程(养成过程Enum stage)
+        {
+            //Stage = stage;
             switch (stage)
             {
                 // 控制中心
-                case "转场处理":
+                case 养成过程Enum.转场处理:
                     Mnt.Refresh();
 
                     if (FastCheck(Symbol.养成主页))
                     {
-                        养成流程("普通日");
+                        养成流程(养成过程Enum.普通日);
                         break;
                     }
                     else if (FastCheck(Symbol.比赛日主页))
                     {
-                        养成流程("比赛日");
+                        养成流程(养成过程Enum.比赛日);
                         break;
                     }
                     else if (FastCheck(Symbol.粉丝不足) || FastCheck(Symbol.未达要求) || FastCheck(Symbol.无法参赛))
                     {
-                        if (比赛处理(比赛过程Enum.额外比赛))
-                            养成流程("每日总结");
+                        if (比赛处理(比赛过程Enum.提醒比赛))
+                            养成流程(养成过程Enum.每日总结);
                         // 没有合适比赛的情况
                         else
                         {
                             MoveTo(AtMainPage, Button.返回);
-                            养成流程("普通日");
+                            养成流程(养成过程Enum.普通日);
                         }
                         break;
                     }
@@ -57,15 +63,15 @@ namespace Shining_BeautifulGirls
                     }
                     else if (FastCheck(Symbol.养成结束))
                     {
-                        养成流程("结束");
+                        养成流程(养成过程Enum.结束);
                         break;
                     }
 
                     Click(Button.选择末尾, 300);
-                    养成流程("转场处理");
+                    养成流程(养成过程Enum.转场处理);
                     break;
 
-                case "普通日":
+                case 养成过程Enum.普通日:
                     Log(回合开始);
 
                     ReadInfo();
@@ -92,18 +98,17 @@ namespace Shining_BeautifulGirls
                         Log("前往训练场地");
                         if (!TryTrain())
                         {
-                            养成流程("转场处理");
+                            养成流程(养成过程Enum.转场处理);
                             break;
                         }
                     }
 
-                    养成流程("每日总结");
+                    养成流程(养成过程Enum.每日总结);
                     break;
 
-                case "比赛日":
+                case 养成过程Enum.比赛日:
                     Log(回合开始);
 
-                    UpdateHP();
                     SkPoints = ExtractValue(Zone.技能点);
 
                     Log($"★今天是比赛日★");
@@ -118,17 +123,17 @@ namespace Shining_BeautifulGirls
                     }
 
                     if (比赛处理(比赛过程Enum.目标比赛))
-                        养成流程("每日总结");
+                        养成流程(养成过程Enum.每日总结);
                     else
-                        养成流程("结束");
+                        养成流程(养成过程Enum.结束);
                     break;
 
-                case "每日总结":
+                case 养成过程Enum.每日总结:
                     Turn += 1;
-                    养成流程("转场处理");
+                    养成流程(养成过程Enum.转场处理);
                     break;
 
-                case "结束":
+                case 养成过程Enum.结束:
                     技能学习过程("结束学习");
                     Log("结束养成");
                     Click(Button.养成结束);
@@ -159,7 +164,7 @@ namespace Shining_BeautifulGirls
         private enum 比赛过程Enum
         {
             目标比赛,
-            额外比赛,
+            提醒比赛,
             进入,
             新比赛,
             重赛处理,
@@ -181,12 +186,13 @@ namespace Shining_BeautifulGirls
                     GotoRacePage();
                     return 比赛处理(比赛过程Enum.进入);
 
-                case 比赛过程Enum.额外比赛:
+                case 比赛过程Enum.提醒比赛:
+                    // 通过提醒弹窗进入比赛界面
                     MoveTo(AtRacePage, Button.大弹窗确认);
 
+                    // 选择适合自己的比赛
                     if (SelectFirstSuitableRace())
                     {
-                        UpdateHP();
                         Log(回合开始);
                         Log("选择比赛:");
                         Log($"{"",5}{TargetRace}");
@@ -197,31 +203,36 @@ namespace Shining_BeautifulGirls
                 case 比赛过程Enum.进入:
                     _lastAction = "比赛";
                     _dqRemakeTimes = 0;
+                    UpdateHP();
+
                     Log("参加比赛");
                     Click(ZButton.通用参赛);
-                    PageDown(Zone.中部, PText.Race.赛事详情, Button.大弹窗确认);
+                    PageDown(Zone.中部, PText.Cultivation.赛事详情, Button.大弹窗确认);
                     return 比赛处理(比赛过程Enum.新比赛);
 
                 //TODO 测试
                 case 比赛过程Enum.新比赛:
-                    PageDown(Zone.下部, PText.Race.前往赛事);
+                    PageDown(Zone.下部, PText.Cultivation.前往赛事);
                     Mnt.Pause(500);
+                    Mnt.Refresh();
+
                     if (IsDimmed(ZButton.查看结果, 160))
                     {
                         MoveTo([Symbol.快进, Button.比赛结束]);
 
+                        //TODO 用MoveControl替换
                         while (true)
                         {
                             Click(Button.比赛连点, 0);
                             Mnt.Refresh();
 
                             var zb = Extract中部();
-                            if (zb.Equals(PText.Race.重新挑战))
+                            if (zb.Equals(PText.Cultivation.重新挑战))
                             {
-                                //相关处理...
+                                _havefree = zb.Contains(PText.Cultivation.免费机会);
                                 return 比赛处理(比赛过程Enum.重赛处理);
                             }
-                            else if (IsZoneContains(Zone.下部, PText.Race.下一页))
+                            else if (IsZoneContains(Zone.下部, PText.Cultivation.下一页))
                                 return 比赛处理(比赛过程Enum.比赛成功);
                         }
                     }
@@ -234,22 +245,21 @@ namespace Shining_BeautifulGirls
                             Mnt.Refresh();
 
                             var zb = Extract中部();
-                            if (zb.Equals(PText.Race.重新挑战))
+                            if (zb.Equals(PText.Cultivation.重新挑战))
                             {
-                                //相关处理...
+                                _havefree = zb.Contains(PText.Cultivation.免费机会);
                                 return 比赛处理(比赛过程Enum.重赛处理);
                             }
-                            else if (IsZoneContains(Zone.下部, PText.Race.下一页))
+                            else if (IsZoneContains(Zone.下部, PText.Cultivation.下一页))
                                 return 比赛处理(比赛过程Enum.比赛成功);
                         }
                     }
 
                 case 比赛过程Enum.重赛处理:
-                    bool A = false;
-
                     Log("比赛未取得良好结果，等待重新挑战......");
-                    if (Check(Symbol.免费闹钟))
-                        A = true;
+
+                    bool A = _havefree;
+
                     if (!A && UserConfig is not null)
                     {
                         switch (UserConfig.ReChallenge)
@@ -266,6 +276,7 @@ namespace Shining_BeautifulGirls
                             default: break;
                         }
                     }
+
                     if (A)
                     {
                         _dqRemakeTimes++;
@@ -273,6 +284,7 @@ namespace Shining_BeautifulGirls
                         Click(Button.大弹窗确认);
                         return 比赛处理(比赛过程Enum.新比赛);
                     }
+
                     Log("放弃重新挑战");
                     return 比赛处理(比赛过程Enum.比赛失败);
 
@@ -286,6 +298,10 @@ namespace Shining_BeautifulGirls
                 case 比赛过程Enum.比赛失败:
                     Log("比赛失败");
                     Click(Button.结束养成);
+
+                    //TODO 用上部检测重构，增加获取粉丝数功能；抽象粉丝数获取函数
+                    var r = Extract上部();
+
                     MoveTo([Symbol.养成结束, Button.比赛结束], 0);
                     return false;
 

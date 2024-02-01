@@ -57,19 +57,6 @@
                             去外出();
                         break;
                 }
-                /*switch (headScore)
-                {
-                    case < 3:
-                        if (Mood < 5)
-                            去外出();
-                        else
-                            去休息();
-                        break;
-                    case > 2:
-                        if (CurrentFail > 5 * (headScore - 2) + failLine)
-                            去休息();
-                        break;
-                }*/
             }
         }
 

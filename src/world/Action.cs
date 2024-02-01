@@ -163,7 +163,7 @@ namespace Shining_BeautifulGirls
             }
             else if (zb.Contains("适应性"))
             {
-                MoveTo(() => ExtractZoneAndContains(Zone.中部, "参赛登记确认"), [Button.继续]);
+                MoveTo(() => ExtractZoneAndContains(Zone.中部, PText.Extravaganza.参赛登记确认), [Button.继续]);
                 Click(Button.弹窗确认);
                 goto 开始分歧;
             }
