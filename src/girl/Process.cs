@@ -366,14 +366,9 @@ namespace Shining_BeautifulGirls
                                 continue;
 
                             Aw = true;
-                            //TODO 测试
 
                             Match(out OpenCvSharp.Point pt, Symbol.技能加, mask);
                             Mnt.Click(pt.X + 20, pt.Y + 20, pauseTime: 300);
-
-                            // 增加额外判断
-                            // 学完后变为「已获得」？还是能继续点？
-                            // 需要立即继续点吗？
 
                             // 二次学习检测
                             if (!IsHadSkill(CropScreen(zone)) && (SkPoints >= 2 * theLearnCost))

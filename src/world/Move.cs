@@ -4,15 +4,11 @@ using System.Threading;
 
 namespace Shining_BeautifulGirls
 {
-    //TODO 继续重构M/P方法。增加原子操作
-    //TODO 增加一个行动构建器(工厂)类
-    //TODO ClickEx实质上也是MoveToEx => 重构
     partial class World
     {
         private bool _stop = true;
         private string _lastClick = string.Empty;
         private static readonly Random _random = new();
-        private static readonly int refreshGAP = 500;
 
 
         /// <summary>

@@ -1,6 +1,5 @@
 ﻿namespace Shining_BeautifulGirls
 {
-    //TODO Button也是Zone，重构
     partial class World
     {
         public static class NP

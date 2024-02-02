@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace Shining_BeautifulGirls
@@ -17,7 +14,20 @@ namespace Shining_BeautifulGirls
 
             public override string ToString()
             {
-                return $"{Type} ({ID}) [{Size.Min()}x{Size.Max()}]";
+                string min, max;
+                try
+                {
+                    min = Size.Min().ToString();
+                    max = Size.Max().ToString();
+                }
+                catch (Exception)
+                {
+                    min = "error";
+                    max = "error";
+                    Size = [-1, -1];
+                }
+
+                return $"{Type} ({ID}) [{min}x{max}]";
             }
         }
 
