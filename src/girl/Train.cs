@@ -31,7 +31,7 @@
             if (index > -1)
             {
                 _lastAction = plan;
-                while (Match(Symbol.返回) > 0.7)
+                while (FastCheck(Symbol.返回, 0.7))
                     Click(plan);
             }
             else
@@ -76,8 +76,6 @@
 
         private void Record训练信息(string subject)
         {
-            Mnt.Refresh();
-
             var 等效体力 = InSummer ? Vitality - 2 : Vitality;
             if (subject == "智力")
                 等效体力 += 10;

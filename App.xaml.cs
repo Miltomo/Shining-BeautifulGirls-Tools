@@ -2,6 +2,7 @@
 global using System.Collections.Generic;
 global using System.Linq;
 global using static Shining_BeautifulGirls.World.NP;
+global using MC = Shining_BeautifulGirls.World.MoveControl;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;

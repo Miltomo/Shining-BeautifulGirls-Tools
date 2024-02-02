@@ -14,63 +14,6 @@ namespace Shining_BeautifulGirls
         private static readonly Random _random = new();
         private static readonly int refreshGAP = 500;
 
-        /// <summary>
-        /// 通过点击一组按钮，移动到某页面（先点击再检查）。
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="sec"></param>
-        public void MoveTo(object[] data, int sec = 3, double sim = 0.9)
-        {
-            var symbol = data[0];
-            var bts = data[1..];
-
-            int maxTime = sec * 1000;
-
-            while (true)
-            {
-                Click(bts);
-
-                int waitting = -1;
-                bool Aw = false;
-                while (waitting < maxTime)
-                {
-                    Pause();
-                    Refresh();
-
-                    if (FastCheck(symbol, sim: sim))
-                    {
-                        Aw = true;
-                        break;
-                    }
-                    waitting += refreshGAP;
-                }
-                if (Aw)
-                    break;
-            }
-        }
-
-        public void MoveTo(Func<bool> condition, object[] bts, int sec = 1)
-        {
-            int step = 300;
-            int sum = 0;
-            int wait = sec < 1 ? step : sec * 1000;
-
-            Click(bts, 100);
-            while (true)
-            {
-                Pause(step);
-                Refresh();
-                if (condition())
-                    break;
-                sum += step;
-                if (sum >= wait)
-                {
-                    Click(bts);
-                    sum = 0;
-                }
-            }
-        }
-
 
         /// <summary>
         /// 尝试移动到目标场所，等待数秒
@@ -89,7 +32,7 @@ namespace Shining_BeautifulGirls
             {
                 Click(bts);
                 Pause(300);
-                Refresh();
+
                 if (FastCheck(symbol, sim: sim))
                     return true;
             }
@@ -103,78 +46,55 @@ namespace Shining_BeautifulGirls
             {
                 Click(bts);
                 Pause(300);
-                Refresh();
+
                 if (condition())
                     return true;
             }
             return false;
         }
 
+
         /// <summary>
-        /// 通过点击一组按钮，移动到某页面（先点击再检查）。并指定可能出现的意外情况。
+        /// 通过点击一组按钮，移动到某页面（先点击再检查）。
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="occurs"></param>
         /// <param name="sec"></param>
-        /// <param name="sim"></param>
-        /// <returns>true，当成功移动到目标页面时；false，当意外情况出现时。</returns>
-        public bool MoveToEx(object[][] data, object[][]? occurs = default, int sec = 1, double sim = 0.9)
-        {
-            var symbols = data[0];
-            var bts = data[1];
-            int maxTime = sec * 1000;
+        public void MoveTo(object[] data, int sec = 3, double sim = 0.9) =>
+            MoveTo(() => FastCheck(data[0], sim: sim), bts: data[1..], sec: sec);
 
+        public void MoveTo(Enum zone, Enum ptext, Button button, int sec = 1) =>
+            MoveTo(() => ExtractZoneAndContains(zone, ptext), button, sec);
+
+        public void MoveTo(Func<bool> condition, Button button, int sec = 1) =>
+            MoveTo(condition, [button], sec);
+
+        /// <summary>
+        /// (原始定义) 点击一组按钮，判断是否满足条件，若满足条件则结束（先点击再检查）
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="bts"></param>
+        /// <param name="sec"></param>
+        public void MoveTo(Func<bool> condition, object[] bts, int sec = 1)
+        {
+            int step = 300;
+            int sum = 0;
+            int wait = sec < 1 ? step : sec * 1000;
+
+            Click(bts, 100);
             while (true)
             {
-                // 点击按钮(组)
-                Click(bts);
+                Pause(step);
 
-                // 判断是否到达目标界面
-                int waitting = -1;
-                while (true)
+                if (condition())
+                    break;
+                sum += step;
+                if (sum >= wait)
                 {
-                    Pause();
-                    Refresh();
-
-                    foreach (var symbol in symbols)
-                        if (FastCheck(symbol, sim: sim))
-                            return true;
-                    waitting += refreshGAP;
-                    if (waitting > maxTime)
-                        break;
+                    Click(bts);
+                    sum = 0;
                 }
-
-                // 检查是否出现意外情况
-                if (occurs is not null)
-                {
-                    for (int i = 0; i < occurs.Length; i++)
-                    {
-                        var dq = occurs[i];
-                        if (FastCheck(dq[0], sim: sim))
-                        {
-                            if (dq.Length == 1)
-                                return false;
-                            Click(dq[1..]);
-                        }
-                    }
-                }//if occurs
-            }//while(true)
-        }
-
-        public bool MoveToEx(Func<bool> target, Func<bool>[] others, params object[] bts)
-        {
-            while (true)
-            {
-                Click(bts, 300);
-                Refresh();
-                if (target())
-                    return true;
-                foreach (var ex in others)
-                    if (ex())
-                        return false;
             }
         }
-
 
         /// <summary>
         /// 确保一定点击的是某页面下的按钮；也可用于确保跳转到某页面（当按钮置空时）。
@@ -182,20 +102,23 @@ namespace Shining_BeautifulGirls
         /// <param name="data"></param>
         /// <param name="sim"></param>
         public void PageDown(object[] data, double sim = 0.9)
-        {
-            var symbol = data[0];
-            var bts = data[1..];
+            => PageDown(() => FastCheck(data[0], sim: sim), data[1..]);
 
-            PageDown(() => FastCheck(symbol, sim: sim), bts);
-        }
+        public void PageDown(Enum zone, Enum ptext, params Button[] buttons) =>
+            PageDown(() => ExtractZoneAndContains(zone, ptext), [.. buttons]);
 
+        /// <summary>
+        /// (原始定义) 不断检查是否满足条件，当满足条件时，点击一组按钮然后结束 (不满足条件时不会产生点击行为)
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="bts"></param>
         public void PageDown(Func<bool> condition, params object[]? bts)
         {
             int sum = 0;
             while (true)
             {
-                Pause(500);
-                Refresh();
+                Pause(400);
+
                 if (condition())
                 {
                     Click(bts);
@@ -204,49 +127,17 @@ namespace Shining_BeautifulGirls
                 sum++;
                 if (sum > 20)
                 {
-                    Click(_lastClick);
+                    ClickLast();
                     sum = 0;
                 }
             }
         }
 
-        public bool PageDownEx(object[] data, object[] ex, double sim = 0.9)
-        {
-            var symbol = data[0];
-            var bts = data[1..];
 
-            int waitting = 0;
-            while (true)
-            {
-                Pause(500);
-                Refresh();
-
-                // 检测目标象征图
-                if (FastCheck(symbol, sim: sim))
-                {
-                    if (bts.Length < 2)
-                        Click(bts.FirstOrDefault(), 20);
-                    else
-                        Click(bts);
-                    return true;
-                }
-
-                // 若出现意外象征图
-                for (int i = 0; i < ex.Length; i++)
-                    if (FastCheck(ex[i], sim: sim))
-                        return false;
-
-                waitting += refreshGAP;
-                if (waitting > 10000)
-                {
-                    Click(_lastClick);
-                    waitting = 0;
-                }
-            }
-        }
-
-
-
+        /// <summary>
+        /// 获取屏幕最新状态
+        /// </summary>
+        /// <exception cref="LongTimeNoOperationException"></exception>
         public void Refresh()
         {
             if (ADB.CopyScreen(DeviceID))
@@ -254,10 +145,8 @@ namespace Shining_BeautifulGirls
             throw new LongTimeNoOperationException();
         }
 
-        //TODO 暂停后刷新？
-
         /// <summary>
-        /// 暂停等待
+        /// (刷新) 暂停等待一段时间，结束后刷新
         /// </summary>
         /// <param name="time"></param>
         public void Pause(int time = 200)
@@ -303,6 +192,9 @@ namespace Shining_BeautifulGirls
                     throw;
                 }
             }
+
+            // 获取最新界面
+            Refresh();
         }
 
         public void Click(
@@ -345,8 +237,13 @@ namespace Shining_BeautifulGirls
         public void ClickEx(object bt, string occur_file, object[] bts)
         {
             Click(bt.ToString(), 1000);
-            if (Check(occur_file))
+            if (FastCheck(occur_file))
                 Click(bts);
+        }
+
+        public void ClickLast()
+        {
+            Click(_lastClick);
         }
 
         public void Scroll(double[] start, double distance)

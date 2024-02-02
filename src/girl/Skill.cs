@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using static MHTools.数据工具;
-using static Shining_BeautifulGirls.World.NP;
+﻿using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
 {
@@ -31,7 +28,7 @@ namespace Shining_BeautifulGirls
 
         private bool IsNecessarySkill(Zone zone)
         {
-            var result = Mnt.ExtractZone(zone);
+            var result = ExtractInfo(zone);
 
             for (int i = 0; i < SkList.Count; i++)
             {
@@ -48,14 +45,13 @@ namespace Shining_BeautifulGirls
 
         private bool IsHadSkill(string? background = null)
         {
-            return Check(Symbol.已获得, background, 0.8);
+            return Mnt.FastCheck(Symbol.已获得, background, 0.8);
         }
 
         private void SkillScroll(int distance)
         {
             Mnt.Scroll([360, 1000, distance]);
-            Mnt.Pause(1000);
-            Mnt.Refresh();
+            Pause(1000);
         }
 
         private void UpdateLearningList()

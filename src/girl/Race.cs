@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-namespace Shining_BeautifulGirls
+﻿namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
@@ -71,7 +70,7 @@ namespace Shining_BeautifulGirls
             // 移至能力详情页
             MoveTo(AtMainPage, Button.返回);
             Click(Button.能力详情);
-            PageDown(Zone.下部, PText.Cultivation.关闭);
+            PageDown(Zone.上部, PText.Cultivation.优俊少女详情);
 
             // 读取适应性等级值
             AdaptionTable.Clear();
@@ -103,6 +102,11 @@ namespace Shining_BeautifulGirls
 
 
         private RaceInfo[] BrowseAllRace()
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool SelectRace(int index)
         {
             throw new NotImplementedException();
         }
@@ -152,10 +156,6 @@ namespace Shining_BeautifulGirls
             return false;
         }
 
-        private bool SelectRace(int index)
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// (加速) 确保从任何位置移到赛事界面；确保处于赛事界面
@@ -176,7 +176,6 @@ namespace Shining_BeautifulGirls
             while (true)
             {
                 Click(ZButton.通用参赛, 1000);
-                Mnt.Refresh();
 
                 if (FastCheck(Symbol.连续参赛))
                     Click(Button.弹窗确认, 1000);
@@ -194,17 +193,7 @@ namespace Shining_BeautifulGirls
         private void RaceScroll(double distance = 230)
         {
             Mnt.Scroll([360, 1000, distance]);
-            Mnt.Pause(500);
-            Mnt.Refresh();
+            Pause(500);
         }
-
-
-
-        //==============================================================
-
-        [GeneratedRegex(@"^\+\d+.+人$")]
-        private static partial Regex RaceFansRegex();
-        [GeneratedRegex("[\\+,人]")]
-        private static partial Regex RaceFansTransRegex();
     }
 }

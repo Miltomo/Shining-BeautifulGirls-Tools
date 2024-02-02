@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using ComputerVision;
+using System.IO;
 using System.Text.RegularExpressions;
 using static ComputerVision.ImageRecognition;
 
@@ -304,13 +305,10 @@ namespace Shining_BeautifulGirls
 
         private int ExtractValue(Zone zone)
         {
-            return (int)Mnt.ExtractZoneNumberS(zone).FirstOrDefault();
+            return (int)ExtractInfo(zone).NumericLines.FirstOrDefault();
         }
 
-        private bool IsZoneContains(Zone zone, Enum ptext)
-        {
-            return Mnt.ExtractZoneAndContains(zone, ptext);
-        }
+        PaddleOCR.Result ExtractInfo(Enum zone) => Mnt.ExtractZone(zone);
 
         private HeadInfo GetHeadInfo()
         {
@@ -331,6 +329,14 @@ namespace Shining_BeautifulGirls
             return head;
         }
 
+        private int GetFans(PaddleOCR.Result result)
+        {
+            var fs = result.Like(RaceFansRegex()).FirstOrDefault();
+            if (fs != null && int.TryParse(RaceFansTransRegex().Replace(fs, ""), out var fans))
+                return fans;
+            return 0;
+        }
+
         private RaceInfo[] GetRaceInfos()
         {
             List<RaceInfo> races = [];
@@ -338,7 +344,7 @@ namespace Shining_BeautifulGirls
             foreach (var zones in RaceZoneTable)
             {
                 RaceInfo info = new();
-                var r = Mnt.ExtractZone(zones[0]);
+                var r = ExtractInfo(zones[0]);
                 info.Ground = r.FirstIn(AllGround) ?? "";
                 info.Distance = r.FirstIn(AllDistance) ?? "";
 
@@ -346,14 +352,10 @@ namespace Shining_BeautifulGirls
                 if (IsSuitableRace(info))
                 {
                     // 获取比赛名称
-                    info.Name = Mnt.ExtractZoneText(zones[1]);
+                    info.Name = ExtractInfo(zones[1]).Text;
 
                     // 获取粉丝数
-                    var fs = Mnt
-                        .ExtractZoneLike(zones[2], RaceFansRegex())
-                        .FirstOrDefault();
-                    if (fs != null)
-                        info.Fans = int.Parse(RaceFansTransRegex().Replace(fs, ""));
+                    info.Fans = GetFans(ExtractInfo(zones[2]));
                 }
 
                 races.Add(info);
@@ -395,6 +397,14 @@ namespace Shining_BeautifulGirls
                 fail += t[i] * Math.Pow(hp, i);
             return (int)Math.Round(fail);
         }
+
+
+        //==============================================================
+
+        [GeneratedRegex(@"^\+?\d+.+人$")]
+        private static partial Regex RaceFansRegex();
+        [GeneratedRegex("[\\+,\\.人]")]
+        private static partial Regex RaceFansTransRegex();
 
         [GeneratedRegex("\\s")]
         private static partial Regex 空白Regex();
