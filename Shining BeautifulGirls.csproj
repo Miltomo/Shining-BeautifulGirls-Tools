@@ -65,30 +65,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Label="DigitalRecognition">
-    <None Include="DigitalRecognition.consumption.cs">
-      <DependentUpon>DigitalRecognition.mbconfig</DependentUpon>
-    </None>
-    <None Include="DigitalRecognition.training.cs">
-      <DependentUpon>DigitalRecognition.mbconfig</DependentUpon>
-    </None>
-    <None Include="DigitalRecognition.zip">
-      <DependentUpon>DigitalRecognition.mbconfig</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup Label="PropertyValueRecognition">
-    <None Include="PropertyValueRecognition.consumption.cs">
-      <DependentUpon>PropertyValueRecognition.mbconfig</DependentUpon>
-    </None>
-    <None Include="PropertyValueRecognition.training.cs">
-      <DependentUpon>PropertyValueRecognition.mbconfig</DependentUpon>
-    </None>
-    <None Include="PropertyValueRecognition.zip">
-      <DependentUpon>PropertyValueRecognition.mbconfig</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <ItemGroup Label="MoodClassification">
     <None Include="MoodClassification.consumption.cs">
       <DependentUpon>MoodClassification.mbconfig</DependentUpon>
