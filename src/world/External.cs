@@ -2,7 +2,6 @@
 using MHTools;
 using OpenCvSharp;
 using System.IO;
-using System.Text.RegularExpressions;
 using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
@@ -145,38 +144,6 @@ namespace Shining_BeautifulGirls
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extract"))
                 .Extract();
-        }
-
-        public string ExtractZoneText(Enum zone)
-        {
-            return PaddleOCR
-                .SetImage(CropScreen(zone, "extract"))
-                .Extract()
-                .Text;
-        }
-
-        public string[] ExtractZoneLike(Enum zone, Regex regex)
-        {
-            return PaddleOCR
-                .SetImage(CropScreen(zone, "extract"))
-                .Extract()
-                .Like(regex);
-        }
-
-        public string[] ExtractZoneLineS(Enum zone)
-        {
-            return PaddleOCR
-                .SetImage(CropScreen(zone, "extract"))
-                .Extract()
-                .TextAsLines;
-        }
-
-        public double[] ExtractZoneNumberS(Enum zone)
-        {
-            return PaddleOCR
-                .SetImage(CropScreen(zone, "extractNumber"))
-                .Extract()
-                .NumericLines;
         }
 
         public bool ExtractZoneAndContains(Enum zone, Enum ptext)

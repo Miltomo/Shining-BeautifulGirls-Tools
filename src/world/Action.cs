@@ -5,81 +5,65 @@ namespace Shining_BeautifulGirls
 {
     partial class World
     {
-        private bool 竞技场流程()
+        //TODO 增加处于结算中的情况 => 按钮变灰的情况
+        private void 竞技场流程()
         {
-            var state = "初入";
-            bool Aw = true;
-            while (Aw)
+            int count = 0;
+
+            MoveTo([Symbol.赛事, Button.赛事], 1);
+            Click(Button.JJC1);
+            MoveTo([Symbol.竞技场, Button.继续], 1);
+            Click(Button.JJC2);
+
+            bool Aw = MC.Builder
+                .AddTarget(Zone.上部, PText.JJC.选择对战对手)
+                .AddOpposite(Zone.中部, PText.JJC.竞技值不足)
+                .StartP(this);
+            if (Aw)
+                goto 选队;
+            goto 结束;
+
+        选队:
+            Log($"准备进行第 {++count} 次比赛");
+            Pause(1000);
+            string target = $"第{(UserConfig is null ? 1 : UserConfig.TeamNumber)}队";
+            string gift = MakeUniqueCacheFile("gift");
+            for (int i = 1; i < 4; i += 1)
             {
-                switch (state)
+                var dq = $"第{i}队";
+                Gray(CropScreen(dq)).SaveImage(gift);
+                if (FastCheck(Symbol.胜利时必得, gift, 0.7))
                 {
-                    case "初入":
-                        Log("开始自动竞技场");
-                        MoveTo([Symbol.赛事, Button.赛事], 1);
-                        Click(Button.JJC1);
-                        MoveTo([Symbol.竞技场, Button.继续], 1);
-                        Click(Button.JJC2);
-                        if (!PageDownEx([Symbol.选队], [Symbol.竞技值不足]))
-                        {
-                            Click(Button.主页);
-                            return false;
-                        }
-                        state = "选队";
-                        break;
-
-                    case "选队":
-                        Pause(1000);
-                        string target = $"第{(UserConfig is null ? 1 : UserConfig.TeamNumber)}队";
-                        string gift = MakeUniqueCacheFile("gift");
-                        for (int i = 1; i < 4; i += 1)
-                        {
-                            var dq = $"第{i}队";
-                            Gray(CropScreen(dq)).SaveImage(gift);
-                            if (FastCheck(Symbol.胜利时必得, gift, 0.7))
-                            {
-                                target = dq;
-                                break;
-                            }
-                        }
-                        MoveTo([Symbol.继续, target], sim: 0.8);
-                        Click(Button.继续);
-                        PageDown([Symbol.选择道具, Button.JJC3]);
-                        state = "比赛处理";
-                        break;
-
-                    case "比赛处理":
-                        Pause(2000);
-                        MoveTo([Symbol.赛事结束, Button.比赛结束, Button.快进], sec: 0);
-                        Click(Button.低继续);
-                        state = "循环处理";
-                        break;
-
-                    case "循环处理":
-                        if (FastCheck(Symbol.竞技值不足, sim: 0.8))
-                        {
-                            MoveTo([Symbol.主界面, Button.主页], 0, 0.8);
-                            state = "结束";
-                            break;
-                        }
-                        else if (FastCheck(Symbol.选队, sim: 0.8))
-                        {
-                            Log("再次参赛");
-                            state = "选队";
-                        }
-                        else
-                            Click(Button.竞技场连点, 500);
-                        break;
-
-                    case "结束":
-                        Aw = false;
-                        break;
-
-                    default:
-                        break;
+                    target = dq;
+                    break;
                 }
             }
-            Log("结束竞技场");
-            return true;
+            MoveTo([Symbol.继续, target], sim: 0.8);
+            Click(Button.继续);
+            PageDown([Symbol.选择道具, Button.JJC3]);
+            goto 比赛处理;
+
+        比赛处理:
+            Pause(2000);
+            MoveTo([Symbol.赛事结束, Button.比赛结束, Button.快进], sec: 0);
+            Click(Button.低继续);
+            goto 循环处理;
+
+        循环处理:
+            bool Bw = MC.Builder
+                .SetButtons(Button.竞技场连点)
+                .AddTarget(Zone.上部, PText.JJC.选择对战对手)
+                .AddOpposite(Zone.中部, PText.JJC.竞技值不足)
+                .StartM(this);
+
+            if (Bw)
+                goto 选队;
+            goto 结束;
+
+        结束:
+            Log("竞技值不足，退出");
+            MoveTo([Symbol.主界面, Button.主页], 0, 0.8);
+            Log($"共完成了 {count} 次比赛");
         }
 
         private void 日常赛事流程(string state = "进入")
@@ -96,9 +80,13 @@ namespace Shining_BeautifulGirls
                     Click($"日{(UserConfig is not null ? UserConfig.DailyRaceNumber : 2)}", 1000);
                     Click($"日{(UserConfig is not null ? UserConfig.DRDNumber : 1)}");
 
-                    //TODO 重构为文字检查 => ON字出现
-                    if (PageDownEx([Symbol.参赛], [Symbol.日常赛事券不足]))
+                    bool A = MC.Builder
+                        .AddTarget(Zone.上部, PText.Race.赛事详情)
+                        .AddOpposite(Zone.中部, PText.Race.日常赛事入场券不足)
+                        .StartP(this);
+                    if (A)
                     {
+                        //TODO 用文字识别检测 => 是否有ON
                         if (FastCheck(Symbol.多次参赛ON, sim: 0.99))
                         {
                             Click(Button.比赛结束);
@@ -114,10 +102,11 @@ namespace Shining_BeautifulGirls
                     }
                     else
                     {
-                        Log("日常赛事券不足，已退出");
+                        Log("日常赛事券不足，退出");
                         日常赛事流程("退出");
                     }
                     break;
+
                 case "参赛":
                     Log("进行日常赛事比赛");
                     ClickEx(Button.继续, Symbol.多次参赛, [Button.弹窗确认]);
@@ -209,37 +198,49 @@ namespace Shining_BeautifulGirls
         private bool 养成流程()
         {
             bool 已存在养成 = false;
-
             MoveTo([Symbol.主界面, Button.主页], 0, 0.8);
-            if (PageDownEx([Symbol.养成, Button.养成], [Symbol.养成2], sim: 0.8))
+
+            bool Aw = MC.Builder
+                .AddTarget(Symbol.养成, 0.8)
+                .AddOpposite(Symbol.养成2, 0.8)
+                .StartP(this, 0);
+
+            if (Aw)
             {
-                PageDown([Symbol.继续]);
-                Pause(1000);
-                ClickEx(Button.继续, Symbol.选择养成难度, [Button.比赛结束]);
-                if (!MoveToEx([[Symbol.选卡], [Button.继续]], [
-                    [Symbol.未选继承]
-                    ], sec: 0))
+                Click(ZButton.养成);
+                bool Bw = MoveControl.Builder
+                    .SetButtons(Button.继续)
+                    .AddAction(Zone.上部, PText.Cultivation.选择养成难度, Button.比赛结束)
+                    .AddTarget(Symbol.选卡)
+                    .AddOpposite(Symbol.未选继承)
+                    .StartM(this, 500);
+
+                if (Bw == false)
                 {
                     Log("⚠️请先自行选好继承优俊少女再尝试养成⚠️");
                     throw new StopException();
                 }
 
                 var card = UserConfig is null ? "北部玄驹" : UserConfig.SupportCard;
-                if (寻找协助卡(card))
-                    PageDown([Symbol.选卡, Button.继续]);
-                else
+                if (!寻找协助卡(card))
                 {
                     Log($"⚠️未找到目标协助卡\"{card}\"⚠️");
                     throw new StopException();
                 }
 
+                bool Cw = MC.Builder
+                    .SetButtons(Button.继续)
+                    .AddTarget(Zone.上部, PText.Cultivation.最终确认)
+                    .AddOpposite(Zone.中部, PText.Cultivation.训练值)
+                    .StartM(this, 500);
+
                 // 训练值不足时的处理
-                if (!PageDownEx([Symbol.最终确认], [Symbol.回复训练值确认], 0.8))
+                if (Cw == false)
                 {
                     if (UserConfig is not null && (UserConfig.CultivateCount > 0))
                     {
                         Click(Button.弹窗确认);
-                        PageDown([Symbol.回复训练值]);
+                        PageDown(Zone.上部, PText.Cultivation.回复训练值);
 
                         if (UserConfig.CultivateUseProp)
                         {
@@ -247,6 +248,7 @@ namespace Shining_BeautifulGirls
                                 Click(Button.使用能量饮料);
                             else goto UseMoney;
                             PageDown([Symbol.回复选条, Button.大弹窗确认]);
+                            Log("成功使用道具回复");
                             goto End;
                         }
 
@@ -257,16 +259,16 @@ namespace Shining_BeautifulGirls
                             PageDown([Symbol.回复选条]);
                             Click(Button.加号);
                             Click(Button.大弹窗确认);
+                            Log("成功使用宝石回复");
                         }
                         else
                         {
-                            // 关闭
-                            Click(Button.比赛结束);
+                            Click(Button.比赛结束);// 关闭
                             return false;
                         }
 
                     End:
-                        MoveTo([Symbol.最终确认, Button.继续], sec: 0);
+                        MoveTo(Zone.上部, PText.Cultivation.最终确认, Button.继续, 0);
                     }
                     else
                         return false;
@@ -275,7 +277,10 @@ namespace Shining_BeautifulGirls
                 Log("确定养成");
                 Click(Button.开始养成);
                 PageDown([Symbol.快进]);
-                ClickEx(Button.快进, Symbol.快进确认, [Button.弹窗勾选, Button.弹窗确认]);
+                MC.Builder
+                    .SetButtons(Button.快进)
+                    .AddAction(Zone.中部, PText.Cultivation.跳过确认, [Button.弹窗勾选, Button.弹窗确认])
+                    .StartM(this, 1000);
                 PageDown([Symbol.缩短事件]);
                 Click([Button.跳过, Button.跳过, Button.缩短所有事件, Button.缩短事件确定]);
                 PageDown([Symbol.养成主页], 0.8);
@@ -285,8 +290,8 @@ namespace Shining_BeautifulGirls
             else
             {
                 已存在养成 = true;
-                Click(Button.养成);
-                PageDown([Symbol.继续养成, Button.大弹窗确认]);
+                Click(ZButton.养成);
+                PageDown(Zone.中部, PText.Cultivation.继续养成, Button.大弹窗确认);
                 Log("继续上次养成");
             }
 
@@ -312,18 +317,14 @@ namespace Shining_BeautifulGirls
 
         public void 标准竞技场()
         {
-            if (竞技场流程())
-            {
-                Log("完成竞技场任务");
-            }
-            else
-            {
-                Log("竞技值不足，已退出");
-            };
+            Log("开始竞技场任务");
+            竞技场流程();
+            Log("完成竞技场任务");
         }
 
         public void 标准日常赛事()
         {
+            Log("开始日常赛事任务");
             日常赛事流程();
             Log("结束日常赛事任务");
         }

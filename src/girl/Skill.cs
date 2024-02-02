@@ -28,7 +28,7 @@ namespace Shining_BeautifulGirls
 
         private bool IsNecessarySkill(Zone zone)
         {
-            var result = Mnt.ExtractZone(zone);
+            var result = ExtractInfo(zone);
 
             for (int i = 0; i < SkList.Count; i++)
             {

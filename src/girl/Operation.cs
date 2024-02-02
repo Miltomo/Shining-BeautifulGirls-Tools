@@ -50,7 +50,7 @@ namespace Shining_BeautifulGirls
         private void PageDown(Func<bool> condition, params Button[] buttons) =>
              Mnt.PageDown(condition, [.. buttons]);
         private void PageDown(Zone zone, Enum ptext, params Button[] buttons) =>
-            PageDown(() => IsZoneContains(zone, ptext), buttons);
+            PageDown(() => Mnt.ExtractZoneAndContains(zone, ptext), buttons);
 
 
         /// <summary>

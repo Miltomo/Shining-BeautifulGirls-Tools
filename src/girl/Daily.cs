@@ -4,6 +4,7 @@
     //TODO 保留每次养成的日志和成果记录
     //TODO 继续完善突发分支的处理
     //TODO 修改比赛逻辑
+    //TODO 增加友人卡外出分支
     partial class ShiningGirl
     {
         /// <summary>
@@ -18,12 +19,12 @@
 
         public void Start()
         {
-            养成流程("转场处理");
+            养成流程(养成过程Enum.转场处理);
         }
 
         public void Continue()
         {
-            养成流程("转场处理");
+            养成流程(养成过程Enum.转场处理);
         }
 
         public void ReadInfo()
@@ -88,6 +89,7 @@
         private void System__relex__()
         {
             _lastAction = "休息";
+            //TODO 有BUG
             while (true)
             {
                 if (FastCheck(Symbol.养成主页))

@@ -7,6 +7,8 @@
         {
             public enum ZButton
             {
+                养成,
+
                 通用参赛,
                 查看结果,
 
@@ -33,7 +35,6 @@
                 日3,
                 取消,
                 扭蛋,
-                养成,
                 继续,
                 大弹窗确认,
                 使用宝石,
@@ -151,7 +152,6 @@
             MakeButton(Button.日3, 360, 980);
             MakeButton(Button.取消, 200, 1180);
             MakeButton(Button.扭蛋, 640, 1225);
-            MakeButton(Button.养成, 540, 1080);
             MakeButton(Button.继续, 360, 1080);
             MakeButton(Button.大弹窗确认, 515, 915);
             MakeButton(Button.使用宝石, 610, 180);
@@ -281,6 +281,7 @@
             MakeZone(Zone.Rank后追, rC4L, rC4R, rR3U, rR3D);
 
             //============================================
+            BuildZB(ZButton.养成, 410, 1040, 680, 1130);
 
             BuildZB(ZButton.通用参赛, 495, 1085, 605, 1115);
             BuildZB(ZButton.查看结果, 165, 1145, 340, 1200);
