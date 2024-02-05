@@ -1,4 +1,5 @@
-﻿using MHTools;
+﻿using ComputerVision;
+using MHTools;
 
 namespace Shining_BeautifulGirls
 {
@@ -23,10 +24,45 @@ namespace Shining_BeautifulGirls
             //Stage = stage;
             switch (stage)
             {
+                //TODO 使用Task异步
                 // 控制中心
                 case 养成过程Enum.转场处理:
-                    Click(Button.选择末尾, 300);
+                    Click(Button.选择末尾, 20);
+                    IOCRResult zb, xb;
 
+                    /*FastCheck(Symbol.粉丝不足) || FastCheck(Symbol.未达要求) || FastCheck(Symbol.无法参赛)*/
+                    if ((zb = Extract中部(), zb.Contains(PText.Race.前往赛事)).Item2)
+                    {
+                        if (比赛处理(比赛过程Enum.提醒比赛))
+                            养成流程(养成过程Enum.每日总结);
+                        // 没有合适比赛的情况
+                        else
+                        {
+                            MoveTo(AtMainPage, ZButton.返回);
+                            养成流程(养成过程Enum.普通日);
+                        }
+                        break;
+                    }
+                    else if (FastCheck(Symbol.继续) || FastCheck(Symbol.抓娃娃))
+                    {
+                        Click(Button.低继续);
+                    }
+                    /*FastCheck(Symbol.OK)*/
+                    else if ((xb = Extract下部(), xb.Contains(PText.Cultivation.OK)).Item2)
+                    {
+                        Click(Button.比赛结束);
+                    }
+                    else if (xb.Contains(PText.Cultivation.因子继承))
+                    {
+                        Click(Button.继续);
+                    }
+                    else if (AtEndPage())
+                    {
+                        养成流程(养成过程Enum.结束);
+                        break;
+                    }
+
+                    Mnt.Refresh();
                     if (FastCheck(Symbol.养成主页))
                     {
                         养成流程(养成过程Enum.普通日);
@@ -37,35 +73,7 @@ namespace Shining_BeautifulGirls
                         养成流程(养成过程Enum.比赛日);
                         break;
                     }
-                    else if (FastCheck(Symbol.粉丝不足) || FastCheck(Symbol.未达要求) || FastCheck(Symbol.无法参赛))
-                    {
-                        if (比赛处理(比赛过程Enum.提醒比赛))
-                            养成流程(养成过程Enum.每日总结);
-                        // 没有合适比赛的情况
-                        else
-                        {
-                            MoveTo(AtMainPage, Button.返回);
-                            养成流程(养成过程Enum.普通日);
-                        }
-                        break;
-                    }
-                    else if (FastCheck(Symbol.继续) || FastCheck(Symbol.抓娃娃))
-                    {
-                        Click(Button.低继续);
-                    }
-                    else if (FastCheck(Symbol.OK))
-                    {
-                        Click(Button.比赛结束);
-                    }
-                    else if (FastCheck(Symbol.因子继承))
-                    {
-                        Click(Button.继续);
-                    }
-                    else if (FastCheck(Symbol.养成结束))
-                    {
-                        养成流程(养成过程Enum.结束);
-                        break;
-                    }
+
 
                     养成流程(养成过程Enum.转场处理);
                     break;
@@ -197,13 +205,13 @@ namespace Shining_BeautifulGirls
             switch (p)
             {
                 case 比赛过程Enum.目标比赛:
+                    // 从主界面进入比赛界面
                     GotoRacePage();
                     return 比赛处理(比赛过程Enum.进入);
 
                 case 比赛过程Enum.提醒比赛:
                     // 通过提醒弹窗进入比赛界面
-                    MoveTo(AtRacePage, Button.大弹窗确认);
-
+                    GotoRacePage();
                     // 选择适合自己的比赛
                     if (SelectFirstSuitableRace())
                     {
@@ -251,7 +259,7 @@ namespace Shining_BeautifulGirls
                         bd.SetButtons(Button.继续);
                     }
 
-                    if (bd.StartM(Mnt))
+                    if (bd.StartAsMoveTo(Mnt))
                         return 比赛处理(比赛过程Enum.比赛成功);
                     return 比赛处理(比赛过程Enum.重赛处理);
 
@@ -332,7 +340,7 @@ namespace Shining_BeautifulGirls
 
                 case "进入":
                     Click(Button.技能);
-                    PageDown([Symbol.技能获取]);
+                    PageDown(Zone.上部, PText.Cultivation.技能获取);
                     技能学习过程("学习");
                     break;
 
@@ -340,6 +348,7 @@ namespace Shining_BeautifulGirls
                     //
                     //Mnt.SaveScreen();
                     //
+                    //TODO 使用Task异步
                     for (int i = 1; i < 4; i++)
                     {
                         Zone zone = i switch
@@ -402,18 +411,21 @@ namespace Shining_BeautifulGirls
                         技能学习过程("结束");
                     else
                     {
-                        SkillScroll(445);
+                        SkillScroll(430);
                         技能学习过程("学习");
                     }
                     break;
 
                 case "结束":
-                    Mnt.ClickEx(Button.继续, Symbol.技能获取确认, [Button.技能获取]);
+                    MC.Builder
+                        .AddProcess(Zone.上部, PText.Cultivation.技能获取确认, Button.技能获取)
+                        .SetButtons(Button.继续)
+                        .StartAsClickEx(Mnt);
 
                     while (true)
                     {
-                        Click(Button.返回);
-                        if (FastCheck(Symbol.比赛日主页, 0.7) || FastCheck(Symbol.养成结束, 0.8))
+                        Click(ZButton.返回);
+                        if (FastCheck(Symbol.比赛日主页, 0.7) || AtEndPage())
                             break;
                     }
 

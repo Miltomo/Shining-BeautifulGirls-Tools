@@ -109,7 +109,7 @@ namespace Shining_BeautifulGirls
             return (int)ExtractInfo(zone).NumericLines.FirstOrDefault();
         }
 
-        PaddleOCR.Result ExtractInfo(Enum zone) => Mnt.ExtractZone(zone);
+        IOCRResult ExtractInfo(Enum zone) => Mnt.ExtractZone(zone);
 
         private HeadInfo GetHeadInfo()
         {
@@ -130,14 +130,6 @@ namespace Shining_BeautifulGirls
             return head;
         }
 
-        private int GetFans(PaddleOCR.Result result)
-        {
-            var fs = result.Like(RaceFansRegex()).FirstOrDefault();
-            if (fs != null && int.TryParse(RaceFansTransRegex().Replace(fs, ""), out var fans))
-                return fans;
-            return 0;
-        }
-
         private RaceInfo[] GetRaceInfos()
         {
             List<RaceInfo> races = [];
@@ -145,18 +137,21 @@ namespace Shining_BeautifulGirls
             foreach (var zones in RaceZoneTable)
             {
                 RaceInfo info = new();
+                // 获取赛事类型
                 var r = ExtractInfo(zones[0]);
                 info.Ground = r.FirstIn(AllGround) ?? "";
                 info.Distance = r.FirstIn(AllDistance) ?? "";
 
-                // 如果类型适合
+                // 获取赛事名称
+                info.Name = ExtractInfo(zones[1]).Text;
+
                 if (IsSuitableRace(info))
                 {
-                    // 获取比赛名称
-                    info.Name = ExtractInfo(zones[1]).Text;
+                    // 获胜赛事简介
+                    //info.Introduction = ExtractInfo(zones[2]).Text;
 
                     // 获取粉丝数
-                    info.Fans = GetFans(ExtractInfo(zones[2]));
+                    info.Fans = GetFans(ExtractInfo(zones[3]));
                 }
 
                 races.Add(info);
@@ -173,6 +168,14 @@ namespace Shining_BeautifulGirls
             }).PredictedLabel;
         }
 
+        private static int GetFans(IOCRResult result)
+        {
+            var fs = result.Like(RaceFansRegex()).FirstOrDefault();
+            if (fs != null && int.TryParse(RaceFansTransRegex().Replace(fs, ""), out var fans))
+                return fans;
+            return 0;
+        }
+
         private static string GetTodayRecordDir()
         {
             var now = DateTime.Now;
@@ -184,7 +187,7 @@ namespace Shining_BeautifulGirls
             return dir;
         }
 
-        public static int FailPredict(int hp)
+        private static int FailPredict(int hp)
         {
             //系数(t0 -> tn)
             double[] t = [
@@ -198,6 +201,25 @@ namespace Shining_BeautifulGirls
                 fail += t[i] * Math.Pow(hp, i);
             return (int)Math.Round(fail);
         }
+
+
+        /// <summary>
+        /// (不刷新) 获取上部位置的解析结果
+        /// </summary>
+        /// <returns></returns>
+        IOCRResult Extract上部() => ExtractInfo(Zone.上部);
+
+        /// <summary>
+        /// (不刷新) 获取中部位置的解析结果
+        /// </summary>
+        /// <returns></returns>
+        IOCRResult Extract中部() => ExtractInfo(Zone.中部);
+
+        /// <summary>
+        /// (不刷新) 获取下部位置的解析结果
+        /// </summary>
+        /// <returns></returns>
+        IOCRResult Extract下部() => ExtractInfo(Zone.下部);
 
 
         //==============================================================

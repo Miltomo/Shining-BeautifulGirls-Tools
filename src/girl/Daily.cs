@@ -41,7 +41,7 @@
             InSummer = FastCheck(Symbol.夏日);
 
             // 判断是否需要治疗
-            InAilment = !(InSummer || IsDimmed(Zone.医务室, 160));
+            InAilment = !(InSummer || IsDimmed(ZButton.医务室, 160));
 
             // 读取当前属性值
             List<int> property = [];
@@ -71,34 +71,47 @@
         /// <summary>
         /// (不刷新) 检测是否在主页（包括普通日和比赛日）
         /// </summary>
-        /// <returns></returns>
-        public bool AtMainPage()
-        {
-            return FastCheck(Symbol.养成主页) || FastCheck(Symbol.比赛日主页);
-        }
+        public bool AtMainPage() => FastCheck(Symbol.养成主页) || FastCheck(Symbol.比赛日主页);
 
         /// <summary>
         /// (不刷新) 检测是否在赛事选择界面
         /// </summary>
-        /// <returns></returns>
-        public bool AtRacePage()
+        public bool AtRacePage() => FastCheck(Symbol.预测);
+
+        /// <summary>
+        /// (不刷新) 检测是否在养成结束页面
+        /// </summary>
+        public bool AtEndPage() => Extract上部().Equals(PText.Cultivation.养成结束确认);
+
+        private void System__bt_clicker__(Enum bt)
         {
-            return FastCheck(Symbol.预测);
+            MC.Builder
+                .AddProcess(() =>
+                {
+                    var r = Extract中部();
+                    if (r.FirstIn([
+                        PText.Cultivation.休息确认,
+                        PText.Cultivation.外出确认,
+                        PText.Cultivation.医务室确认
+                    ]) is not null)
+                        Mnt.Click([Button.弹窗勾选, Button.弹窗确认]);
+                })
+                .SetButtons(bt)
+                .StartAsClickEx(Mnt);
         }
 
         private void System__relex__()
         {
             _lastAction = "休息";
-            //TODO 有BUG
             while (true)
             {
                 if (FastCheck(Symbol.养成主页))
                     break;
-                Click(Button.返回, 300);
+                Click(ZButton.返回, 300);
             }
 
-            Mnt.ClickEx(Button.休息, Symbol.休息确认, [Button.弹窗勾选, Button.弹窗确认]);
-            Pause(1000);
+
+            System__bt_clicker__(Button.休息);
         }
 
         private void System__out__()
@@ -115,18 +128,24 @@
             {
                 if (FastCheck(Symbol.养成主页))
                     break;
-                Click(Button.返回, 300);
+                Click(ZButton.返回, 300);
             }
 
-            Mnt.ClickEx(Button.外出, Symbol.外出确认, [Button.弹窗勾选, Button.弹窗确认]);
-            Pause(1000);
+            System__bt_clicker__(Button.外出);
+            var r = ExtractInfo(ZButton.外出1);
+            if (r.Contains(PText.Cultivation.事件进度))
+            {
+                if (r.Contains(PText.Cultivation.事件完成))
+                    Click(ZButton.外出2);
+                else
+                    Click(ZButton.外出1);
+            }
         }
 
         private void System__treat__()
         {
             _lastAction = "治疗";
-            Mnt.ClickEx(Button.医务室, Symbol.医务室确认, [Button.弹窗勾选, Button.弹窗确认]);
-            Pause(1000);
+            System__bt_clicker__(ZButton.医务室);
         }
     }
 }

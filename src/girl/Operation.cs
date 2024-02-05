@@ -1,6 +1,4 @@
-﻿using ComputerVision;
-
-namespace Shining_BeautifulGirls
+﻿namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
@@ -44,31 +42,12 @@ namespace Shining_BeautifulGirls
 
 
         private void MoveTo(object[] data, int sec = 1, double sim = 0.9) => Mnt.MoveTo(data, sec, sim);
-        private void MoveTo(Func<bool> condition, Button button, int sec = 1) => Mnt.MoveTo(condition, [button], sec);
+        private void MoveTo(Func<bool> condition, Enum button, int sec = 1) => Mnt.MoveTo(condition, [button], sec);
 
         private void PageDown(object[] data) => Mnt.PageDown(data);
-        private void PageDown(Func<bool> condition, params Button[] buttons) =>
+        private void PageDown(Func<bool> condition, params Enum[] buttons) =>
              Mnt.PageDown(condition, [.. buttons]);
-        private void PageDown(Zone zone, Enum ptext, params Button[] buttons) =>
+        private void PageDown(Zone zone, Enum ptext, params Enum[] buttons) =>
             PageDown(() => Mnt.ExtractZoneAndContains(zone, ptext), buttons);
-
-
-        /// <summary>
-        /// (不刷新) 获取上部位置的解析结果
-        /// </summary>
-        /// <returns></returns>
-        private PaddleOCR.Result Extract上部() => Mnt.ExtractZone(Zone.上部);
-
-        /// <summary>
-        /// (不刷新) 获取中部位置的解析结果
-        /// </summary>
-        /// <returns></returns>
-        private PaddleOCR.Result Extract中部() => Mnt.ExtractZone(Zone.中部);
-
-        /// <summary>
-        /// (不刷新) 获取下部位置的解析结果
-        /// </summary>
-        /// <returns></returns>
-        private PaddleOCR.Result Extract下部() => Mnt.ExtractZone(Zone.下部);
     }
 }

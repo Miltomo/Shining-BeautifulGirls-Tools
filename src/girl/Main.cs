@@ -92,7 +92,7 @@ namespace Shining_BeautifulGirls
 
         public void 测试()
         {
-            IsDimmed(ZButton.查看结果);
+            SelectFirstSuitableRace();
         }
     }
 }

@@ -5,74 +5,47 @@
 #pragma warning disable IDE0001
         public class MoveControl
         {
-            private static MoveControl? _instance;
-            public static MoveControl Builder
-            {
-                get
-                {
-                    _instance ??= new MoveControl();
-                    return _instance;
-                }
-            }
-            private static void Consume()
-            {
-                _instance = null;
-            }
-            private static bool True
-            {
-                get
-                {
-                    Consume();
-                    return true;
-                }
-            }
-            private static bool False
-            {
-                get
-                {
-                    Consume();
-                    return false;
-                }
-            }
-
-
+            public static MoveControl Builder => new();
+            private static bool True => true;
+            private static bool False => false;
             private enum ModeEnum
             {
                 MoveTo,
+                WaitTo,
                 PageDown,
             }
 
             private class Configuration
             {
-                public int Step { get; set; }
-                public int MaxWait { get; set; }
+                public int Step { get; set; } = 200;
+                public int MaxWait { get; set; } = 0;
+                public ModeEnum Mode { get; set; } = ModeEnum.MoveTo;
             }
 
 #pragma warning disable CS8618 // 禁止构造null检查
             private MoveControl() { }
-#pragma warning restore CS8618 // 回复构造null检查
-            private List<Action> DoSomes { get; set; } = [];
+#pragma warning restore CS8618 // 恢复构造null检查
+            private List<Action> DoSomethings { get; set; } = [];
             private List<Func<bool>> Targets { get; } = [];
             private List<Func<bool>> Others { get; } = [];
             private object[] Buttons { get; set; } = [];
             private World World { get; set; }
-            private ModeEnum Mode { get; set; }
             private Configuration Config { get; set; }
 
 
-            public MoveControl AddAction(Action action)
+            public MoveControl AddProcess(Action action)
             {
-                DoSomes.Add(action);
+                DoSomethings.Add(action);
                 return this;
             }
-            public MoveControl AddAction(string symbol, double sim = 0.9, params object[] bts) =>
-                AddAction(() =>
+            public MoveControl AddProcess(string symbol, double sim = 0.9, params object[] bts) =>
+                AddProcess(() =>
                 {
                     if (World.FastCheck(symbol, sim: sim))
                         World.Click(bts);
                 });
-            public MoveControl AddAction(Enum zone, Enum ptext, params object[] bts) =>
-                AddAction(() =>
+            public MoveControl AddProcess(Enum zone, Enum ptext, params object[] bts) =>
+                AddProcess(() =>
                 {
                     if (World.ExtractZoneAndContains(zone, ptext))
                         World.Click(bts);
@@ -100,26 +73,51 @@
                 return this;
             }
 
-            public bool StartM(World world, int step = 300, int sec = 0)
+            public bool StartAsMoveTo(World world, int step = 300, int sec = 0)
             {
                 World = world;
-                Mode = ModeEnum.MoveTo;
                 Config = new Configuration()
                 {
                     Step = step < 20 ? 20 : step,
                     MaxWait = sec < 0 ? 0 : sec,
+                    Mode = ModeEnum.MoveTo,
                 };
                 return Execute();
             }
 
-            public bool StartP(World world, int step = 300, int sec = 10)
+            public bool StartAsWaitTo(World world, int step = 500, int sec = 5)
             {
                 World = world;
-                Mode = ModeEnum.PageDown;
+                Config = new Configuration()
+                {
+                    Step = step < 200 ? 200 : step,
+                    MaxWait = sec < 2 ? 2 : sec,
+                    Mode = ModeEnum.WaitTo,
+                };
+                return Execute();
+            }
+
+            public bool StartAsPageDown(World world, int step = 300, int sec = 10)
+            {
+                World = world;
                 Config = new Configuration()
                 {
                     Step = step < 20 ? 20 : step,
                     MaxWait = sec < 5 ? 5 : sec,
+                    Mode = ModeEnum.PageDown,
+                };
+                return Execute();
+            }
+
+            public bool StartAsClickEx(World world, int step = 1000)
+            {
+                if (Targets.Count > 0)
+                    throw new ArgumentException("不应设置Target");
+
+                World = world;
+                Config = new Configuration()
+                {
+                    Step = step,
                 };
                 return Execute();
             }
@@ -129,9 +127,9 @@
                 int sum = 0;
                 int step = Config.Step;
                 int max = Config.MaxWait * 1000;
-                bool toClick = Mode switch
+                var mode = Config.Mode;
+                bool toClick = mode switch
                 {
-                    ModeEnum.MoveTo => true,
                     ModeEnum.PageDown => false,
                     _ => true,
                 };
@@ -144,7 +142,7 @@
                         World.Pause(step);
 
 
-                    DoSomes.ForEach(a => a());
+                    DoSomethings.ForEach(a => a());
 
 
                     //==========检测条件==========
@@ -154,7 +152,7 @@
                     foreach (var t in Targets)
                         if (t())
                         {
-                            if (Mode == ModeEnum.PageDown)
+                            if (mode == ModeEnum.PageDown)
                                 World.Click(Buttons);
                             return True;
                         }
@@ -166,7 +164,7 @@
 
                     sum += step;
 
-                    switch (Mode)
+                    switch (mode)
                     {
                         case ModeEnum.MoveTo:
                             toClick = false;
@@ -183,6 +181,11 @@
                                 World.ClickLast();
                                 sum = 0;
                             }
+                            break;
+
+                        case ModeEnum.WaitTo:
+                            if (sum > max)
+                                return False;
                             break;
                     }
                 }

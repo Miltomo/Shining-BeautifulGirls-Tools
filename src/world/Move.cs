@@ -35,20 +35,6 @@ namespace Shining_BeautifulGirls
             return false;
         }
 
-        public bool WaitTo(Func<bool> condition, object[] bts, int maxWait = 5)
-        {
-            int count = maxWait * 2;
-            for (int i = 0; i < count; i++)
-            {
-                Click(bts);
-                Pause(300);
-
-                if (condition())
-                    return true;
-            }
-            return false;
-        }
-
 
         /// <summary>
         /// 通过点击一组按钮，移动到某页面（先点击再检查）。
@@ -72,24 +58,10 @@ namespace Shining_BeautifulGirls
         /// <param name="sec"></param>
         public void MoveTo(Func<bool> condition, object[] bts, int sec = 1)
         {
-            int step = 300;
-            int sum = 0;
-            int wait = sec < 1 ? step : sec * 1000;
-
-            Click(bts, 100);
-            while (true)
-            {
-                Pause(step);
-
-                if (condition())
-                    break;
-                sum += step;
-                if (sum >= wait)
-                {
-                    Click(bts);
-                    sum = 0;
-                }
-            }
+            MoveControl.Builder
+                .SetButtons(bts)
+                .AddTarget(condition)
+                .StartAsMoveTo(this, sec: sec);
         }
 
         /// <summary>
@@ -108,25 +80,12 @@ namespace Shining_BeautifulGirls
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="bts"></param>
-        public void PageDown(Func<bool> condition, params object[]? bts)
+        public void PageDown(Func<bool> condition, params object[] bts)
         {
-            int sum = 0;
-            while (true)
-            {
-                Pause(400);
-
-                if (condition())
-                {
-                    Click(bts);
-                    break;
-                }
-                sum++;
-                if (sum > 20)
-                {
-                    ClickLast();
-                    sum = 0;
-                }
-            }
+            MoveControl.Builder
+                .SetButtons(bts)
+                .AddTarget(condition)
+                .StartAsPageDown(this, step: 400);
         }
 
 
@@ -228,13 +187,6 @@ namespace Shining_BeautifulGirls
                 for (int i = 0; i < bts.Length; i++)
                     Click(bts[i], pauseTime);
             }
-        }
-
-        public void ClickEx(object bt, string occur_file, object[] bts)
-        {
-            Click(bt.ToString(), 1000);
-            if (FastCheck(occur_file))
-                Click(bts);
         }
 
         public void ClickLast()

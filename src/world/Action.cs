@@ -1,5 +1,4 @@
 ﻿using MHTools;
-using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
 {
@@ -9,43 +8,46 @@ namespace Shining_BeautifulGirls
         private void 竞技场流程()
         {
             int count = 0;
-
-            MoveTo([Symbol.赛事, Button.赛事], 1);
+            MoveTo(Zone.上部, PText.Main.赛事, Button.赛事);
             Click(Button.JJC1);
-            MoveTo([Symbol.竞技场, Button.继续], 1);
+            MoveTo(Zone.上部, PText.Main.团队竞技场, Button.继续);
             Click(Button.JJC2);
 
             bool Aw = MC.Builder
                 .AddTarget(Zone.上部, PText.JJC.选择对战对手)
-                .AddOpposite(Zone.中部, PText.JJC.竞技值不足)
-                .StartP(this);
+                .AddOpposite(Zone.中部, PText.JJC.确认)
+                .StartAsPageDown(this);
             if (Aw)
                 goto 选队;
             goto 结束;
 
         选队:
             Log($"准备进行第 {++count} 次比赛");
+            ZButton[] teams = [ZButton.JJC队伍1, ZButton.JJC队伍2, ZButton.JJC队伍3];
             Pause(1000);
-            string target = $"第{(UserConfig is null ? 1 : UserConfig.TeamNumber)}队";
-            string gift = MakeUniqueCacheFile("gift");
-            for (int i = 1; i < 4; i += 1)
+            int target = UserConfig is null ? 0 : UserConfig.TeamIndex;
+
+            for (int i = 0; i < 3; i++)
             {
-                var dq = $"第{i}队";
-                Gray(CropScreen(dq)).SaveImage(gift);
-                if (FastCheck(Symbol.胜利时必得, gift, 0.7))
+                if (ExtractZoneAndContains(teams[i], PText.JJC.胜利时必得))
                 {
-                    target = dq;
+                    target = i;
                     break;
                 }
+                Refresh();
             }
-            MoveTo([Symbol.继续, target], sim: 0.8);
+
+            MoveTo([Symbol.继续, teams[target]], sim: 0.8);
             Click(Button.继续);
-            PageDown([Symbol.选择道具, Button.JJC3]);
+            PageDown(Zone.中部, PText.JJC.选择道具, Button.选择道具确认);
             goto 比赛处理;
 
         比赛处理:
             Pause(2000);
-            MoveTo([Symbol.赛事结束, Button.比赛结束, Button.快进], sec: 0);
+            MoveTo(
+                () => ExtractZoneAndContains(Zone.上部, PText.JJC.赛事结束),
+                [Button.比赛结束, Button.快进],
+                sec: 0);
             Click(Button.低继续);
             goto 循环处理;
 
@@ -53,8 +55,8 @@ namespace Shining_BeautifulGirls
             bool Bw = MC.Builder
                 .SetButtons(Button.竞技场连点)
                 .AddTarget(Zone.上部, PText.JJC.选择对战对手)
-                .AddOpposite(Zone.中部, PText.JJC.竞技值不足)
-                .StartM(this);
+                .AddOpposite(Zone.中部, PText.JJC.确认)
+                .StartAsMoveTo(this);
 
             if (Bw)
                 goto 选队;
@@ -71,7 +73,7 @@ namespace Shining_BeautifulGirls
             switch (state)
             {
                 case "进入":
-                    MoveTo([Symbol.赛事, Button.赛事], 1);
+                    MoveTo(Zone.上部, PText.Main.赛事, Button.赛事);
                     MoveTo([Symbol.金币, Button.日常赛事], 6, 0.8);
                     日常赛事流程("赛事选择");
                     break;
@@ -83,7 +85,7 @@ namespace Shining_BeautifulGirls
                     bool A = MC.Builder
                         .AddTarget(Zone.上部, PText.Race.赛事详情)
                         .AddOpposite(Zone.中部, PText.Race.日常赛事入场券不足)
-                        .StartP(this);
+                        .StartAsPageDown(this);
                     if (A)
                     {
                         //TODO 用文字识别检测 => 是否有ON
@@ -109,10 +111,16 @@ namespace Shining_BeautifulGirls
 
                 case "参赛":
                     Log("进行日常赛事比赛");
-                    ClickEx(Button.继续, Symbol.多次参赛, [Button.弹窗确认]);
-                    MoveTo([Symbol.返回, Button.比赛结束], sec: 1);
+
+                    MC.Builder
+                        .AddProcess(Zone.中部, PText.Race.多次参赛, Button.弹窗确认)
+                        .SetButtons(Button.继续)
+                        .StartAsClickEx(this);
+
+                    MoveTo([Symbol.返回, Button.比赛结束], sec: 0);
                     日常赛事流程("退出");
                     break;
+
                 case "退出":
                     MoveTo([Symbol.主界面, Button.主页], 0, 0.8);
                     break;
@@ -121,7 +129,7 @@ namespace Shining_BeautifulGirls
 
         private void 群英联赛流程()
         {
-            MoveTo([Symbol.赛事, Button.赛事], 1);
+            MoveTo(Zone.上部, PText.Main.赛事, Button.赛事);
             Click(Button.赛事活动);
             PageDown([Symbol.赛事活动, Button.群英联赛]);
 
@@ -203,17 +211,17 @@ namespace Shining_BeautifulGirls
             bool Aw = MC.Builder
                 .AddTarget(Symbol.养成, 0.8)
                 .AddOpposite(Symbol.养成2, 0.8)
-                .StartP(this, 0);
+                .StartAsPageDown(this, 0);
 
             if (Aw)
             {
                 Click(ZButton.养成);
                 bool Bw = MoveControl.Builder
                     .SetButtons(Button.继续)
-                    .AddAction(Zone.上部, PText.Cultivation.选择养成难度, Button.比赛结束)
-                    .AddTarget(Symbol.选卡)
+                    .AddProcess(Zone.上部, PText.Cultivation.选择养成难度, Button.比赛结束)
+                    .AddTarget(Zone.上部, PText.Cultivation.协助卡编成)
                     .AddOpposite(Symbol.未选继承)
-                    .StartM(this, 500);
+                    .StartAsMoveTo(this, 500);
 
                 if (Bw == false)
                 {
@@ -232,7 +240,7 @@ namespace Shining_BeautifulGirls
                     .SetButtons(Button.继续)
                     .AddTarget(Zone.上部, PText.Cultivation.最终确认)
                     .AddOpposite(Zone.中部, PText.Cultivation.训练值)
-                    .StartM(this, 500);
+                    .StartAsMoveTo(this);
 
                 // 训练值不足时的处理
                 if (Cw == false)
@@ -279,8 +287,8 @@ namespace Shining_BeautifulGirls
                 PageDown([Symbol.快进]);
                 MC.Builder
                     .SetButtons(Button.快进)
-                    .AddAction(Zone.中部, PText.Cultivation.跳过确认, [Button.弹窗勾选, Button.弹窗确认])
-                    .StartM(this, 1000);
+                    .AddProcess(Zone.中部, PText.Cultivation.跳过确认, [Button.弹窗勾选, Button.弹窗确认])
+                    .StartAsClickEx(this);
                 PageDown([Symbol.缩短事件]);
                 Click([Button.跳过, Button.跳过, Button.缩短所有事件, Button.缩短事件确定]);
                 PageDown([Symbol.养成主页], 0.8);

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading;
 using System.Windows;
 using static MHTools.数据工具;
@@ -60,7 +58,11 @@ namespace Shining_BeautifulGirls
 
             AdbHelper.SetProgramPath(App.AdbPath);
             AdbHelper.SetWorkDir(World.CacheDir);
-            // =======
+
+            // ======系统配置======
+            //PaddleOCR.UseGPU();
+
+            // ===================
 
             提示.Text = "";
             自动连接CheckBox.Visibility = Visibility.Collapsed;

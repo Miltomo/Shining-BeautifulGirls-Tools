@@ -1,4 +1,6 @@
-﻿namespace Shining_BeautifulGirls
+﻿using ComputerVision;
+
+namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
@@ -10,6 +12,7 @@
         class RaceInfo
         {
             public string Name { get; set; }
+            public string Introduction { get; set; }
             public int Fans { get; set; }
             public string Ground { get; set; }
             public string Distance { get; set; }
@@ -27,6 +30,13 @@
                 }
                 return false;
             }
+
+            public override int GetHashCode()
+            {
+                return
+                    Name.GetHashCode() ^ Introduction.GetHashCode() ^
+                    Ground.GetHashCode() ^ Distance.GetHashCode();
+            }
         }
 
         private static Zone[] 场地适应性 { get; } = [Zone.Rank草地, Zone.Rank泥地];
@@ -40,8 +50,8 @@
         private List<AdaptInfo> AdaptionTable { get; } = [];
 
         private static Zone[][] RaceZoneTable { get; } = [
-            [Zone.赛事Type1, Zone.赛事Name1, Zone.赛事Fans1],
-            [Zone.赛事Type2, Zone.赛事Name2, Zone.赛事Fans2],
+            [Zone.赛事Type1, Zone.赛事Name1, Zone.赛事Intro1, Zone.赛事Fans1],
+            [Zone.赛事Type2, Zone.赛事Name2, Zone.赛事Intro2, Zone.赛事Fans2],
         ];
 
         private RaceInfo TargetRace { get; set; }
@@ -68,7 +78,7 @@
         private void UpdateAdpTable()
         {
             // 移至能力详情页
-            MoveTo(AtMainPage, Button.返回);
+            MoveTo(AtMainPage, ZButton.返回);
             Click(Button.能力详情);
             PageDown(Zone.上部, PText.Cultivation.优俊少女详情);
 
@@ -127,6 +137,7 @@
             while (true)
             {
                 var races = GetRaceInfos();
+
                 for (int i = 0; i < races.Length; i++)
                 {
                     if (IsSuitableRace(races[i]))
@@ -148,7 +159,8 @@
 
                 if (last?.Equals(races[^1]) ?? false)
                     break;
-                last ??= races[^1];
+
+                last = races[^1];
 
                 RaceScroll();
             }
@@ -157,36 +169,39 @@
         }
 
 
+
         /// <summary>
         /// (加速) 确保从任何位置移到赛事界面；确保处于赛事界面
         /// </summary>
         private void GotoRacePage()
         {
             _lastAction = "比赛";
+            Mnt.Refresh();
+            IOCRResult r;
 
-            // 判断是否就在赛事界面
-            if (AtRacePage())
-                return;
-
-            // 确保移至主界面
-            if (!AtMainPage())
-                MoveTo(AtMainPage, Button.返回);
-
-            // 移至赛事界面以及处理相关弹窗
             while (true)
             {
-                Click(ZButton.通用参赛, 1000);
-
-                if (FastCheck(Symbol.连续参赛))
-                    Click(Button.弹窗确认, 1000);
-                if (FastCheck(Symbol.赛事推荐弹窗, sim: 0.8))
+                if (AtRacePage())
+                    return;
+                else if (AtMainPage())
+                    Click(ZButton.通用参赛, 1000);
+                // 检测赛事推荐弹窗
+                else if (Extract上部().Contains(PText.Race.赛事推荐功能))
                 {
                     Click(Button.不弹赛事推荐);
-                    Click(Button.比赛结束);
+                    Click(Button.比赛结束, 1000);
                 }
-
-                if (AtRacePage())
-                    break;
+                else if ((r = Extract中部(), r.Contains(PText.Race.连续参赛)).Item2)
+                {
+                    Click(Button.弹窗确认, 1000);
+                }
+                // 检测提醒弹窗
+                else if (r.Equals(PText.Race.前往赛事))
+                {
+                    Click(Button.大弹窗确认, 1000);
+                }
+                else
+                    Click(ZButton.返回);
             }
         }
 

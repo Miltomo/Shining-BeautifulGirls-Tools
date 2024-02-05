@@ -139,7 +139,7 @@ namespace Shining_BeautifulGirls
         //========文字识别========
         //========================
 
-        public PaddleOCR.Result ExtractZone(Enum zone)
+        public IOCRResult ExtractZone(Enum zone)
         {
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extract"))

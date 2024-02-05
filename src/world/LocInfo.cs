@@ -7,9 +7,16 @@
             public enum ZButton
             {
                 养成,
-
+                医务室,
+                外出1,
+                外出2,
+                返回,
                 通用参赛,
                 查看结果,
+
+                JJC队伍1,
+                JJC队伍2,
+                JJC队伍3,
 
 
                 群英联赛报名,
@@ -23,10 +30,7 @@
                 赛事,
                 JJC1,
                 JJC2,
-                JJC3,
-                第1队,
-                第2队,
-                第3队,
+                选择道具确认,
                 竞技场连点,
                 日常赛事,
                 日1,
@@ -50,9 +54,7 @@
                 休息,
                 训练,
                 技能,
-                医务室,
                 外出,
-                返回,
                 速度,
                 耐力,
                 力量,
@@ -88,7 +90,6 @@
                 日历,
                 心情,
                 体力,
-                医务室,
                 协助1,
                 协助2,
                 协助3,
@@ -104,9 +105,6 @@
                 力量,
                 毅力,
                 智力,
-                第1队,
-                第2队,
-                第3队,
                 卡1,
                 卡2,
                 卡3,
@@ -119,8 +117,8 @@
                 技能点,
                 技能点2,
 
-                赛事Name1, 赛事Fans1, 赛事Type1,
-                赛事Name2, 赛事Fans2, 赛事Type2,
+                赛事Name1, 赛事Intro1, 赛事Fans1, 赛事Type1,
+                赛事Name2, 赛事Intro2, 赛事Fans2, 赛事Type2,
                 Rank草地, Rank泥地,
                 Rank短距离, Rank英里, Rank中距离, Rank长距离,
                 Rank领跑, Rank跟前, Rank居中, Rank后追,
@@ -140,10 +138,7 @@
             MakeButton(Button.赛事, 520, 1225);
             MakeButton(Button.JJC1, 208, 864);
             MakeButton(Button.JJC2, 360, 810);
-            MakeButton(Button.第1队, 360, 350);
-            MakeButton(Button.第2队, 360, 620);
-            MakeButton(Button.第3队, 360, 890);
-            MakeButton(Button.JJC3, 510, 913);
+            MakeButton(Button.选择道具确认, 510, 913);
             MakeButton(Button.竞技场连点, 275, 1165, 40); // last 320 1180
             MakeButton(Button.日常赛事, 210, 1040);
             MakeButton(Button.日1, 360, 690);
@@ -167,9 +162,7 @@
             MakeButton(Button.休息, 115, 985);
             MakeButton(Button.训练, 355, 985);
             MakeButton(Button.技能, 210, 1075);
-            MakeButton(Button.医务室, 160, 1125);
             MakeButton(Button.外出, 400, 1125);
-            MakeButton(Button.返回, 85, 1200);
 
             int trainY = 1055, train_d = 25;
             MakeButton(Button.速度, 105, trainY, train_d, train_d);
@@ -218,7 +211,6 @@
             MakeZone(Zone.日历, 0, 150, 65, 190);
             MakeZone(Zone.心情, 530, 700, 138, 183);
             MakeZone(Zone.体力, 223, 600, 145, 177);
-            MakeZone(Zone.医务室, 110, 220, 1090, 1170);
             MakeZone(Zone.协助1, 580, 700, 185, 290);
             MakeZone(Zone.协助2, 580, 700, 290, 410);
             MakeZone(Zone.协助3, 580, 700, 410, 530);
@@ -234,9 +226,6 @@
             MakeZone(Zone.力量, 290, 365, 855, 883);
             MakeZone(Zone.毅力, 405, 475, 855, 883);
             MakeZone(Zone.智力, 515, 585, 855, 883);
-            MakeZone(Zone.第1队, 520, 685, 440, 475);
-            MakeZone(Zone.第2队, 520, 685, 710, 745);
-            MakeZone(Zone.第3队, 520, 685, 980, 1015);
             MakeZone(Zone.卡1, 35, 160, 80, 310);
             MakeZone(Zone.卡2, 35, 160, 250, 480);
             MakeZone(Zone.卡3, 35, 160, 430, 655);
@@ -254,10 +243,12 @@
             int ssTypeL = 560, ssTypeR = 690;
 
             MakeZone(Zone.赛事Name1, ssNameL, ssNameR, 680, 870);
+            MakeZone(Zone.赛事Intro1, ssNameR, ssTypeR, 680, 760);
             MakeZone(Zone.赛事Fans1, ssFansL, ssFansR, 750, 870);
             MakeZone(Zone.赛事Type1, ssTypeL, ssTypeR, 750, 870);
 
             MakeZone(Zone.赛事Name2, ssNameL, ssNameR, 830, 1030);
+            MakeZone(Zone.赛事Intro2, ssNameR, ssTypeR, 830, 910);
             MakeZone(Zone.赛事Fans2, ssFansL, ssFansR, 905, 1030);
             MakeZone(Zone.赛事Type2, ssTypeL, ssTypeR, 905, 1030);
 
@@ -281,9 +272,17 @@
 
             //============================================
             BuildZB(ZButton.养成, 410, 1040, 680, 1130);
-
+            BuildZB(ZButton.返回, 45, 1200, 130, 1260);
+            BuildZB(ZButton.医务室, 107, 1085, 228, 1170);
             BuildZB(ZButton.通用参赛, 495, 1085, 605, 1115);
             BuildZB(ZButton.查看结果, 165, 1145, 340, 1200);
+
+            BuildZB(ZButton.外出1, 50, 400, 670, 500);
+            BuildZB(ZButton.外出2, 50, 540, 670, 640);
+
+            BuildZB(ZButton.JJC队伍1, 36, 238, 685, 467);
+            BuildZB(ZButton.JJC队伍2, 36, 514, 685, 740);
+            BuildZB(ZButton.JJC队伍3, 36, 782, 685, 1010);
 
             BuildZB(ZButton.群英联赛报名, 170, 875, 550, 970);
             BuildZB(ZButton.群英联赛_赛事与奖励, 255, 1045, 465, 1130);

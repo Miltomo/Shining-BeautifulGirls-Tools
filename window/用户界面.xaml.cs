@@ -20,6 +20,7 @@ namespace Shining_BeautifulGirls
     /// </summary>
     public partial class 用户界面 : Window
     {
+        #region 定义
         private readonly string _json养成优俊少女 = Path.Combine(App.UserDataDir, "girl.json");
         private readonly string _json用户设置 = Path.Combine(App.UserDataDir, "user.json");
 
@@ -206,7 +207,7 @@ namespace Shining_BeautifulGirls
             public static bool 需要竞技场 { get; set; } = true;
             public static bool 需要日常赛事 { get; set; } = true;
         }
-
+        #endregion
         public 用户界面(Emulator.EmulatorItem emulator)
         {
             InitializeComponent();
@@ -233,6 +234,7 @@ namespace Shining_BeautifulGirls
             右键测试.Visibility = Visibility.Visible;
 #endif
             //TODO 使用异步更新技能名列表
+            //TODO 准备对技能进行分类；添加筛选与搜索功能
         }
 
         public void Refresh()
@@ -511,7 +513,7 @@ namespace Shining_BeautifulGirls
                     {
                         DailyRaceNumber = User.赛事名Index + 1,
                         DRDNumber = User.赛事难度Index + 1,
-                        TeamNumber = User.选队Index + 1,
+                        TeamIndex = User.选队Index,
                         SupportCard = User.协助卡名称,
                         CultivateCount = User.养成次数设定,
                         CultivateUseProp = User.使用道具,

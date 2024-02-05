@@ -1,5 +1,4 @@
 ﻿using MHTools;
-using System;
 using System.IO;
 
 namespace Shining_BeautifulGirls
@@ -32,7 +31,7 @@ namespace Shining_BeautifulGirls
         {
             public int DailyRaceNumber { get; set; } = 1;
             public int DRDNumber { get; set; } = 1;
-            public int TeamNumber { get; set; } = 1;
+            public int TeamIndex { get; set; } = 0;
             public int CultivateCount { get; set; } = -1;
             public bool CultivateUseProp { get; set; } = true;
             public bool CultivateUseMoney { get; set; } = false;

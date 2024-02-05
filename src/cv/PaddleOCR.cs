@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 namespace ComputerVision
 {
     /// <summary>
-    /// (单例|工厂)PaddleOCRSharp的进一步封装。全局管理一个引擎实例。
+    /// (单例|工厂) PaddleOCRSharp的进一步封装。全局管理一个引擎实例。
     /// 纯函数操作，无需在意构建过程。对识别结果也进行了封装，非常方便处理。<br/>
     /// </summary>
     public class PaddleOCR
@@ -40,7 +40,7 @@ namespace ComputerVision
         {
         }
 
-        public static void UseGPU(int gpu_id = 0, int gpu_mem = 4000)
+        public static void UseGPU(int gpu_id = 0, int gpu_mem = 5000)
         {
             Parameter ??= new OCRParameter();
             Parameter.use_gpu = true;
@@ -54,7 +54,7 @@ namespace ComputerVision
             Engine = new PaddleOCREngine(null, Parameter ?? new OCRParameter()
             {
                 use_gpu = false,
-                cpu_math_library_num_threads = 10
+                cpu_math_library_num_threads = 20
             });
         }
 #pragma warning restore CS8618 // 恢复类成员的构造null检查
@@ -63,12 +63,7 @@ namespace ComputerVision
             return new Result(Engine.DetectText(TargetImage));
         }
 
-        public OCRStructureResult Structure()
-        {
-            return Engine.DetectStructure(System.Drawing.Image.FromFile(TargetImage));
-        }
-
-        public class Result
+        public class Result : IOCRResult
         {
             private OCRResult Orin { get; set; }
             private IEnumerable<TextBlock> TB { get; set; }
@@ -130,7 +125,8 @@ namespace ComputerVision
             }
 
             /// <summary>
-            /// 判断识别结果中是否存在某行等于目标文本
+            /// 判断识别结果中是否存在某行等于目标文本<br/>
+            /// 判断是否是两个相同的识别结果
             /// </summary>
             /// <param name="target"></param>
             /// <returns></returns>
@@ -138,17 +134,29 @@ namespace ComputerVision
             {
                 if (target != null)
                 {
-                    var text = target.ToString();
-                    if (string.IsNullOrWhiteSpace(text))
-                        return false;
-                    foreach (var b in TB)
+                    if (target is OCRResult another)
                     {
-                        if (b.Text.Equals(text))
-                            return true;
+                        return Text == another.Text;
+                    }
+                    else
+                    {
+                        var text = target.ToString();
+                        if (string.IsNullOrWhiteSpace(text))
+                            return false;
+                        foreach (var b in TB)
+                        {
+                            if (b.Text.Equals(text))
+                                return true;
+                        }
                     }
                 }
 
                 return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return Text.GetHashCode();
             }
 
             /// <summary>
