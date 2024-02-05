@@ -1,13 +1,11 @@
 ﻿using MHTools;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using static MHTools.数据工具;
 
@@ -24,6 +22,8 @@ namespace Shining_BeautifulGirls
         SimpleFileManager FileManager { get; } =
             new(App.SkillStrategyDir, "技能组", "json");
 
+        CollectionView 仓库分类器 { get; init; }
+
         TextBlock? textBlockInEdit;
         TextBox? textBoxInEdit;
 
@@ -31,6 +31,7 @@ namespace Shining_BeautifulGirls
         {
             public string Name { get; set; }
             public string Path { get; set; }
+            public string[] Tag { get; set; }
 
             public override bool Equals(object? obj)
             {
@@ -38,7 +39,7 @@ namespace Shining_BeautifulGirls
                     return false;
 
                 var other = (SkillItem)obj;
-                return Name == other.Name;
+                return Path == other.Path;
             }
 
             public override int GetHashCode()
@@ -75,12 +76,20 @@ namespace Shining_BeautifulGirls
             Width = 1200;
             技能组 = [级别1, 级别2, 级别3, 级别4];
 
-            foreach (var skill in Directory.GetFiles(World.SkillDir))
-                DefaultList.Add(new SkillItem { Name = Path.GetFileNameWithoutExtension(skill), Path = skill });
+            Array.ForEach(GenerateItems(World.SkillDir), DefaultList.Add);
+
+            仓库分类器 = (CollectionView)CollectionViewSource.GetDefaultView(技能仓库.Items);
+            仓库分类器.Filter = (item) =>
+            {
+                if (item is SkillItem skillItem)
+                {
+                    return skillItem.Tag.Intersect(["蓝技能"]).Any();
+                }
+                return false;
+            };
 
             文件列表.ItemsSource = FileManager.Names;
         }
-
         protected override void OnClosed(EventArgs e)
         {
             Save技能配置(FileManager.SelectedFile);
@@ -92,6 +101,27 @@ namespace Shining_BeautifulGirls
             }
             App.SkillWindow = null;
             base.OnClosed(e);
+        }
+
+        private static SkillItem[] GenerateItems(string dir)
+        {
+            List<SkillItem> r = [];
+            Queue<string> subs = [];
+            subs.Enqueue(dir);
+            while (subs.Count > 0)
+            {
+                var dq = subs.Dequeue();
+                var tag = dq.Replace(dir, string.Empty).Split("\\", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                Directory.GetFiles(dq).ToList().ForEach(
+                    f => r.Add(new SkillItem
+                    {
+                        Name = Path.GetFileNameWithoutExtension(f),
+                        Path = f,
+                        Tag = tag,
+                    }));
+                Array.ForEach(Directory.GetDirectories(dq), subs.Enqueue);
+            }
+            return [.. r];
         }
 
         private void SwitchMode(bool edit = true)
@@ -169,12 +199,16 @@ namespace Shining_BeautifulGirls
                 });
 
                 complement = DefaultList.Except(
-                    技能组.Select(x => App.Items2List<SkillItem>(x.Items))
-                    .SelectMany(list => list).Distinct()
+                    技能组
+                    .Select(x => App.Items2List<SkillItem>(x.Items))
+                    .SelectMany(list => list)
+                    .Distinct()
                     ).ToList();
             }
 
             complement.ForEach(item => 技能仓库.Items.Add(item));
+
+            仓库分类器.Refresh();
         }
 
 
