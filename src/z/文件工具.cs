@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 namespace MHTools
 {
@@ -142,6 +139,29 @@ namespace MHTools
             if (Path.IsPathRooted(path))
                 return path!;
             throw new ArgumentException($"参数 {nameof(fp)} 错误，应为文件绝对路径");
+        }
+
+        /// <summary>
+        /// 获取目标文件夹及其子文件夹内的所有文件
+        /// </summary>
+        /// <param name="folderPath"></param>
+        /// <returns></returns>
+        public static string[] GetAllFiles(string folderPath)
+        {
+            List<string> allFiles = [];
+
+            // 获取当前文件夹中的所有文件
+            string[] filesInCurrentFolder = Directory.GetFiles(folderPath);
+            allFiles.AddRange(filesInCurrentFolder);
+
+            // 获取当前文件夹中的所有子文件夹
+            string[] subFolders = Directory.GetDirectories(folderPath);
+
+            // 递归处理每个子文件夹
+            foreach (string subFolder in subFolders)
+                allFiles.AddRange(GetAllFiles(subFolder));
+
+            return [.. allFiles];
         }
 
         /// <summary>
