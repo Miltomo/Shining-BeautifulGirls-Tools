@@ -45,7 +45,7 @@
 
             // 读取当前属性值
             List<int> property = [];
-            for (int i = 0; i < SubjectS.Count; i += 1)
+            for (int i = 0; i < TrainingItems.Length; i += 1)
                 property.Add(ExtractValue(i switch
                 {
                     0 => Zone.速度,
