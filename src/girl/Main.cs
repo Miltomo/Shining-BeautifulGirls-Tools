@@ -5,6 +5,7 @@ namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl(World world, ShiningGirl.Config? userConfig = default)
     {
+        #region
         public static string RecordDir { get; set; } = @"./record/";
         public static string HighLightDir
         {
@@ -50,28 +51,10 @@ namespace Shining_BeautifulGirls
                     $"体力: {Vitality}",
                     $"属性值: {Property[0]} , {Property[1]} , {Property[2]} , {Property[3]} , {Property[4]}",
                 ];
-        public string[] 训练信息
-        {
-            get
-            {
-                List<string> list = [];
-                for (int i = 0; i < T.Count; i++)
-                {
-                    var dq = T[i];
-                    var t = dq.Subject + " => ";
-                    t += $"协助数: {dq.HeadInfo.Count} ";
-                    t += "增益值: ";
-                    for (int k = 0; k < dq.UpS.Length; k++)
-                        t += dq.UpS[k] + " ";
-                    t += $"得分: {dq.Score:f3}";
-                    list.Add(t);
-                }
-                return [.. list];
-            }
-        }
 
         private World Mnt { get; init; } = world;
         public Config? UserConfig { get; set; } = userConfig;
+        #endregion
 
         public class Config
         {

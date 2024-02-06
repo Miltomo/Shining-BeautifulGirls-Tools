@@ -7,7 +7,7 @@
         /// </summary>
         /// <param name="button"></param>
         /// <param name="wait"></param>
-        private void Click(object button, int wait = 200) => Mnt.Click(button, wait);
+        private void Click(Enum button, int wait = 200) => Mnt.Click(button, wait);
 
         /// <summary>
         /// (不刷新) 快速检查背景图是否包含目标

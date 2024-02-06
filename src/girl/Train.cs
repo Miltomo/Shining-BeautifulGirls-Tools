@@ -2,19 +2,18 @@
 {
     partial class ShiningGirl
     {
-        public static List<string> SubjectS { get; } =
-            ["速度", "耐力", "力量", "毅力", "智力"];
-        private List<TrainInfo> T { get; } = [];
+        private static PlanEnum[] TrainingItems { get; } =
+            [PlanEnum.速度, PlanEnum.耐力, PlanEnum.力量, PlanEnum.毅力, PlanEnum.智力];
+        private static Button[] TrainingButtons { get; } =
+            [Button.速度, Button.耐力, Button.力量, Button.毅力, Button.智力];
+        private Algorithm Core { get; set; }
         public bool TryTrain()
         {
             if (Mnt.WaitTo([Symbol.返回, Button.训练], 0.8))
             {
+                Core = new PrimaryLogic(this);
                 Subject巡视();
-
-                PrimaryLogic();
-
                 StartPlan();
-
                 return true;
             }
 
@@ -23,26 +22,30 @@
 
         private void StartPlan()
         {
-            Log(训练信息);
+            Log(Core.Print());
+            var t = Core.PlanToDo();
+            var plan = t.Plan;
+            Log($"选择「{plan}」 {(t.Fail > 9 ? $"(训练失败率：{t.Fail}%)" : "")}");
+            _lastAction = plan.ToString();
 
-            var plan = PlanToDo.Subject;
-            Log($"选择「{plan}」 {(CurrentFail > 9 ? $"(训练失败率：{CurrentFail}%)" : "")}");
-            var index = SubjectS.IndexOf(plan);
-            if (index > -1)
+            if (TrainingItems.Contains(plan))
             {
-                _lastAction = plan;
+                var bt = TrainingButtons[Array.IndexOf(TrainingItems, plan)];
                 while (FastCheck(Symbol.返回, 0.7))
-                    Click(plan);
+                    Click(bt);
             }
             else
             {
                 switch (plan)
                 {
-                    case "休息":
+                    case PlanEnum.休息:
                         System__relex__();
                         break;
-                    case "外出":
+                    case PlanEnum.外出:
                         System__out__();
+                        break;
+                    default:
+                        System__relex__();
                         break;
                 }
             }
@@ -61,29 +64,30 @@
                 _ => -1
             };
             var start = index;
-            T.Clear();
             do
             {
-                Record训练信息(SubjectS[index]);
-                var next = (index + 1) % SubjectS.Count;
+                Read训练信息(TrainingItems[index]);
+                // 判断是否可以跳过剩下的
+                if (Core.Skip())
+                    return;
+                var next = (index + 1) % TrainingItems.Length;
                 if (next == start)
                     break;
-                Click(SubjectS[next], 50);
+                Click(TrainingButtons[next], 50);
                 index = next;
             } while (true);
-            SortByIndex();
         }
 
-        private void Record训练信息(string subject)
+        private void Read训练信息(PlanEnum subject)
         {
             var 等效体力 = InSummer ? Vitality - 2 : Vitality;
-            if (subject == "智力")
+            if (subject == PlanEnum.智力)
                 等效体力 += 10;
 
             // 记录训练信息
-            TrainInfo train = new()
+            PlanInfo train = new()
             {
-                Subject = subject,
+                Plan = subject,
                 HeadInfo = GetHeadInfo(),
                 Fail = FailPredict(等效体力)
             };
@@ -102,7 +106,7 @@
             }
 
             List<int> ups = [];
-            for (int i = 0; i < SubjectS.Count; i++)
+            for (int i = 0; i < TrainingItems.Length; i++)
             {
                 int real;
                 var table = vList.Select(x => x[i]);
@@ -118,8 +122,6 @@
             // 记录增益值信息
             train.UpS = [.. ups];
 
-            T.Add(train);
-
             // 判断并记录高光时刻
             foreach (var v in train.UpS)
             {
@@ -129,18 +131,21 @@
                     break;
                 }
             }
+
+            // 载入算法
+            Core.Add(train);
         }
 
-        private int[] Once增益读值(string subject)
+        private int[] Once增益读值(PlanEnum subject)
         {
-            int[] V = SubjectS.Select(x => 0).ToArray();
+            int[] V = TrainingItems.Select(x => 0).ToArray();
             int[] rCode = subject switch
             {
-                "速度" => [0, 2],
-                "耐力" => [1, 3],
-                "力量" => [1, 2],
-                "毅力" => [0, 2, 3],
-                "智力" => [0, 4],
+                PlanEnum.速度 => [0, 2],
+                PlanEnum.耐力 => [1, 3],
+                PlanEnum.力量 => [1, 2],
+                PlanEnum.毅力 => [0, 2, 3],
+                PlanEnum.智力 => [0, 4],
                 _ => []
             };
 
@@ -162,13 +167,24 @@
         }
 
 
-        private class TrainInfo()
+        private class PlanInfo()
         {
-            public string Subject { get; set; }
+            public PlanEnum Plan { get; set; }
             public int[] UpS { get; set; }
             public HeadInfo HeadInfo { get; set; }
             public int Fail { get; set; }
             public double Score { get; set; } = 0d;
+        }
+
+        private enum PlanEnum
+        {
+            速度,
+            耐力,
+            力量,
+            毅力,
+            智力,
+            外出,
+            休息,
         }
 
         private struct HeadInfo()
