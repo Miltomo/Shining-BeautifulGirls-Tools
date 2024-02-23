@@ -134,7 +134,7 @@ namespace ComputerVision
             {
                 if (target != null)
                 {
-                    if (target is OCRResult another)
+                    if (target is IOCRResult another)
                     {
                         return Text == another.Text;
                     }

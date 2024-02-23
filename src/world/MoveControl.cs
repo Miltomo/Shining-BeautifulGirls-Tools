@@ -136,7 +136,7 @@
 
                 while (true)
                 {
-                    if (toClick)
+                    if (toClick && Buttons.Length > 0)
                         World.Click(Buttons, step);
                     else
                         World.Pause(step);

@@ -60,5 +60,7 @@ namespace Shining_BeautifulGirls
         {
             return Path.Combine(CacheDir, $"{DeviceID}_{FileManagerHelper.SanitizeFileName(name)}.png");
         }
+
+        public bool AtStartPage() => ExtractZoneAndContains(ZButton.养成, PText.Main.养成);
     }
 }

@@ -41,13 +41,13 @@ namespace Shining_BeautifulGirls
         /// </summary>
         /// <param name="data"></param>
         /// <param name="sec"></param>
-        public void MoveTo(object[] data, int sec = 3, double sim = 0.9) =>
+        public void MoveTo(object[] data, int sec = 1, double sim = 0.9) =>
             MoveTo(() => FastCheck(data[0], sim: sim), bts: data[1..], sec: sec);
 
-        public void MoveTo(Enum zone, Enum ptext, Button button, int sec = 1) =>
+        public void MoveTo(Enum zone, Enum ptext, Enum button, int sec = 1) =>
             MoveTo(() => ExtractZoneAndContains(zone, ptext), button, sec);
 
-        public void MoveTo(Func<bool> condition, Button button, int sec = 1) =>
+        public void MoveTo(Func<bool> condition, Enum button, int sec = 1) =>
             MoveTo(condition, [button], sec);
 
         /// <summary>
@@ -197,12 +197,17 @@ namespace Shining_BeautifulGirls
         public void Scroll(double[] start, double distance)
         {
             int time = 1000;
-            int L = (int)distance;
-            int size = 300;
-            while (L > size)
+            if (Math.Abs(distance) > 1999)
+                time = 200;
+            else
             {
-                L -= size;
-                time += 1000;
+                int L = (int)distance;
+                int size = 300;
+                while (L > size)
+                {
+                    L -= size;
+                    time += 1000;
+                }
             }
             ADB.Swipe(start, [start[0], start[1] - distance], time);
         }

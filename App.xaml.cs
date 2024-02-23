@@ -134,6 +134,57 @@ namespace Shining_BeautifulGirls
             return null;
         }
 
+        // 递归函数，检查指定控件及其子控件是否包含指定文本的 TextBlock
+        public static bool CheckForTextBlock(DependencyObject parent, string searchText)
+        {
+            int count = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < count; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                if (child != null)
+                {
+                    if (child is TextBlock textBlock)
+                    {
+                        if (textBlock.Text == searchText)
+                        {
+                            // 找到了指定文本的 TextBlock，返回 true
+                            return true;
+                        }
+                    }
+
+                    // 递归调用，继续检查子控件
+                    if (CheckForTextBlock(child, searchText))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // 获取指定控件及其子控件中所有 TextBlock 的文本
+        public static string[] GetAllTextBlockTexts(DependencyObject parent)
+        {
+            List<string> texts = [];
+            int count = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < count; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                if (child != null)
+                {
+                    if (child is TextBlock textBlock)
+                    {
+                        texts.Add(textBlock.Text);
+                    }
+
+                    // 递归调用，继续检查子控件
+                    string[] childTexts = GetAllTextBlockTexts(child);
+                    texts.AddRange(childTexts);
+                }
+            }
+            return [.. texts];
+        }
+
         public static List<T> Items2List<T>(ItemCollection itemCollection)
         {
             List<T> itemList = [];
@@ -148,5 +199,7 @@ namespace Shining_BeautifulGirls
 
             return itemList;
         }
+
+
     }
 }

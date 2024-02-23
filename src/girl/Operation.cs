@@ -43,6 +43,7 @@
 
         private void MoveTo(object[] data, int sec = 1, double sim = 0.9) => Mnt.MoveTo(data, sec, sim);
         private void MoveTo(Func<bool> condition, Enum button, int sec = 1) => Mnt.MoveTo(condition, [button], sec);
+        private void MoveTo(Enum zone, Enum Ptext, Enum button, int sec = 1) => Mnt.MoveTo(zone, Ptext, button, sec);
 
         private void PageDown(object[] data) => Mnt.PageDown(data);
         private void PageDown(Func<bool> condition, params Enum[] buttons) =>

@@ -8,9 +8,11 @@
             {
                 养成,
                 医务室,
+                养成日常赛事位,
                 外出1,
                 外出2,
                 返回,
+                高返回,
                 通用参赛,
                 查看结果,
 
@@ -18,6 +20,8 @@
                 JJC队伍2,
                 JJC队伍3,
 
+                传奇赛事,
+                传奇赛事比赛位,
 
                 群英联赛报名,
                 群英联赛_赛事与奖励,
@@ -30,7 +34,6 @@
                 赛事,
                 JJC1,
                 JJC2,
-                选择道具确认,
                 竞技场连点,
                 日常赛事,
                 日1,
@@ -65,6 +68,7 @@
                 赛事位置2,
                 比赛结束,
                 低继续,
+                最低继续,
                 选择倒二,
                 选择末尾,
                 选卡,
@@ -81,7 +85,7 @@
                 赛事活动,
                 群英联赛,
                 比赛连点,
-                传奇赛事,
+                传奇赛事连点,
             }
             public enum Zone
             {
@@ -116,6 +120,7 @@
                 技白,
                 技能点,
                 技能点2,
+                决赛判断,
 
                 赛事Name1, 赛事Intro1, 赛事Fans1, 赛事Type1,
                 赛事Name2, 赛事Intro2, 赛事Fans2, 赛事Type2,
@@ -134,11 +139,10 @@
 
             MakeButton(Button.强化编成, 75, 1225);
             MakeButton(Button.剧情, 190, 1225);
-            MakeButton(Button.主页, 360, 1225);
+            MakeButton(Button.主页, 360, 1195, 50, 25);
             MakeButton(Button.赛事, 520, 1225);
             MakeButton(Button.JJC1, 208, 864);
             MakeButton(Button.JJC2, 360, 810);
-            MakeButton(Button.选择道具确认, 510, 913);
             MakeButton(Button.竞技场连点, 275, 1165, 40); // last 320 1180
             MakeButton(Button.日常赛事, 210, 1040);
             MakeButton(Button.日1, 360, 690);
@@ -178,6 +182,7 @@
             MakeButton(Button.比赛连点, 562, 1260);
             MakeButton(Button.比赛结束, 435, 1200, 55, 10);// last is 460 maybe => [1230 , 30] ???
             MakeButton(Button.低继续, 360, 1110);
+            MakeButton(Button.最低继续, 360, 1172);
             MakeButton(Button.选择倒二, 360, 715);
             MakeButton(Button.选择末尾, 360, 830);
             MakeButton(Button.选卡, 570, 680);
@@ -189,14 +194,15 @@
             MakeButton(Button.技能获取, 520, 1180);
             MakeButton(Button.结束养成, 205, 915);
             MakeButton(Button.养成结束, 510, 1050);
-            MakeButton(Button.结束连点, 360, 1145, 30, 5);// 中心点在1140 - 1145 之间
+            MakeButton(Button.结束连点, 345, 1145, 20, 5);// 中心点在1140 - 1145 之间
             MakeButton(Button.不弹赛事推荐, 260, 1035);
 
             int ssjdx = 130, ssjdy = 90;
 
             MakeButton(Button.赛事活动, 505, 850, ssjdx, ssjdy);
             MakeButton(Button.群英联赛, 210, 925, ssjdx, ssjdy);
-            MakeButton(Button.传奇赛事, 505, 925, ssjdx, ssjdy);
+
+            MakeButton(Button.传奇赛事连点, 412, 1140, 15, 10);
 
             //============================================
             double L = 0, R = STANDARD_WIDTH;
@@ -237,6 +243,7 @@
             MakeZone(Zone.技白, 10, 300, 950, 1025);
             MakeZone(Zone.技能点, 600, 695, 920, 965);
             MakeZone(Zone.技能点2, 520, 650, 400, 440);
+            MakeZone(Zone.决赛判断, 403, 626, 975, 1028);
 
             int ssNameL = 30, ssNameR = 250;
             int ssFansL = 295, ssFansR = 530;
@@ -273,7 +280,9 @@
             //============================================
             BuildZB(ZButton.养成, 410, 1040, 680, 1130);
             BuildZB(ZButton.返回, 45, 1200, 130, 1260);
+            BuildZB(ZButton.高返回, 36, 1190, 130, 1210);
             BuildZB(ZButton.医务室, 107, 1085, 228, 1170);
+            BuildZB(ZButton.养成日常赛事位, 491, 1084, 613, 1171);
             BuildZB(ZButton.通用参赛, 495, 1085, 605, 1115);
             BuildZB(ZButton.查看结果, 165, 1145, 340, 1200);
 
@@ -283,6 +292,9 @@
             BuildZB(ZButton.JJC队伍1, 36, 238, 685, 467);
             BuildZB(ZButton.JJC队伍2, 36, 514, 685, 740);
             BuildZB(ZButton.JJC队伍3, 36, 782, 685, 1010);
+
+            BuildZB(ZButton.传奇赛事, 377, 833, 637, 1011);
+            BuildZB(ZButton.传奇赛事比赛位, 40, 632, 677, 741);
 
             BuildZB(ZButton.群英联赛报名, 170, 875, 550, 970);
             BuildZB(ZButton.群英联赛_赛事与奖励, 255, 1045, 465, 1130);

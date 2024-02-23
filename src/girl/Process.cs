@@ -7,8 +7,7 @@ namespace Shining_BeautifulGirls
     {
         private bool _havefree = false;
         private int _dqRemakeTimes = 0;
-
-        //TODO 比赛算法可以考虑实施了
+        private IOCRResult? _lastSkill;
 
         private enum 养成过程Enum
         {
@@ -28,9 +27,8 @@ namespace Shining_BeautifulGirls
                 // 控制中心
                 case 养成过程Enum.转场处理:
                     Click(Button.选择末尾, 20);
-                    IOCRResult zb, xb;
+                    IOCRResult sb, zb, xb;
 
-                    /*FastCheck(Symbol.粉丝不足) || FastCheck(Symbol.未达要求) || FastCheck(Symbol.无法参赛)*/
                     if ((zb = Extract中部(), zb.Contains(PText.Race.前往赛事)).Item2)
                     {
                         if (比赛处理(比赛过程Enum.提醒比赛))
@@ -56,14 +54,14 @@ namespace Shining_BeautifulGirls
                     {
                         Click(Button.继续);
                     }
-                    else if (AtEndPage())
+                    else if ((sb = Extract上部(), sb.Equals(PText.Cultivation.养成结束确认) || sb.Contains(PText.Cultivation.目标未达成)).Item2)
                     {
                         养成流程(养成过程Enum.结束);
                         break;
                     }
 
                     Mnt.Refresh();
-                    if (FastCheck(Symbol.养成主页))
+                    if (FastCheck(Symbol.普通日主页))
                     {
                         养成流程(养成过程Enum.普通日);
                         break;
@@ -81,7 +79,7 @@ namespace Shining_BeautifulGirls
                 case 养成过程Enum.普通日:
                     Log(回合开始);
 
-                    ReadInfo();
+                    UpdateBasicValue();
                     Log(基本信息);
 
                     // 判断要去训练还是干别的
@@ -124,7 +122,8 @@ namespace Shining_BeautifulGirls
 
                     if ((Turn > 35 || SkPoints > 500) && SkPoints > 150)
                     {
-                        if (FastCheck(Symbol.决赛))
+                        /*FastCheck(Symbol.决赛)*/
+                        if (ExtractInfo(Zone.决赛判断).Equals(PText.Cultivation.决赛))
                             技能学习过程("最终学习");
                         else
                             技能学习过程("普通学习");
@@ -173,8 +172,7 @@ namespace Shining_BeautifulGirls
                     Mnt.SaveScreen(dir, name);
                     Log("已保存养成信息截图");
 
-                    MoveTo([Symbol.主界面, Button.结束连点], sec: 0, sim: 0.7);
-
+                    MoveTo(Mnt.AtStartPage, Button.结束连点, 0);
                     EndTraining = true;
                     break;
 
@@ -223,13 +221,14 @@ namespace Shining_BeautifulGirls
                     return false;
 
                 case 比赛过程Enum.进入:
-                    _lastAction = "比赛";
                     _dqRemakeTimes = 0;
                     UpdateHP();
 
                     Log("参加比赛");
-                    Click(ZButton.通用参赛, 0);
-                    PageDown(Zone.中部, PText.Race.赛事详情, Button.大弹窗确认);
+
+                    MoveTo(Zone.中部, PText.Race.赛事详情, ZButton.通用参赛);
+                    Click(Button.大弹窗确认);
+
                     return 比赛处理(比赛过程Enum.新比赛);
 
                 case 比赛过程Enum.新比赛:
@@ -299,8 +298,8 @@ namespace Shining_BeautifulGirls
                 case 比赛过程Enum.比赛成功:
                     Click(Button.比赛结束);
                     PageDown([Symbol.赛果, Button.比赛结束]);
-
                     Log("比赛结束，已达成目标");
+                    _lastAction = "比赛";
                     return true;
 
                 case 比赛过程Enum.比赛失败:
@@ -339,8 +338,10 @@ namespace Shining_BeautifulGirls
                     break;
 
                 case "进入":
+                    _lastSkill = default;
                     Click(Button.技能);
                     PageDown(Zone.上部, PText.Cultivation.技能获取);
+                    RefreshSkillPoint();
                     技能学习过程("学习");
                     break;
 
@@ -391,9 +392,8 @@ namespace Shining_BeautifulGirls
                             }
                         }
 
-                        // 更新技能点
-                        // 加速：只在变化时更新
-                        if (Aw) SkPoints = ExtractValue(Zone.技能点2);
+                        // 加速：只在变化时更新技能点
+                        if (Aw) RefreshSkillPoint();
 
                         // 加速：若技能点过小则结束
                         if (SkPoints < 71)
@@ -402,15 +402,15 @@ namespace Shining_BeautifulGirls
                             return;
                         }
                     }//for
-
                     技能学习过程("翻页");
                     break;
-                //TODO 使用文字检测重构 => 检测最后一个技能的名字
                 case "翻页":
-                    if (Mnt.Match(Symbol.技白, CropScreen(Zone.技白)) > 0.9)
+                    var dqLast = ReadLastSkill();
+                    if (_lastSkill?.Equals(dqLast) ?? false)
                         技能学习过程("结束");
                     else
                     {
+                        _lastSkill = dqLast;
                         SkillScroll(430);
                         技能学习过程("学习");
                     }
@@ -424,7 +424,7 @@ namespace Shining_BeautifulGirls
 
                     while (true)
                     {
-                        Click(ZButton.返回);
+                        Click(ZButton.高返回);
                         if (FastCheck(Symbol.比赛日主页, 0.7) || AtEndPage())
                             break;
                     }

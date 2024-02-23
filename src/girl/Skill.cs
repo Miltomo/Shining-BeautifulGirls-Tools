@@ -1,4 +1,5 @@
-﻿using static MHTools.数据工具;
+﻿using ComputerVision;
+using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
 {
@@ -67,6 +68,17 @@ namespace Shining_BeautifulGirls
                 }
             if (canUpdate && SkIndex < PrioritySkillList.Count)
                 SkList.AddRange(PrioritySkillList[SkIndex++]);
+        }
+
+
+        private void RefreshSkillPoint()
+        {
+            SkPoints = ExtractValue(Zone.技能点2);
+        }
+
+        private IOCRResult ReadLastSkill()
+        {
+            return ExtractInfo(Zone.技3);
         }
     }
 }

@@ -130,7 +130,7 @@ namespace Shining_BeautifulGirls
             return head;
         }
 
-        private RaceInfo[] GetRaceInfos()
+        private RaceInfo[] ReadRaceInfos()
         {
             List<RaceInfo> races = [];
 
@@ -145,7 +145,7 @@ namespace Shining_BeautifulGirls
                 // 获取赛事名称
                 info.Name = ExtractInfo(zones[1]).Text;
 
-                if (IsSuitableRace(info))
+                if (IsSuitable(info))
                 {
                     // 获胜赛事简介
                     //info.Introduction = ExtractInfo(zones[2]).Text;

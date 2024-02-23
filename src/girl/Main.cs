@@ -75,7 +75,7 @@ namespace Shining_BeautifulGirls
 
         public void 测试()
         {
-            SelectFirstSuitableRace();
+            SelectMaxFansSuitableRace();
         }
     }
 }

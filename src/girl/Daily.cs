@@ -27,7 +27,7 @@
             养成流程(养成过程Enum.转场处理);
         }
 
-        public void ReadInfo()
+        public void UpdateBasicValue()
         {
             Mnt.Refresh();
 
@@ -54,7 +54,7 @@
                     3 => Zone.毅力,
                     4 => Zone.智力,
                     _ => throw new KeyNotFoundException()
-                })); //GetPropertyValue(SubjectS[i])
+                }));
 
             _hproperty ??= [.. property];
 
@@ -71,17 +71,35 @@
         /// <summary>
         /// (不刷新) 检测是否在主页（包括普通日和比赛日）
         /// </summary>
-        public bool AtMainPage() => FastCheck(Symbol.养成主页) || FastCheck(Symbol.比赛日主页);
+        public bool AtMainPage() => FastCheck(Symbol.普通日主页) || FastCheck(Symbol.比赛日主页);
+
+        /// <summary>
+        /// (不刷新) 检测是否在训练界面
+        /// </summary>
+        public bool AtTrainPage() => FastCheck(Symbol.返回, 0.8);
 
         /// <summary>
         /// (不刷新) 检测是否在赛事选择界面
         /// </summary>
-        public bool AtRacePage() => FastCheck(Symbol.预测);
+        public bool AtRacePage() => Extract下部().Contains(PText.Cultivation.预测);
 
         /// <summary>
         /// (不刷新) 检测是否在养成结束页面
         /// </summary>
         public bool AtEndPage() => Extract上部().Equals(PText.Cultivation.养成结束确认);
+
+
+        private bool GotoMainPage()
+        {
+            if (AtMainPage())
+                return true;
+
+            return MC.Builder
+                .SetButtons(ZButton.返回)
+                .AddTarget(AtMainPage)
+                .StartAsWaitTo(Mnt);
+        }
+
 
         private void System__bt_clicker__(Enum bt)
         {
@@ -105,7 +123,7 @@
             _lastAction = "休息";
             while (true)
             {
-                if (FastCheck(Symbol.养成主页))
+                if (FastCheck(Symbol.普通日主页))
                     break;
                 Click(ZButton.返回, 300);
             }
@@ -126,7 +144,7 @@
             _lastAction = "外出";
             while (true)
             {
-                if (FastCheck(Symbol.养成主页))
+                if (FastCheck(Symbol.普通日主页))
                     break;
                 Click(ZButton.返回, 300);
             }

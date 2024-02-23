@@ -12,7 +12,7 @@ namespace Shining_BeautifulGirls
         class RaceInfo
         {
             public string Name { get; set; }
-            public string Introduction { get; set; }
+            public string Introduction { get; set; } = string.Empty;
             public int Fans { get; set; }
             public string Ground { get; set; }
             public string Distance { get; set; }
@@ -34,8 +34,7 @@ namespace Shining_BeautifulGirls
             public override int GetHashCode()
             {
                 return
-                    Name.GetHashCode() ^ Introduction.GetHashCode() ^
-                    Ground.GetHashCode() ^ Distance.GetHashCode();
+                    Name.GetHashCode() ^ Ground.GetHashCode() ^ Distance.GetHashCode();
             }
         }
 
@@ -67,13 +66,13 @@ namespace Shining_BeautifulGirls
             return AcceptRank.Contains(r);
         }
 
-        private bool IsSuitableRace(RaceInfo race)
+        private bool IsSuitable(RaceInfo race)
         {
             return IsGoodAt(race.Ground) && IsGoodAt(race.Distance);
         }
 
         /// <summary>
-        /// 前往并读取角色适应性信息，完毕后回到<b>赛事界面</b>
+        /// 前往并读取角色适应性信息，完毕后回到<b>养成主界面</b>
         /// </summary>
         private void UpdateAdpTable()
         {
@@ -107,96 +106,165 @@ namespace Shining_BeautifulGirls
 
             // 返回主界面
             MoveTo(AtMainPage, Button.比赛结束);
-            GotoRacePage();
         }
 
 
         private RaceInfo[] BrowseAllRace()
         {
-            throw new NotImplementedException();
+            List<RaceInfo> list = [];
+            while (true)
+            {
+                var lin = ReadRaceInfos();
+                if (list.LastOrDefault() is RaceInfo last && last.Equals(lin.LastOrDefault()))
+                    break;
+                Array.ForEach(lin, list.Add);
+                RaceScroll();
+            }
+
+            // 退回到开头
+            RaceScroll(-5000);
+            /*do
+            {
+                RaceScroll(-3000);
+                if (list.First().Equals(ReadRaceInfos().First()))
+                    break;
+            } while (true);*/
+
+            return [.. list.Distinct()];
         }
 
         private bool SelectRace(int index)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// 选择第一个擅长的比赛
-        /// </summary>
-        /// <returns>true, 选择成功; false, 选择失败|不存在比赛|比赛不可参加</returns>
-        private bool SelectFirstSuitableRace()
-        {
-            if (AdaptionTable.Count == 0)
-                UpdateAdpTable();
-            else
-                GotoRacePage();
-
-            RaceInfo? last = default;
-
-            while (true)
+            if (index > -1)
             {
-                var races = GetRaceInfos();
-
-                for (int i = 0; i < races.Length; i++)
+                index += 1;
+                while (index > 2)
                 {
-                    if (IsSuitableRace(races[i]))
-                    {
-                        Click(i switch
-                        {
-                            0 => Button.赛事位置1,
-                            1 => Button.赛事位置2,
-                            _ => throw new NotImplementedException()
-                        }, 500);
-
-                        if (IsDimmed(ZButton.通用参赛, 140))
-                            return false;
-
-                        TargetRace = races[i];
-                        return true;
-                    }
+                    RaceScroll();
+                    index -= 2;
                 }
 
-                if (last?.Equals(races[^1]) ?? false)
-                    break;
+                Click(index switch
+                {
+                    1 => Button.赛事位置1,
+                    2 => Button.赛事位置2,
+                    _ => throw new NotImplementedException()
+                }, 500);
 
-                last = races[^1];
+                if (IsDimmed(ZButton.通用参赛, 140))
+                    return false;
 
-                RaceScroll();
+                TargetRace = ReadRaceInfos()[index - 1];
+
+                return true;
             }
 
             return false;
         }
 
 
+        /// <summary>
+        /// 选择第一个擅长的比赛
+        /// </summary>
+        /// <returns>true, 选择成功; false, 选择失败|不存在比赛|比赛不可参加|无法进入赛事界面</returns>
+        private bool SelectFirstSuitableRace()
+        {
+            if (AdaptionTable.Count == 0)
+                UpdateAdpTable();
+
+            if (GotoRacePage())
+            {
+                RaceInfo? last = default;
+
+                while (true)
+                {
+                    var races = ReadRaceInfos();
+
+                    for (int i = 0; i < races.Length; i++)
+                    {
+                        if (IsSuitable(races[i]))
+                        {
+                            if (SelectRace(i))
+                            {
+                                TargetRace = races[i];
+                                return true;
+                            }
+
+                            return false;
+                        }
+                    }
+
+                    if (last?.Equals(races[^1]) ?? false)
+                        break;
+
+                    last = races[^1];
+
+                    RaceScroll();
+                }
+            }
+
+            return false;
+        }
+
+        private bool SelectMaxFansSuitableRace()
+        {
+            if (AdaptionTable.Count == 0)
+                UpdateAdpTable();
+
+            if (GotoRacePage())
+            {
+                var infos = BrowseAllRace();
+                var mf = infos
+                    .Where(IsSuitable)
+                    .MaxBy(s => s.Fans);
+                return SelectRace(Array.IndexOf(infos, mf));
+            }
+
+            return false;
+        }
+
+        private bool SelectFirstG1orMaxFans()
+        {
+            throw new NotImplementedException();
+        }
+
 
         /// <summary>
         /// (加速) 确保从任何位置移到赛事界面；确保处于赛事界面
         /// </summary>
-        private void GotoRacePage()
+        /// <returns>true，成功移动到赛事界面；false，无法移至赛事界面</returns>
+        private bool GotoRacePage()
         {
-            _lastAction = "比赛";
             Mnt.Refresh();
             IOCRResult r;
+
+            if (!AtRacePage())
+                Click(ZButton.返回);
 
             while (true)
             {
                 if (AtRacePage())
-                    return;
+                    return true;
                 else if (AtMainPage())
-                    Click(ZButton.通用参赛, 1000);
+                {
+                    if (IsDimmed(ZButton.养成日常赛事位, 140))
+                        return false;
+
+                    Click(ZButton.养成日常赛事位, 1000);
+                }
                 // 检测赛事推荐弹窗
                 else if (Extract上部().Contains(PText.Race.赛事推荐功能))
                 {
                     Click(Button.不弹赛事推荐);
                     Click(Button.比赛结束, 1000);
                 }
+                // 检测连续参赛弹窗
                 else if ((r = Extract中部(), r.Contains(PText.Race.连续参赛)).Item2)
                 {
                     Click(Button.弹窗确认, 1000);
                 }
                 // 检测提醒弹窗
-                else if (r.Equals(PText.Race.前往赛事))
+                else if (Extract中部().Equals(PText.Race.前往赛事))
                 {
                     Click(Button.大弹窗确认, 1000);
                 }
