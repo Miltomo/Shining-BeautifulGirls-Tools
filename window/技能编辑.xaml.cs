@@ -75,6 +75,7 @@ namespace Shining_BeautifulGirls
             Height = 800;
             Width = 1200;
             技能组 = [级别1, 级别2, 级别3, 级别4];
+            右侧面板.Visibility = Visibility.Collapsed;
 
             Array.ForEach(GenerateItems(World.SkillDir), DefaultList.Add);
 
@@ -83,10 +84,13 @@ namespace Shining_BeautifulGirls
             {
                 if (item is SkillItem skillItem)
                 {
-                    return skillItem.Tag.Intersect(["蓝技能"]).Any();
+                    var sx = App.GetAllTextBlockTexts(筛选项集合);
+                    return sx.Length == 0 || skillItem.Tag.Intersect(sx).Any();
                 }
                 return false;
             };
+
+            筛选下拉列表.ItemsSource = DefaultList.Select(x => x.Tag).SelectMany(x => x).Distinct();
 
             文件列表.ItemsSource = FileManager.Names;
         }
@@ -122,6 +126,24 @@ namespace Shining_BeautifulGirls
                 Array.ForEach(Directory.GetDirectories(dq), subs.Enqueue);
             }
             return [.. r];
+        }
+
+
+        private void 刷新技能仓库()
+        {
+            技能仓库.Items.Clear();
+
+            // 删去已经分配的技能
+            var complement = DefaultList.Except(
+                    技能组
+                    .Select(x => App.Items2List<SkillItem>(x.Items))
+                    .SelectMany(list => list)
+                    .Distinct()
+                    ).ToList();
+
+            complement.ForEach(item => 技能仓库.Items.Add(item));
+
+            仓库分类器.Refresh();
         }
 
         private void SwitchMode(bool edit = true)
@@ -182,9 +204,7 @@ namespace Shining_BeautifulGirls
         private void Load技能配置(string configFile)
         {
             var dt = LoadFromJSON<Dictionary<string, JsonElement>>(configFile);
-            var complement = DefaultList;
             技能组.ForEach(x => x.Items.Clear());
-            技能仓库.Items.Clear();
 
             if (dt != null)
             {
@@ -197,20 +217,10 @@ namespace Shining_BeautifulGirls
                         x.Items.Add(DefaultList.Where(x => x.Name == name).FirstOrDefault());
                     });
                 });
-
-                complement = DefaultList.Except(
-                    技能组
-                    .Select(x => App.Items2List<SkillItem>(x.Items))
-                    .SelectMany(list => list)
-                    .Distinct()
-                    ).ToList();
             }
 
-            complement.ForEach(item => 技能仓库.Items.Add(item));
-
-            仓库分类器.Refresh();
+            刷新技能仓库();
         }
-
 
 
         private void ListBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -283,16 +293,18 @@ namespace Shining_BeautifulGirls
             if (FileManager.Select(文件列表.SelectedIndex))
             {
                 Button删除.IsEnabled = true;
-                配置面板.IsEnabled = true;
-                配置面板.Visibility = Visibility.Visible;
+                右侧面板.Visibility = Visibility.Visible;
+                /*配置面板.IsEnabled = true;
+                配置面板.Visibility = Visibility.Visible;*/
 
                 Load技能配置(FileManager.SelectedFile!);
             }
             else
             {
                 Button删除.IsEnabled = false;
-                配置面板.IsEnabled = false;
-                配置面板.Visibility = Visibility.Hidden;
+                右侧面板.Visibility = Visibility.Collapsed;
+                /*配置面板.IsEnabled = false;
+                配置面板.Visibility = Visibility.Hidden;*/
             }
         }
 
@@ -318,6 +330,64 @@ namespace Shining_BeautifulGirls
                 SwitchMode(false);
                 e.Handled = true;
             }
+        }
+
+
+        private void 筛选按钮Click(object sender, RoutedEventArgs e)
+        {
+            筛选下拉列表.SelectedIndex = -1;
+
+            popup.IsOpen = !popup.IsOpen; // 切换下拉列表的展开状态
+        }
+
+        private void 筛选下拉列表Selected(object sender, SelectionChangedEventArgs e)
+        {
+            if (筛选下拉列表.SelectedIndex > -1)
+            {
+                popup.IsOpen = false;
+
+                var target = (string)筛选下拉列表.SelectedValue;
+
+                if (App.CheckForTextBlock(筛选项集合, target))
+                    return;
+
+                筛选项集合.Children.Add(new TextBlock()
+                {
+                    Text = (string)筛选下拉列表.SelectedValue,
+                    Style = (Style)Resources["筛选TextBlockStyle"]
+                });
+
+                刷新技能仓库();
+            }
+        }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (sender is ScrollViewer scrollViewer && e.Delta != 0)
+            {
+                double newOffset = scrollViewer.HorizontalOffset - (e.Delta > 0 ? 20 : -20);
+                if (newOffset < 0)
+                {
+                    scrollViewer.ScrollToHorizontalOffset(0);
+                }
+                else if (newOffset > scrollViewer.ScrollableWidth)
+                {
+                    scrollViewer.ScrollToHorizontalOffset(scrollViewer.ScrollableWidth);
+                }
+                else
+                {
+                    scrollViewer.ScrollToHorizontalOffset(newOffset);
+                }
+
+                e.Handled = true;
+            }
+        }
+
+        private void 清除筛选(object sender, RoutedEventArgs e)
+        {
+            筛选项集合.Children.Clear();
+
+            刷新技能仓库();
         }
     }
 }

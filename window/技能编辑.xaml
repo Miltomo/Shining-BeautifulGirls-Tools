@@ -82,6 +82,13 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Black"/>
         </Style>
+
+        <Style x:Key="筛选TextBlockStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="5,0,5,0"/>
+        </Style>
+        
     </Window.Resources>
     <Border>
         <Grid>
@@ -91,19 +98,12 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5*"/>
             </Grid.ColumnDefinitions>
             <Border Grid.Column="0">
                 <TextBlock Style="{DynamicResource 标题TextBlockStyle}">名称</TextBlock>
             </Border>
-            <Border Grid.Column="1">
-                <TextBlock Style="{DynamicResource 标题TextBlockStyle}">技能组配置</TextBlock>
-            </Border>
-            <Border Grid.Column="2">
-                <TextBlock Style="{DynamicResource 标题TextBlockStyle}">仓库</TextBlock>
-            </Border>
-
+            
             <Border Grid.Row="1">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -148,65 +148,120 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Column="1" Grid.Row="1"/>
-            <Border Grid.Column="2" Grid.Row="1"/>
-            <!--配置面板-->
-            <Grid x:Name="配置面板" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" IsEnabled="False" Visibility="Hidden">
+
+            <Grid x:Name="右侧面板" Grid.Column="1" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="15*"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Border>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition Height="15*"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0">
-                            <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅰ">
-                                <TextBlock.ToolTip>
-                                    <ToolTip Content="最优先技能：第一次学习时即要学习的技能；默认学习的技能。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
-                                </TextBlock.ToolTip>
-                            </TextBlock>
-                        </Border>
-                        <Border Grid.Column="1">
-                            <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅱ">
-                                <TextBlock.ToolTip>
-                                    <ToolTip Content="次优先技能：第三次学习开始(或前置技能均学习完毕|养成结束，下略)时开始学习。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
-                                </TextBlock.ToolTip>
-                            </TextBlock>
-                        </Border>
-                        <Border Grid.Column="2">
-                            <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅲ">
-                                <TextBlock.ToolTip>
-                                    <ToolTip Content="后置技能：第六次技能学习开始时，或最后一次技能学习时才开启的技能。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
-                                </TextBlock.ToolTip>
-                            </TextBlock>
-                        </Border>
-                        <Border Grid.Column="3">
-                            <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅳ">
-                                <TextBlock.ToolTip>
-                                    <ToolTip Content="补足技能：只在养成结束时学习的技能。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
-                                </TextBlock.ToolTip>
-                            </TextBlock>
-                        </Border>
-
-
-                        <ListBox x:Name="级别1" Grid.Column="0" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
-                        <ListBox x:Name="级别2" Grid.Column="1" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
-                        <ListBox x:Name="级别3" Grid.Column="2" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
-                        <ListBox x:Name="级别4" Grid.Column="3" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
-                    </Grid>
+                <Border Grid.Column="0">
+                    <TextBlock Style="{DynamicResource 标题TextBlockStyle}">技能组配置</TextBlock>
+                </Border>
+                <Border Grid.Column="1">
+                    <TextBlock Style="{DynamicResource 标题TextBlockStyle}">仓库</TextBlock>
                 </Border>
 
-                <ListBox x:Name="技能仓库" Grid.Column="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" d:ItemsSource="{d:SampleData ItemCount=5}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+
+                <!--配置面板-->
+                <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!--技能组配置-->
+                    <Border>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="15*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0">
+                                <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅰ">
+                                    <TextBlock.ToolTip>
+                                        <ToolTip Content="最优先技能：第一次学习时即要学习的技能；默认学习的技能。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Column="1">
+                                <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅱ">
+                                    <TextBlock.ToolTip>
+                                        <ToolTip Content="次优先技能：第三次学习开始(或前置技能均学习完毕|养成结束，下略)时开始学习。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Column="2">
+                                <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅲ">
+                                    <TextBlock.ToolTip>
+                                        <ToolTip Content="后置技能：第六次技能学习开始时，或最后一次技能学习时才开启的技能。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                            </Border>
+                            <Border Grid.Column="3">
+                                <TextBlock Style="{DynamicResource 技能类别TextBlockStyle}" Text="Ⅳ">
+                                    <TextBlock.ToolTip>
+                                        <ToolTip Content="补足技能：只在养成结束时学习的技能。" Style="{DynamicResource 技能分类介绍ToolTipStyle}"/>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                            </Border>
+
+
+                            <ListBox x:Name="级别1" Grid.Column="0" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+                            <ListBox x:Name="级别2" Grid.Column="1" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+                            <ListBox x:Name="级别3" Grid.Column="2" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+                            <ListBox x:Name="级别4" Grid.Column="3" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+                        </Grid>
+                    </Border>
+                    
+                    <!--仓库-->
+                    <Border Grid.Column="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="20*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <!-- X 按钮 -->
+                                <Button Cursor="Hand" Grid.Column="0" Content="X" FontWeight="Bold" FontFamily="Comic Sans MS" FontSize="20" Foreground="#FFEC4C4C" Background="{x:Null}" BorderBrush="{x:Null}" Click="清除筛选"/>
+                                
+                                <!-- 中间部分 TextBlock 集合 -->
+                                <ScrollViewer Cursor="ScrollWE" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                                    <StackPanel x:Name="筛选项集合" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"></StackPanel>
+                                </ScrollViewer>
+
+                                <!-- 下拉列表和箭头按钮 -->
+                                <Grid Grid.Column="2">
+                                    <ToggleButton Cursor="Hand" x:Name="筛选按钮" Content="▼" FontSize="20" Click="筛选按钮Click" Width="33"/>
+                                    <Popup x:Name="popup" PlacementTarget="{Binding ElementName=筛选按钮}" Placement="Bottom" StaysOpen="False" IsOpen="False">
+                                        <ListBox Width="100" x:Name="筛选下拉列表" SelectionChanged="筛选下拉列表Selected">
+                                        </ListBox>
+                                    </Popup>
+                                </Grid>
+                            </Grid>
+
+                            <ListBox x:Name="技能仓库" Grid.Row="1" Style="{DynamicResource 技能ListBoxStyle}" Template="{DynamicResource ListBoxTemplate}" d:ItemsSource="{d:SampleData ItemCount=5}" ItemTemplate="{DynamicResource 技能ListBoxItemTemplate}"/>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
+
+            
         </Grid>
     </Border>
 </Window>
