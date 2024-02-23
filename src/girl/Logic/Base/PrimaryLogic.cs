@@ -32,7 +32,7 @@
 
                 // 若属性值超过1000
                 if (dq > 1000)
-                    s -= 5;
+                    s -= 2;
                 // 若已超过目标值(严重惩罚)
                 if (dq > tg)
                     s -= 10;
@@ -57,16 +57,19 @@
                 var fail = target.Fail;
                 int failLine;
 
+                //TODO 完善25回合之前的判断
                 if (Turn < 26)
                 {
                     failLine = 25;
-
 
                     switch (score)
                     {
                         case < 2:
                             if (Mood < 5)
                                 return GoOut;
+                            //TODO 这里错误
+                            if (Turn > 11)
+                                return Race;
                             break;
                         case < 3:
                             if (Mood < 4 && Vitality < 90)
@@ -98,30 +101,26 @@
                     return target;
                 }
 
+                var maxUp = target.UpS.Max();
+                var sumUp = target.UpS.Sum();
                 int baseScore = 18;
                 failLine = 30;
 
-                // 与心情惩罚值比较
-                if (score - (5 - Mood) * 9 < 0.1)
-                    return GoOut;
-                // 与基准得分比较
-                else if (score < baseScore)
+                // 增益过低的情况
+                if (maxUp < 25)
                 {
-                    var maxUp = target.UpS.Max();
-                    // 目标为智力的情况
-                    if (target.Plan == PlanEnum.智力)
+                    if (score < baseScore || sumUp < 25)
                     {
-                        if (Vitality < 41 && maxUp < 25)
-                            return Relex;
-                        return target;
+                        if (Vitality < 70)
+                        {
+                            if (Mood < 4) return GoOut;
+                            if (target.Plan == PlanEnum.智力 && score > baseScore) return target;
+                        }
+                        return Race;
                     }
-
-                    // 训练其他项目的情况
-                    if (maxUp < 21 && Vitality < 61)
-                        return Relex;
                 }
                 // 与失败率比较
-                else if (target.Fail > 1 * (score - baseScore) + failLine)
+                if (target.Fail > 1 * (score - baseScore) + failLine)
                 {
                     if (Mood < 4)
                         return GoOut;

@@ -25,6 +25,14 @@
             };
 
             /// <summary>
+            /// (日常)比赛
+            /// </summary>
+            protected PlanInfo Race => new()
+            {
+                Plan = PlanEnum.比赛,
+            };
+
+            /// <summary>
             /// 得分最高的训练项目
             /// </summary>
             protected PlanInfo First
@@ -55,6 +63,8 @@
 
             public string[] Print()
             {
+                SortByScore();
+
                 List<string> list = [];
                 for (int i = 0; i < T.Count; i++)
                 {
@@ -84,7 +94,35 @@
             abstract protected double Score(PlanInfo info);
             abstract protected PlanInfo Select();
             virtual public bool Skip() => false;
+            virtual public bool FindRace()
+            {
+                if (Turn < 31)
+                    return girl.SelectFirstSuitableRace();
 
+                return girl.SelectMaxFansSuitableRace();
+            }
+            virtual public PlanInfo NoSuitableRace()
+            {
+                if (Vitality > 69)
+                    return T.Where(t => t.Plan == PlanEnum.智力).First();
+
+                if (Mood < 5 && Vitality > 39)
+                    return GoOut;
+
+                return Relex;
+            }
+
+
+
+            protected void SortByIndex()
+            {
+                int L = TrainingItems.Length - 1;
+                for (int i = 0; i < L; i++)
+                {
+                    var orin = T.FindIndex(x => x.Plan == TrainingItems[i]);
+                    (T[i], T[orin]) = (T[orin], T[i]);
+                }
+            }
             protected void SortByScore()
             {
                 T.Sort((a, b) =>

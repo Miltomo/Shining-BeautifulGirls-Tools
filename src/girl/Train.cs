@@ -1,5 +1,8 @@
 ﻿namespace Shining_BeautifulGirls
 {
+    //TODO 连续参赛时的处理
+    //TODO 增加"训练-赛事"权衡决断定义
+    //TODO 着手设计自选比赛功能
     partial class ShiningGirl
     {
         private static PlanEnum[] TrainingItems { get; } =
@@ -9,7 +12,7 @@
         private Algorithm Core { get; set; }
         public bool TryTrain()
         {
-            if (Mnt.WaitTo([Symbol.返回, Button.训练], 0.8))
+            if (GotoTrainPage())
             {
                 Core = new PrimaryLogic(this);
                 Subject巡视();
@@ -20,35 +23,81 @@
             return false;
         }
 
+        private bool GotoTrainPage()
+        {
+            if (AtTrainPage())
+                return true;
+
+            if (!GotoMainPage())
+                return false;
+
+            Click(Button.训练);
+
+            return MC.Builder
+                .AddTarget(AtTrainPage)
+                .StartAsWaitTo(Mnt, 200);
+        }
+
         private void StartPlan()
         {
             Log(Core.Print());
             var t = Core.PlanToDo();
             var plan = t.Plan;
-            Log($"选择「{plan}」 {(t.Fail > 9 ? $"(训练失败率：{t.Fail}%)" : "")}");
-            _lastAction = plan.ToString();
 
+        计划匹配:
             if (TrainingItems.Contains(plan))
             {
+                GotoTrainPage();
+
+                Log($"选择「{plan}」 {(t.Fail > 9 ? $"(训练失败率：{t.Fail}%)" : "")}");
                 var bt = TrainingButtons[Array.IndexOf(TrainingItems, plan)];
                 while (FastCheck(Symbol.返回, 0.7))
                     Click(bt);
+
             }
             else
             {
                 switch (plan)
                 {
                     case PlanEnum.休息:
+                        Log($"训练回报差，选择休息");
                         System__relex__();
                         break;
+
                     case PlanEnum.外出:
+                        Log($"放弃训练，恢复心情");
                         System__out__();
                         break;
+
+                    case PlanEnum.比赛:
+                        // 夏天不比赛
+                        if (InSummer)
+                        {
+                            plan = Core.NoSuitableRace().Plan;
+                            goto 计划匹配;
+                        }
+
+                        Log($"训练增益值过低，准备参加日常比赛......");
+                        if (Core.FindRace())
+                        {
+                            Log($"已找到合适比赛：");
+                            Log(TargetRace);
+                            比赛处理(比赛过程Enum.进入);
+                            break;
+                        }
+                        Log($"未找到合适比赛");
+                        plan = Core.NoSuitableRace().Plan;
+                        GotoMainPage();
+
+                        goto 计划匹配;
+
                     default:
                         System__relex__();
                         break;
                 }
             }
+
+            _lastAction = plan.ToString();
         }
 
         private void Subject巡视()
@@ -185,6 +234,7 @@
             智力,
             外出,
             休息,
+            比赛,
         }
 
         private struct HeadInfo()
