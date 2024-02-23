@@ -103,6 +103,7 @@
             </Setter>
         </Style>
     </Window.Resources>
+
     <Grid>
         <Grid.ContextMenu>
             <ContextMenu>
@@ -118,9 +119,9 @@
         <!--上部-->
         <Canvas Grid.Row="0">
             <Grid x:Name="选项面板" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}"
-                  Canvas.Left="0"
-                  Canvas.Top="0"
-                  >
+          Canvas.Left="0"
+          Canvas.Top="0"
+          >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="2*"/>
                     <RowDefinition/>
@@ -182,9 +183,9 @@
                         </Grid>
 
                         <ComboBox x:Name="协助卡ComboBox" Grid.Row="2" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" 
-                                  SelectedIndex="0"
-                                  SelectionChanged="协助卡ComboBox_SelectionChanged"
-                                  >
+                          SelectedIndex="0"
+                          SelectionChanged="协助卡ComboBox_SelectionChanged"
+                          >
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
@@ -247,17 +248,19 @@
                         </Grid>
 
                         <!--<Button Style="{DynamicResource ButtonStyle}" x:Name="Button默认" Grid.Column="1" Click="Button默认_Click" Height="30">
-                            恢复默认值
-                        </Button>-->
+                    恢复默认值
+                </Button>-->
                         <CheckBox x:Name="养成启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True"/>
                     </Grid>
                 </Border>
                 <!--杂项任务-->
                 <Grid Grid.Row="1">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="1.1*"/>
                     </Grid.RowDefinitions>
+
                     <Border x:Name="竞技场任务" Style="{DynamicResource BorderStyle}" Grid.Row="0">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -281,6 +284,7 @@
                             <CheckBox x:Name="竞技场启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True" Margin="20,0,0,0"/>
                         </Grid>
                     </Border>
+
                     <Border x:Name="日常赛事任务" Style="{DynamicResource BorderStyle}" Grid.Row="1">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -314,13 +318,42 @@
                             <CheckBox x:Name="日常赛事启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True"/>
                         </Grid>
                     </Border>
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Border x:Name="传奇赛事任务" Style="{DynamicResource BorderStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Style="{DynamicResource 面板名TextBlockStyle}" HorizontalAlignment="Center">传奇赛事</TextBlock>
+
+                                <CheckBox x:Name="传奇赛事启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="2" IsChecked="False"/>
+                            </Grid>
+                        </Border>
+                        <Border x:Name="群英联赛任务" Style="{DynamicResource BorderStyle}" Grid.Column="1" IsEnabled="False">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Style="{DynamicResource 面板名TextBlockStyle}" HorizontalAlignment="Center">群英联赛</TextBlock>
+
+                                <CheckBox x:Name="群英联赛启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="2" IsChecked="False"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
                 </Grid>
             </Grid>
             <Grid x:Name="输出面板" Opacity="0"
-                  Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}"
-                  Canvas.Left="600"
-                  Canvas.Top="0"
-                  >
+          Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}"
+          Canvas.Left="600"
+          Canvas.Top="0"
+          >
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition Height="9*"/>
@@ -342,8 +375,8 @@
             </Viewbox>
 
             <Button x:Name="Button执行" Grid.Row="1" Style="{DynamicResource ButtonStyle}" FontSize="30" Height="60" Width="150"
-                    Click="Button执行_Click"
-                    >
+            Click="Button执行_Click"
+            >
                 <Button.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF65BCF3"/>
@@ -353,4 +386,5 @@
             </Button>
         </Grid>
     </Grid>
+    
 </Window>

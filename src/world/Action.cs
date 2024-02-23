@@ -37,17 +37,14 @@ namespace Shining_BeautifulGirls
                 Refresh();
             }
 
-            MoveTo([Symbol.继续, teams[target]], sim: 0.8);
+            MoveTo([Symbol.继续, teams[target]], sec: 3, sim: 0.8);
             Click(Button.继续);
-            PageDown(Zone.中部, PText.JJC.选择道具, Button.选择道具确认);
+            PageDown(Zone.中部, PText.Race.选择道具, Button.大弹窗确认);
             goto 比赛处理;
 
         比赛处理:
             Pause(2000);
-            MoveTo(
-                () => ExtractZoneAndContains(Zone.上部, PText.JJC.赛事结束),
-                [Button.比赛结束, Button.快进],
-                sec: 0);
+            MoveTo([Symbol.赛事结束, Button.比赛结束, Button.快进], 0);
             Click(Button.低继续);
             goto 循环处理;
 
@@ -64,7 +61,7 @@ namespace Shining_BeautifulGirls
 
         结束:
             Log("竞技值不足，退出");
-            MoveTo([Symbol.主界面, Button.主页], 0, 0.8);
+            MoveTo(AtStartPage, Button.主页, 0);
             Log($"共完成了 {count} 次比赛");
         }
 
@@ -117,12 +114,11 @@ namespace Shining_BeautifulGirls
                         .SetButtons(Button.继续)
                         .StartAsClickEx(this);
 
-                    MoveTo([Symbol.返回, Button.比赛结束], sec: 0);
                     日常赛事流程("退出");
                     break;
 
                 case "退出":
-                    MoveTo([Symbol.主界面, Button.主页], 0, 0.8);
+                    MoveTo(AtStartPage, Button.主页, 0);
                     break;
             }
         }
@@ -198,6 +194,56 @@ namespace Shining_BeautifulGirls
         退出:;
         }
 
+        private void 传奇赛事流程()
+        {
+            MoveTo(Zone.上部, PText.Main.赛事, Button.赛事);
+            Click(Button.赛事活动);
+            PageDown([Symbol.赛事活动]);
+            if (IsNoLight(ZButton.传奇赛事))
+            {
+                Log("⚠️传奇赛事未开放⚠️");
+                goto 结束;
+            }
+            Click(ZButton.传奇赛事);
+            PageDown([Symbol.返回]);
+            goto 开始判断;
+
+        开始判断:
+            if (IsNoLight(ZButton.传奇赛事比赛位))
+            {
+                Log("今日比赛次数已耗尽");
+                goto 结束;
+            }
+            goto 新比赛;
+
+        新比赛:
+            Log("开始新一轮传奇比赛...");
+            MoveTo(Zone.上部, PText.Race.赛事详情, ZButton.传奇赛事比赛位);
+            Click(Button.比赛结束);
+            PageDown([Symbol.返回, Button.继续]);
+
+            // 比赛
+            PageDown([Symbol.继续, Button.比赛结束]);
+            PageDown(Zone.中部, PText.Race.选择道具, Button.大弹窗确认);
+            PageDown(Zone.下部, PText.Race.前往赛事);
+            Pause();
+            if (IsNoLight(ZButton.查看结果, 160))
+            {
+                MoveTo([Symbol.快进, Button.比赛结束], 0);
+                MoveTo([Symbol.继续, Button.比赛连点], 0);
+            }
+            else
+            {
+                Click(ZButton.查看结果, 1000);
+                MoveTo([Symbol.继续, Button.继续], 0);
+            }
+            MoveTo([Symbol.返回, Button.传奇赛事连点], 0);
+            Log("比赛结束");
+            goto 开始判断;
+
+        结束: Click(Button.主页);
+        }
+
         /// <summary>
         /// 进行一次养成的标准流程
         /// </summary>
@@ -206,12 +252,11 @@ namespace Shining_BeautifulGirls
         private bool 养成流程()
         {
             bool 已存在养成 = false;
-            MoveTo([Symbol.主界面, Button.主页], 0, 0.8);
-
             bool Aw = MC.Builder
+                .SetButtons(Button.主页)
                 .AddTarget(Symbol.养成, 0.8)
                 .AddOpposite(Symbol.养成2, 0.8)
-                .StartAsPageDown(this, 0);
+                .StartAsMoveTo(this);
 
             if (Aw)
             {
@@ -289,9 +334,9 @@ namespace Shining_BeautifulGirls
                     .SetButtons(Button.快进)
                     .AddProcess(Zone.中部, PText.Cultivation.跳过确认, [Button.弹窗勾选, Button.弹窗确认])
                     .StartAsClickEx(this);
-                PageDown([Symbol.缩短事件]);
+                PageDown(Zone.中部, PText.Cultivation.缩短事件设置);
                 Click([Button.跳过, Button.跳过, Button.缩短所有事件, Button.缩短事件确定]);
-                PageDown([Symbol.养成主页], 0.8);
+                PageDown([Symbol.普通日主页], 0.8);
                 Log("到达界面，正式开始");
                 Girl = default;
             }
@@ -340,6 +385,13 @@ namespace Shining_BeautifulGirls
         public void 标准群英联赛()
         {
             群英联赛流程();
+        }
+
+        public void 标准传奇赛事()
+        {
+            Log("正在执行自动传奇赛事任务");
+            传奇赛事流程();
+            Log("结束传奇赛事任务");
         }
 
         public void 自定义养成()
@@ -439,7 +491,12 @@ namespace Shining_BeautifulGirls
         {
             Start();
             Log("正在检测位置......");
-            return WaitTo([Symbol.主界面, Button.主页], 0.8);
+
+            /*WaitTo([Symbol.主界面, Button.主页], 0.8);*/
+            return MoveControl.Builder
+                .SetButtons(Button.主页)
+                .AddTarget(AtStartPage)
+                .StartAsWaitTo(this);
         }
 
         public void Start()

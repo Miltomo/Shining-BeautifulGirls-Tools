@@ -20,7 +20,7 @@ namespace Shining_BeautifulGirls
     /// </summary>
     public partial class 用户界面 : Window
     {
-        #region 定义
+        #region 变量定义
         private readonly string _json养成优俊少女 = Path.Combine(App.UserDataDir, "girl.json");
         private readonly string _json用户设置 = Path.Combine(App.UserDataDir, "user.json");
 
@@ -187,7 +187,9 @@ namespace Shining_BeautifulGirls
             public string Name { get; set; }
             public string Path { get; set; }
         }
+        #endregion
 
+        #region 传递值
         [SaveAll]
         private static class User
         {
@@ -206,6 +208,7 @@ namespace Shining_BeautifulGirls
 
             public static bool 需要竞技场 { get; set; } = true;
             public static bool 需要日常赛事 { get; set; } = true;
+            public static bool 需要传奇赛事 { get; set; } = false;
         }
         #endregion
         public 用户界面(Emulator.EmulatorItem emulator)
@@ -234,7 +237,7 @@ namespace Shining_BeautifulGirls
             右键测试.Visibility = Visibility.Visible;
 #endif
             //TODO 使用异步更新技能名列表
-            //TODO 准备对技能进行分类；添加筛选与搜索功能
+            //TODO 分离数据交互模型
         }
 
         public void Refresh()
@@ -335,6 +338,7 @@ namespace Shining_BeautifulGirls
                 SaveAllToSaveAsJSON(Monitor.Girl, _json养成优俊少女);
         }
 
+        #region 数据保存与读取
         public void Save用户设置()
         {
             User.目标属性值 = [
@@ -360,6 +364,7 @@ namespace Shining_BeautifulGirls
 
             User.需要竞技场 = 竞技场启用CheckBox.IsChecked ?? false;
             User.需要日常赛事 = 日常赛事启用CheckBox.IsChecked ?? false;
+            User.需要传奇赛事 = 传奇赛事启用CheckBox.IsChecked ?? false;
 
             SaveAllToSaveAsJSON(typeof(User), _json用户设置);
         }
@@ -390,7 +395,9 @@ namespace Shining_BeautifulGirls
 
             竞技场启用CheckBox.IsChecked = User.需要竞技场;
             日常赛事启用CheckBox.IsChecked = User.需要日常赛事;
+            传奇赛事启用CheckBox.IsChecked = User.需要传奇赛事;
         }
+        #endregion
 
         private void Animation面板移动(bool reverse = false)
         {
@@ -490,6 +497,9 @@ namespace Shining_BeautifulGirls
 
                     // 任务入队
                     PlanQueue.Clear();
+
+                    if (User.需要传奇赛事)
+                        PlanQueue.Enqueue(Monitor.标准传奇赛事);
                     if (User.需要竞技场)
                         PlanQueue.Enqueue(Monitor.标准竞技场);
                     if (User.需要日常赛事)
@@ -560,6 +570,7 @@ namespace Shining_BeautifulGirls
             使用宝石CheckBox.Visibility = toSet ? Visibility.Visible : Visibility.Collapsed;
         }
 
+
         private void 右键截图_Click(object sender, RoutedEventArgs e)
         {
             Monitor.SaveScreen();
@@ -570,7 +581,7 @@ namespace Shining_BeautifulGirls
         {
             Thread thread = new(() =>
             {
-                //Monitor.Refresh();
+                Monitor.Refresh();
                 Monitor.Start();
                 // 创建 Stopwatch 实例
                 Stopwatch stopwatch = new();
@@ -580,10 +591,10 @@ namespace Shining_BeautifulGirls
 
                 // 调用需要计时的函数
 
+                //Toast($"亮度：{ComputerVision.ImageRecognition.AvgBrightness(Monitor.CropScreen(ZButton.养成日常赛事位, "测试"))}");
 
-                //Monitor.标准群英联赛();
-                var g = new ShiningGirl(Monitor);
-                g.测试();
+                /*var g = new ShiningGirl(Monitor);
+                g.测试();*/
 
 
                 /*var result = RankClassification.Predict(new()
