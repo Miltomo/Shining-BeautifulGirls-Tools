@@ -241,7 +241,7 @@ namespace Shining_BeautifulGirls
             Log("比赛结束");
             goto 开始判断;
 
-        结束: Click(Button.主页);
+        结束: MoveTo(AtStartPage, Button.主页);
         }
 
         /// <summary>

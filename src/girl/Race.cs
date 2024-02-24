@@ -251,6 +251,7 @@ namespace Shining_BeautifulGirls
                         return false;
 
                     Click(ZButton.养成日常赛事位, 1000);
+                    //TODO 把判断逻辑放到这里
                 }
                 // 检测赛事推荐弹窗
                 else if (Extract上部().Contains(PText.Race.赛事推荐功能))

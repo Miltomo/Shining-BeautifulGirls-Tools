@@ -202,7 +202,7 @@
             MakeButton(Button.赛事活动, 505, 850, ssjdx, ssjdy);
             MakeButton(Button.群英联赛, 210, 925, ssjdx, ssjdy);
 
-            MakeButton(Button.传奇赛事连点, 412, 1140, 15, 10);
+            MakeButton(Button.传奇赛事连点, 412, 1140, 15, 5);
 
             //============================================
             double L = 0, R = STANDARD_WIDTH;
