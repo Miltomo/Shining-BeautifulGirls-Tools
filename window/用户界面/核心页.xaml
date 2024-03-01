@@ -8,7 +8,8 @@
       d:DesignHeight="900" d:DesignWidth="600"
       Title="核心页"
       >
-    <!--<Page.Resources>
+
+    <Page.Resources>
         <Style x:Key="面板名TextBlockStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -107,18 +108,12 @@
     </Page.Resources>
 
     <Grid>
-        <Grid.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="截图" Cursor="Hand" Click="右键截图_Click"/>
-                <MenuItem x:Name="右键测试" Header="测试" Cursor="Hand" Click="右键测试_Click" Visibility="Collapsed"/>
-            </ContextMenu>
-        </Grid.ContextMenu>
-
         <Grid.RowDefinitions>
-            <RowDefinition Height="5*"/>
+            <RowDefinition Height="6*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        --><!--上部--><!--
+
+        <!--上部-->
         <Canvas Grid.Row="0">
             <Grid x:Name="选项面板" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type Canvas}}}"
       Canvas.Left="0"
@@ -128,7 +123,7 @@
                     <RowDefinition Height="2*"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                --><!--养成任务--><!--
+                <!--养成任务-->
                 <Border x:Name="养成任务" Style="{DynamicResource BorderStyle}">
                     <Border.BorderBrush>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -159,7 +154,7 @@
                         <TextBlock Grid.Row="5" Text="养成算法" Style="{DynamicResource 选项TextBlockStyle}"/>
                         <TextBlock Grid.Row="6" Text="循环设置" Style="{DynamicResource 选项TextBlockStyle}"/>
 
-                        --><!--编辑属性值--><!--
+                        <!--编辑属性值-->
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -214,7 +209,7 @@
                             <ComboBoxItem Content="基本逻辑"/>
                         </ComboBox>
 
-                        --><!--循环设置--><!--
+                        <!--循环设置-->
                         <Grid Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*"/>
@@ -249,13 +244,13 @@
                             </CheckBox>
                         </Grid>
 
-                        --><!--<Button Style="{DynamicResource ButtonStyle}" x:Name="Button默认" Grid.Column="1" Click="Button默认_Click" Height="30">
+                        <!--<Button Style="{DynamicResource ButtonStyle}" x:Name="Button默认" Grid.Column="1" Click="Button默认_Click" Height="30">
                 恢复默认值
-            </Button>--><!--
+            </Button>-->
                         <CheckBox x:Name="养成启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True"/>
                     </Grid>
                 </Border>
-                --><!--杂项任务--><!--
+                <!--杂项任务-->
                 <Grid Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*"/>
@@ -337,15 +332,15 @@
                                 <CheckBox x:Name="传奇赛事启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="2" IsChecked="False"/>
                             </Grid>
                         </Border>
-                        <Border x:Name="群英联赛任务" Style="{DynamicResource BorderStyle}" Grid.Column="1" IsEnabled="False">
+                        
+                        <Border x:Name="群英联赛任务" Style="{DynamicResource BorderStyle}" Grid.Column="1" IsEnabled="True">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="2*"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Style="{DynamicResource 面板名TextBlockStyle}" HorizontalAlignment="Center">群英联赛</TextBlock>
-
-                                <CheckBox x:Name="群英联赛启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="2" IsChecked="False"/>
+                                <CheckBox Grid.Column="1" x:Name="群英联赛启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" IsChecked="False"/>
                             </Grid>
                         </Border>
                     </Grid>
@@ -366,26 +361,29 @@
                 </FlowDocumentScrollViewer>
             </Grid>
         </Canvas>
-        --><!--下部--><!--
+
+        <!--下部-->
         <Grid x:Name="控制面板" Grid.Row="1" ClipToBounds="False">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="3*"/>
             </Grid.RowDefinitions>
-            <Viewbox Stretch="None" ClipToBounds="False">
-                <TextBlock x:Name="提示信息" Text="未选择任何任务" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Microsoft YaHei" FontSize="22" FontWeight="Bold" Opacity="0" TextWrapping="Wrap" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"/>
-            </Viewbox>
-
-            <Button x:Name="Button执行" Grid.Row="1" Style="{DynamicResource ButtonStyle}" FontSize="30" Height="60" Width="150"
-        Click="Button执行_Click"
-        >
+            <Image Style="{StaticResource 系统图标Style}" x:Name="设置图标" Width="50" Grid.Row="1" Source="resources/asset/设置.png" HorizontalAlignment="Center" VerticalAlignment="Top" MouseLeftButtonUp="设置图标MouseLeftButtonUp" ToolTip="设置"/>
+            <Button x:Name="Button执行" Grid.RowSpan="2" Grid.Column="1" Style="{DynamicResource ButtonStyle}" FontSize="30" Height="60" Width="150" Click="Button执行_Click">
                 <Button.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF65BCF3"/>
                         <GradientStop Color="#FFF5F5DF" Offset="1"/>
                     </LinearGradientBrush>
-                </Button.Background> 开始执行
+                </Button.Background>
+                开始执行
             </Button>
         </Grid>
-    </Grid>-->
+    </Grid>
+
 </Page>
