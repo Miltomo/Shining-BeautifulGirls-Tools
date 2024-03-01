@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 
 namespace Shining_BeautifulGirls
@@ -18,12 +19,16 @@ namespace Shining_BeautifulGirls
     {
         public static Window? StartWindow { get; set; }
         public static Window? UserWindow { get; set; }
+        public static Page? CorePage { get; set; }
+        public static Page? ConfigPage { get; set; }
         public static Window? SkillWindow { get; set; }
 
         public static readonly string Version = "v0.12.0";
 
         public static string AdbPath => Path.Combine(ProgramDir, @"adb/adb.exe");
         public static string ProgramDir { get; private set; } = Environment.CurrentDirectory;
+        public static string SystemIconsDir => @$"{ProgramDir}\resources\asset";
+
         public static string UserDataDir
         {
             get
@@ -56,8 +61,7 @@ namespace Shining_BeautifulGirls
                 // 保存数据
                 if (UserWindow is 用户界面 wd)
                 {
-                    wd.Save养成优俊少女();
-                    wd.Save用户设置();
+                    用户界面.Save();
                 }
 
                 Exception ex = e.ExceptionObject as Exception;
@@ -132,6 +136,18 @@ namespace Shining_BeautifulGirls
                 }
             }
             return null;
+        }
+
+        public static void SetImage(Image image, string picturePath)
+        {
+            // 创建BitmapImage对象
+            BitmapImage bitmap = new();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(picturePath, UriKind.RelativeOrAbsolute);
+            bitmap.EndInit();
+
+            // 将BitmapImage对象分配给Image控件的Source属性
+            image.Source = bitmap;
         }
 
         // 递归函数，检查指定控件及其子控件是否包含指定文本的 TextBlock

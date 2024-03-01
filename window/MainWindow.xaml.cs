@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using ComputerVision;
+using System.IO;
 using System.Threading;
 using System.Windows;
 using static MHTools.数据工具;
@@ -60,7 +61,7 @@ namespace Shining_BeautifulGirls
             AdbHelper.SetWorkDir(World.CacheDir);
 
             // ======系统配置======
-            //PaddleOCR.UseGPU();
+            PaddleOCR.CPUthreads = 配置DataModel.Get.OCRthreads;
 
             // ===================
 

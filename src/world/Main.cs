@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Shining_BeautifulGirls
 {
-    partial class World : Base
+    public partial class World : Base
     {
         public static string SymbolDir { get; set; } = @"./symbol/";
         public static string SkillDir { get; set; } = @"./skill/";
@@ -32,9 +32,11 @@ namespace Shining_BeautifulGirls
             public int DailyRaceNumber { get; set; } = 1;
             public int DRDNumber { get; set; } = 1;
             public int TeamIndex { get; set; } = 0;
-            public int CultivateCount { get; set; } = -1;
+            public bool CultivateExhaustTP { get; set; } = true;
+            public int CultivateCount { get; set; } = 1;
             public bool CultivateUseProp { get; set; } = true;
-            public bool CultivateUseMoney { get; set; } = false;
+            public bool CultivateUseDiamond { get; set; } = false;
+            public bool ExtravaganzaUseDiamond { get; set; } = false;
             public string SupportCard { get; set; } = "北部玄驹";
             public ShiningGirl.Config? SBGConfig { get; set; }
         }

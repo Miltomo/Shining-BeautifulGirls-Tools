@@ -3,7 +3,7 @@ using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
 {
-    partial class ShiningGirl(World world, ShiningGirl.Config? userConfig = default)
+    public partial class ShiningGirl(World world, ShiningGirl.Config? userConfig = default)
     {
         #region
         public static string RecordDir { get; set; } = @"./record/";

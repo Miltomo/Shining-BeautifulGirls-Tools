@@ -60,7 +60,7 @@
                 switch (plan)
                 {
                     case PlanEnum.休息:
-                        Log($"训练回报差，选择休息");
+                        Log($"训练失败率高，选择休息");
                         System__relex__();
                         break;
 
@@ -73,7 +73,7 @@
                         // 夏天不比赛
                         if (InSummer)
                         {
-                            plan = Core.NoSuitableRace().Plan;
+                            plan = Core.WhenNoRace().Plan;
                             goto 计划匹配;
                         }
 
@@ -86,7 +86,7 @@
                             break;
                         }
                         Log($"未找到合适比赛");
-                        plan = Core.NoSuitableRace().Plan;
+                        plan = Core.WhenNoRace().Plan;
                         GotoMainPage();
 
                         goto 计划匹配;
