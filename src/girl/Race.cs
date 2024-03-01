@@ -232,14 +232,11 @@ namespace Shining_BeautifulGirls
         /// <summary>
         /// (加速) 确保从任何位置移到赛事界面；确保处于赛事界面
         /// </summary>
-        /// <returns>true，成功移动到赛事界面；false，无法移至赛事界面</returns>
+        /// <returns>true，成功移动到赛事界面；false，无法移至赛事界面|无比赛</returns>
         private bool GotoRacePage()
         {
             Mnt.Refresh();
             IOCRResult r;
-
-            if (!AtRacePage())
-                Click(ZButton.返回);
 
             while (true)
             {
@@ -247,11 +244,16 @@ namespace Shining_BeautifulGirls
                     return true;
                 else if (AtMainPage())
                 {
-                    if (IsDimmed(ZButton.养成日常赛事位, 140))
-                        return false;
-
-                    Click(ZButton.养成日常赛事位, 1000);
-                    //TODO 把判断逻辑放到这里
+                    // 比赛日主页无需检测
+                    if (FastCheck(Symbol.比赛日主页))
+                        Click(ZButton.通用参赛, 1000);
+                    else
+                    {
+                        if (IsDimmed(ZButton.养成日常赛事位, 140))
+                            return false;
+                        // 点击赛事按钮
+                        Click(ZButton.养成日常赛事位, 1000);
+                    }
                 }
                 // 检测赛事推荐弹窗
                 else if (Extract上部().Contains(PText.Race.赛事推荐功能))
@@ -259,16 +261,14 @@ namespace Shining_BeautifulGirls
                     Click(Button.不弹赛事推荐);
                     Click(Button.比赛结束, 1000);
                 }
-                // 检测连续参赛弹窗
-                else if ((r = Extract中部(), r.Contains(PText.Race.连续参赛)).Item2)
-                {
-                    Click(Button.弹窗确认, 1000);
-                }
                 // 检测提醒弹窗
-                else if (Extract中部().Equals(PText.Race.前往赛事))
-                {
+                else if ((r = Extract中部(), r.Equals(PText.Race.前往赛事)).Item2)
                     Click(Button.大弹窗确认, 1000);
-                }
+                else if (r.Contains(PText.Race.连续参赛))
+                    Click(Button.弹窗确认, 1000);
+                // 当没有比赛时
+                else if (r.Equals(PText.Cultivation.暂无可以参加的比赛))
+                    return false;
                 else
                     Click(ZButton.返回);
             }

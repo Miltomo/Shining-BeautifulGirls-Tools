@@ -1,29 +1,25 @@
 ﻿using MHTools;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
 {
     /// <summary>
-    /// 用户界面.xaml 的交互逻辑
+    /// 核心页.xaml 的交互逻辑
     /// </summary>
-    public partial class 用户界面 : Window
+    public partial class 核心页 : Page
     {
         #region 变量定义
         private readonly string _json养成优俊少女 = Path.Combine(App.UserDataDir, "girl.json");
-        private readonly string _json用户设置 = Path.Combine(App.UserDataDir, "user.json");
-
         private string _corestate = "未启动";
         public string CoreState
         {
@@ -140,8 +136,8 @@ namespace Shining_BeautifulGirls
                         // UI变动
                         Dispatcher.Invoke(() =>
                         {
-                            Topmost = true;
-                            Topmost = false;
+                            App.UserWindow!.Topmost = true;
+                            App.UserWindow!.Topmost = false;
                             LinearGradientBrush brush = new()
                             {
                                 StartPoint = new Point(0.5, 0),
@@ -178,8 +174,6 @@ namespace Shining_BeautifulGirls
                 _corestate = value;
             }
         }
-
-        readonly BlockingCollection<Action> TipQueue = [];
         Queue<Action> PlanQueue { get; set; } = new();
         World Monitor { get; init; }
         class 协助卡Item
@@ -188,68 +182,73 @@ namespace Shining_BeautifulGirls
             public string Path { get; set; }
         }
         #endregion
-
-        #region 传递值
-        [SaveAll]
-        private static class User
-        {
-            public static int[] 目标属性值 { get; set; } = [1100, 1000, 700, 360, 400];
-            public static string 协助卡名称 { get; set; } = "北部玄驹";
-            public static string 技能文件名 { get; set; } = "";
-            public static int 重赛逻辑 { get; set; } = 0;
-            public static int 选队Index { get; set; } = 0;
-            public static int 赛事名Index { get; set; } = 0;
-            public static int 赛事难度Index { get; set; } = 0;
-
-            public static bool 需要养成 { get; set; } = true;
-            public static int 养成次数设定 { get; set; } = -1;
-            public static bool 使用道具 { get; set; } = true;
-            public static bool 使用宝石 { get; set; } = false;
-
-            public static bool 需要竞技场 { get; set; } = true;
-            public static bool 需要日常赛事 { get; set; } = true;
-            public static bool 需要传奇赛事 { get; set; } = false;
-        }
-        #endregion
-        public 用户界面(Emulator.EmulatorItem emulator)
+        static 用户DataModel VM => 用户DataModel.Get;
+        static 配置DataModel Config => 配置DataModel.Get;
+        public 核心页(World mnt)
         {
             InitializeComponent();
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            ResizeMode = ResizeMode.CanMinimize;
-            Title = $"操作设备：{emulator}";
-            Height = 800;
-            Width = 600;
-            App.UserWindow = this;
 
-            // 启动处理消息队列的后台线程
-            Task.Run(() =>
-            {
-                foreach (var task in TipQueue.GetConsumingEnumerable())
-                    task();
-            });
-            Monitor = new(emulator.ID);
+            Monitor = mnt;
             Monitor.LogEvent += OutPut;
             Monitor.LogUpdateEvent += UpdateLogInfo;
             Monitor.LogDeleteEvent += DeleteLogInfo;
+            UpdateSource();
 
-            Refresh();
-#if DEBUG
-            右键测试.Visibility = Visibility.Visible;
-#endif
-            //TODO 使用异步更新技能名列表
-            //TODO 分离数据交互模型
+            App.SetImage(设置图标, FileManagerHelper.SetDir(App.SystemIconsDir).Find("设置")!);
+
+            DataContext = VM;
+
+            //=== 绑定数据 ===
+            MakeBinding(速度Input, TextBox.TextProperty, nameof(VM.V1));
+            MakeBinding(耐力Input, TextBox.TextProperty, nameof(VM.V2));
+            MakeBinding(力量Input, TextBox.TextProperty, nameof(VM.V3));
+            MakeBinding(毅力Input, TextBox.TextProperty, nameof(VM.V4));
+            MakeBinding(智力Input, TextBox.TextProperty, nameof(VM.V5));
+
+            MakeBinding(技能ComboBox, ComboBox.SelectedValueProperty, nameof(VM.技能文件Value));
+
+            MakeBinding(重赛逻辑ComboBox, ComboBox.SelectedIndexProperty, nameof(VM.重赛逻辑Index));
+            MakeBinding(选队ComboBox, ComboBox.SelectedIndexProperty, nameof(VM.选队Index));
+            MakeBinding(日常赛事ComboBox1, ComboBox.SelectedIndexProperty, nameof(VM.赛事名Index));
+            MakeBinding(日常赛事ComboBox2, ComboBox.SelectedIndexProperty, nameof(VM.赛事难度Index));
+
+            MakeBinding(养成循环_体力, RadioButton.IsCheckedProperty, nameof(VM.Is用尽体力));
+            MakeBinding(养成次数Input, TextBox.TextProperty, nameof(VM.养成次数设定));
+            MakeBinding(使用体力补剂CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is使用道具));
+            MakeBinding(使用宝石CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is使用宝石));
+
+            MakeBinding(养成启用CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is需要养成));
+            MakeBinding(竞技场启用CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is需要竞技场));
+            MakeBinding(日常赛事启用CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is需要日常赛事));
+            MakeBinding(传奇赛事启用CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is需要传奇赛事));
+            MakeBinding(群英联赛启用CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is需要群英联赛));
+            //============
+
         }
 
-        public void Refresh()
+        private static Binding MakeBinding(string propertyName)
         {
+            return new(propertyName)
+            {
+                Source = VM,
+                Mode = BindingMode.TwoWay
+            };
+        }
+        private static void MakeBinding(FrameworkElement element, DependencyProperty dq, string propertyName) => element.SetBinding(dq, MakeBinding(propertyName));
+
+        public void UpdateSource()
+        {
+            // 更新源集合
             协助卡ComboBox.ItemsSource = Directory.GetFiles(World.CardDir)
                 .Select(f => new 协助卡Item { Name = Path.GetFileNameWithoutExtension(f), Path = f });
 
             技能ComboBox.ItemsSource = new SimpleFileManager(App.SkillStrategyDir).Names;
 
-            Load用户设置(_json用户设置);
+            // 值还原
+            协助卡ComboBox.SelectedIndex = ((IEnumerable<协助卡Item>)协助卡ComboBox.ItemsSource).ToList().FindIndex(x => x.Name.Contains(VM.协助卡名称));
         }
 
+        #region 信息输出
         private void OutPut(object logInfo)
         {
             var text = logInfo.ToString();
@@ -300,105 +299,50 @@ namespace Shining_BeautifulGirls
             });
         }
 
-        private void Toast(string msg)
+        private static void Toast(string msg)
         {
-            TipQueue.Add(() =>
+            if (App.UserWindow is 用户界面 wd)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    提示信息.Text = msg;
-                    提示信息.Opacity = 1;
-                });
-                Thread.Sleep(1000);
-
-                int sum = 500, step = 20;
-                int count = sum / step;
-                var bias = 1d / count;
-                for (int i = 0; i < count; i++)
-                {
-                    Dispatcher.Invoke(() => 提示信息.Opacity -= bias);
-                    Thread.Sleep(step);
-                }
-
-                Dispatcher.Invoke(() => 提示信息.Opacity = 0);
-            });
+                wd.Toast(msg);
+            }
         }
 
-        protected override void OnClosed(EventArgs e)
+        /// <summary>
+        /// 显示一个警告信息对话框
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns>true，继续提示; false，不再提示</returns>
+        private bool OpenWarningBox(string msg)
         {
-            Monitor.Stop();
+            IsEnabled = false;
+            new 警告框(msg).ShowDialog();
+            IsEnabled = true;
+            return 警告框.DoNotDisplay == false;
+        }
+        #endregion
+
+        #region 数据保存
+        public void Save()
+        {
             Save养成优俊少女();
             Save用户设置();
-            base.OnClosed(e);
         }
-
-        public void Save养成优俊少女()
+        private void Save养成优俊少女()
         {
             if (Monitor.Girl is not null)
                 SaveAllToSaveAsJSON(Monitor.Girl, _json养成优俊少女);
         }
-
-        #region 数据保存与读取
-        public void Save用户设置()
+        private void Save用户设置()
         {
-            User.目标属性值 = [
-                int.Parse(速度Input.Text),
-                int.Parse(耐力Input.Text),
-                int.Parse(力量Input.Text),
-                int.Parse(毅力Input.Text),
-                int.Parse(智力Input.Text),
-            ];
-            User.协助卡名称 = ((协助卡Item)协助卡ComboBox.SelectedItem)?.Name ?? "";
-            User.技能文件名 = 技能ComboBox.SelectedItem as string ?? "";
-            User.重赛逻辑 = 重赛逻辑ComboBox.SelectedIndex;
-            User.选队Index = 选队ComboBox.SelectedIndex;
-            User.赛事名Index = 日常赛事ComboBox1.SelectedIndex;
-            User.赛事难度Index = 日常赛事ComboBox2.SelectedIndex;
+            // 保存无法绑定的值
+            VM.协助卡名称 = ((协助卡Item)协助卡ComboBox.SelectedItem)?.Name ?? "";
 
-
-            User.需要养成 = 养成启用CheckBox.IsChecked ?? false;
-            User.养成次数设定 = (养成循环_次数.IsChecked ?? false) ?
-                int.Parse(养成次数Input.Text) : -1;
-            User.使用道具 = 使用体力补剂CheckBox.IsChecked ?? false;
-            User.使用宝石 = 使用宝石CheckBox.IsChecked ?? false;
-
-            User.需要竞技场 = 竞技场启用CheckBox.IsChecked ?? false;
-            User.需要日常赛事 = 日常赛事启用CheckBox.IsChecked ?? false;
-            User.需要传奇赛事 = 传奇赛事启用CheckBox.IsChecked ?? false;
-
-            SaveAllToSaveAsJSON(typeof(User), _json用户设置);
-        }
-        private void Load用户设置(string file)
-        {
-            LoadFromJSON(typeof(User), file);
-            速度Input.Text = User.目标属性值[0].ToString();
-            耐力Input.Text = User.目标属性值[1].ToString();
-            力量Input.Text = User.目标属性值[2].ToString();
-            毅力Input.Text = User.目标属性值[3].ToString();
-            智力Input.Text = User.目标属性值[4].ToString();
-
-            协助卡ComboBox.SelectedIndex = ((IEnumerable<协助卡Item>)协助卡ComboBox.ItemsSource).ToList().FindIndex(x => x.Name.Contains(User.协助卡名称));
-            重赛逻辑ComboBox.SelectedIndex = User.重赛逻辑;
-            技能ComboBox.SelectedIndex = ((IEnumerable<string>)技能ComboBox.ItemsSource).ToList().FindIndex(x => x == User.技能文件名);
-            选队ComboBox.SelectedIndex = User.选队Index;
-            日常赛事ComboBox1.SelectedIndex = User.赛事名Index;
-            日常赛事ComboBox2.SelectedIndex = User.赛事难度Index;
-
-            养成启用CheckBox.IsChecked = User.需要养成;
-            if (User.养成次数设定 > 0)
-            {
-                养成循环_次数.IsChecked = true;
-                养成次数Input.Text = User.养成次数设定.ToString();
-                使用体力补剂CheckBox.IsChecked = User.使用道具;
-                使用宝石CheckBox.IsChecked = User.使用宝石;
-            }
-
-            竞技场启用CheckBox.IsChecked = User.需要竞技场;
-            日常赛事启用CheckBox.IsChecked = User.需要日常赛事;
-            传奇赛事启用CheckBox.IsChecked = User.需要传奇赛事;
+            // 保存普通值
+            用户DataModel.Save();
         }
         #endregion
 
+        #region 基本交互
         private void Animation面板移动(bool reverse = false)
         {
             const double W = 600;
@@ -431,20 +375,12 @@ namespace Shining_BeautifulGirls
             CoreState = reverse ? "未启动" : "运行中";
         }
 
-
         private void 协助卡ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (协助卡ComboBox.SelectedIndex > -1)
             {
                 var imagePath = ((协助卡Item)协助卡ComboBox.SelectedItem).Path;
-                // 创建BitmapImage对象
-                BitmapImage bitmap = new();
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
-                bitmap.EndInit();
-
-                // 将BitmapImage对象分配给Image控件的Source属性
-                协助卡Image.Source = bitmap;
+                App.SetImage(协助卡Image, imagePath);
             }
         }
 
@@ -473,6 +409,8 @@ namespace Shining_BeautifulGirls
             if (length == 0)
             {
                 tb.Text = "0";
+                if (tb.Name == nameof(养成次数Input))
+                    tb.Text = "1";
             }
             else
             {
@@ -488,23 +426,48 @@ namespace Shining_BeautifulGirls
             }
         }
 
+        private void Set养成次数(object sender, RoutedEventArgs e)
+        {
+            bool toSet = (sender as RadioButton)?.IsChecked ?? false;
+            养成次数Input.IsEnabled = toSet;
+            使用体力补剂CheckBox.Visibility = toSet ? Visibility.Visible : Visibility.Collapsed;
+            使用宝石CheckBox.Visibility = toSet ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void Button技能编辑_Click(object sender, RoutedEventArgs e)
+        {
+            Save用户设置();
+            App.SkillWindow ??= new 技能编辑();
+            App.SkillWindow.Show();
+            App.UserWindow!.IsEnabled = false;
+        }
+        #endregion
+
         private void Button执行_Click(object sender, RoutedEventArgs e)
         {
             switch (CoreState)
             {
                 case "未启动":
-                    Save用户设置();
-
                     // 任务入队
                     PlanQueue.Clear();
 
-                    if (User.需要传奇赛事)
+                    if (VM.Is需要传奇赛事)
+                    {
+                        if (Config.Tip传奇赛事)
+                            Config.Tip传奇赛事 =
+                                OpenWarningBox(
+                                    "你选择了「传奇赛事」任务。" +
+                                    "请确保此场对决已自行选过角色，否则将使用默认角色。");
+
                         PlanQueue.Enqueue(Monitor.标准传奇赛事);
-                    if (User.需要竞技场)
+                    }
+                    if (VM.Is需要竞技场)
                         PlanQueue.Enqueue(Monitor.标准竞技场);
-                    if (User.需要日常赛事)
+                    if (VM.Is需要日常赛事)
                         PlanQueue.Enqueue(Monitor.标准日常赛事);
-                    if (User.需要养成)
+                    if (VM.Is需要群英联赛)
+                        PlanQueue.Enqueue(Monitor.标准群英联赛);
+                    if (VM.Is需要养成)
                         PlanQueue.Enqueue(Monitor.自定义养成);
 
                     if (PlanQueue.Count == 0)
@@ -521,24 +484,25 @@ namespace Shining_BeautifulGirls
                     // 载入用户配置
                     Monitor.UserConfig = new World.Config
                     {
-                        DailyRaceNumber = User.赛事名Index + 1,
-                        DRDNumber = User.赛事难度Index + 1,
-                        TeamIndex = User.选队Index,
-                        SupportCard = User.协助卡名称,
-                        CultivateCount = User.养成次数设定,
-                        CultivateUseProp = User.使用道具,
-                        CultivateUseMoney = User.使用宝石,
+                        DailyRaceNumber = VM.赛事名Index + 1,
+                        DRDNumber = VM.赛事难度Index + 1,
+                        TeamIndex = VM.选队Index,
+                        SupportCard = VM.协助卡名称,
+                        CultivateExhaustTP = VM.Is用尽体力,
+                        CultivateCount = VM.养成次数设定,
+                        CultivateUseProp = VM.Is使用道具,
+                        CultivateUseDiamond = VM.Is使用宝石,
+                        ExtravaganzaUseDiamond = Config.Is群英允许宝石,
                         SBGConfig = new ShiningGirl.Config
                         {
-                            TargetProperty = User.目标属性值,
-                            ReChallenge = User.重赛逻辑,
+                            TargetProperty = [VM.V1, VM.V2, VM.V3, VM.V4, VM.V5],
+                            ReChallenge = VM.重赛逻辑Index,
                             PrioritySkillList =
-                            string.IsNullOrWhiteSpace(User.技能文件名) ?
+                            string.IsNullOrWhiteSpace(VM.技能文件Value) ?
                             null :
-                            技能编辑.GetPrioritySkillList(User.技能文件名)
+                            技能编辑.GetPrioritySkillList(VM.技能文件Value)
                         }
                     };
-
                     CoreState = "准备开始";
                     break;
 
@@ -554,81 +518,10 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        private void Button技能编辑_Click(object sender, RoutedEventArgs e)
+        private void 设置图标MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Save用户设置();
-            App.SkillWindow ??= new 技能编辑();
-            App.SkillWindow.Show();
-            IsEnabled = false;
-        }
-
-        private void Set养成次数(object sender, RoutedEventArgs e)
-        {
-            bool toSet = (sender as RadioButton)?.IsChecked ?? false;
-            养成次数Input.IsEnabled = toSet;
-            使用体力补剂CheckBox.Visibility = toSet ? Visibility.Visible : Visibility.Collapsed;
-            使用宝石CheckBox.Visibility = toSet ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-
-        private void 右键截图_Click(object sender, RoutedEventArgs e)
-        {
-            Monitor.SaveScreen();
-            Toast($"已保存截图：前往 {World.ScreenshotDir} 查看");
-        }
-
-        private void 右键测试_Click(object sender, RoutedEventArgs e)
-        {
-            Thread thread = new(() =>
-            {
-                Monitor.Refresh();
-                Monitor.Start();
-                // 创建 Stopwatch 实例
-                Stopwatch stopwatch = new();
-
-                // 启动计时器
-                stopwatch.Start();
-
-                // 调用需要计时的函数
-
-                //Toast($"亮度：{ComputerVision.ImageRecognition.AvgBrightness(Monitor.CropScreen(ZButton.养成日常赛事位, "测试"))}");
-
-                /*var g = new ShiningGirl(Monitor);
-                g.测试();*/
-
-
-                /*var result = RankClassification.Predict(new()
-                {
-                    ImageSource = File.ReadAllBytes(Monitor.CropScreen(World.NP.Zone.Rank英里, "测试")),
-                }).PredictedLabel;
-
-                Toast(result);*/
-
-                /*var dir = @"C:\Users\Administrator\Desktop\mlData\data\Rank";
-                Monitor.Refresh();
-                Func<object, OpenCvSharp.Mat> func = Monitor.CropScreen;
-                func(World.NP.Zone.Rank草地).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank泥地).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank短距离).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank英里).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank中距离).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank长距离).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank领跑).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank跟前).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank居中).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank后追).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));*/
-
-
-                // 停止计时器
-                stopwatch.Stop();
-                Monitor.Stop();
-
-                // 获取经过的时间（毫秒）
-                long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
-                Debug.WriteLine($"Function took {elapsedMilliseconds} milliseconds to execute.");
-                Toast("测试结束");
-            });
-            thread.Start();
+            if (App.UserWindow is 用户界面 wd)
+                wd.切换页面(用户界面.PageEnum.配置页面);
         }
     }
 }

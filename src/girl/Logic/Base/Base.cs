@@ -44,9 +44,22 @@
                 }
             }
 
+            /// <summary>
+            /// 增益值总和最高的项目
+            /// </summary>
+            protected PlanInfo MaxSum
+            {
+                get
+                {
+                    var max = T.Select(x => x.UpS.Sum()).Max();
+                    return TheOne(t => t.UpS.Sum() >= max);
+                }
+            }
+
             protected int Turn => girl.Turn;
             protected int Vitality => girl.Vitality;
             protected int Mood => girl.Mood;
+            protected bool InSummer => girl.InSummer;
             protected int[] TargetProperty => girl.UserConfig!.TargetProperty!;
             protected int[] CurrentProperty => girl.Property;
 
@@ -101,10 +114,10 @@
 
                 return girl.SelectMaxFansSuitableRace();
             }
-            virtual public PlanInfo NoSuitableRace()
+            virtual public PlanInfo WhenNoRace()
             {
                 if (Vitality > 69)
-                    return T.Where(t => t.Plan == PlanEnum.智力).First();
+                    return TheOne(t => t.Plan == PlanEnum.智力);
 
                 if (Mood < 5 && Vitality > 39)
                     return GoOut;

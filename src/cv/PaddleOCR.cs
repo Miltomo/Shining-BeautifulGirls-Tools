@@ -22,6 +22,8 @@ namespace ComputerVision
         }
         private static OCRParameter? Parameter { get; set; }
 
+        public static int CPUthreads { get; set; } = 10;
+
         /// <summary>
         /// 设置即将要识别的目标图片[文件路径]
         /// </summary>
@@ -36,8 +38,9 @@ namespace ComputerVision
         public static void ChangeModel()
         {
         }
-        public static void CustomPara()
+        public static void CustomPara(OCRParameter parameter)
         {
+            Parameter = parameter;
         }
 
         public static void UseGPU(int gpu_id = 0, int gpu_mem = 5000)
@@ -54,7 +57,7 @@ namespace ComputerVision
             Engine = new PaddleOCREngine(null, Parameter ?? new OCRParameter()
             {
                 use_gpu = false,
-                cpu_math_library_num_threads = 20
+                cpu_math_library_num_threads = CPUthreads,
             });
         }
 #pragma warning restore CS8618 // 恢复类成员的构造null检查

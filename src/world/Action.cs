@@ -127,21 +127,37 @@ namespace Shining_BeautifulGirls
         {
             MoveTo(Zone.上部, PText.Main.赛事, Button.赛事);
             Click(Button.赛事活动);
-            PageDown([Symbol.赛事活动, Button.群英联赛]);
+            PageDown([Symbol.赛事活动]);
+            if (IsNoLight(ZButton.群英联赛))
+            {
+                Log("⚠️群英联赛未开始⚠️");
+                goto 退出;
+            }
+            Click(ZButton.群英联赛);
 
         入场判定:
-            PageDown([Symbol.返回]);
-            if (ExtractZoneAndContains(Zone.中部, PText.Extravaganza.决赛))
+            MoveTo([Symbol.返回, Button.继续]);
+
+            // 无法报名
+            if (IsNoLight(ZButton.群英联赛报名))
+            {
+                Log("⚠️报名次数已用尽或无法报名⚠️");
+                goto 退出;
+            }
+
+            // 进入决赛轮
+            if (ExtractZoneAndContains(Zone.群英联赛赛程位, PText.Extravaganza.决赛轮))
             {
                 Log("⚠️已进入决赛，请自行操作⚠️");
                 goto 退出;
             }
 
-            // 无法报名
-            if (IsNoLight(ZButton.群英联赛报名))
-            {
-                goto 退出;
-            }
+            // 自动领取报名券
+            MoveTo(Zone.中部, PText.Extravaganza.限定任务, Button.群英联赛限定任务);
+            Click(Button.大弹窗确认);
+            MoveTo([Symbol.返回, Button.继续], sec: 0);
+
+            Log("准备报名比赛");
             Click(ZButton.群英联赛报名);
             goto 开始分歧;
 
@@ -149,34 +165,49 @@ namespace Shining_BeautifulGirls
             Pause(1000);
             var zb = ExtractZone(Zone.中部);
 
-            if (zb.Equals("报名确认"))
+            if (zb.Equals(PText.Extravaganza.报名确认))
             {
+                // 需要使用宝石时
+                if (zb.Contains(PText.Extravaganza.是否确认执行))
+                {
+                    Log("需要使用宝石进行报名");
+                    // 判断是否允许用宝石
+                    if (UserConfig?.ExtravaganzaUseDiamond ?? false)
+                        Log("允许使用宝石报名，继续");
+                    else
+                    {
+                        Log("不可使用宝石报名，结束");
+                        goto 退出;
+                    }
+                }
+
                 Click(Button.弹窗确认);
                 goto 开始分歧;
             }
-            else if (zb.Contains("适应性"))
+            else if (zb.Contains(PText.Extravaganza.适应性))
             {
                 MoveTo(() => ExtractZoneAndContains(Zone.中部, PText.Extravaganza.参赛登记确认), [Button.继续]);
                 Click(Button.弹窗确认);
+                Log("报名成功，正式进入比赛");
                 goto 开始分歧;
             }
-            else if (zb.Contains("奖励"))
+            else if (zb.Contains(PText.Extravaganza.奖励))
             {
-                if (IsNoLight(ZButton.群英联赛_赛事与奖励))
+                if (IsNoLight(ZButton.群英联赛主按钮))
                     goto 退出;
-
-                var xb = ExtractZone(Zone.下部);
+                var sbw = ExtractZone(Zone.群英联赛识别位);
                 // 参赛
-                if (xb.Contains("赛事"))
+                if (sbw.Contains(PText.Extravaganza.开始匹配))
                     goto 比赛处理;
                 // 结束
-                else if (xb.Contains("获得奖励"))
+                else if (sbw.Contains(PText.Extravaganza.获得奖励))
                     goto 结果处理;
             }
             goto 开始分歧;
 
         比赛处理:
-            Click(ZButton.群英联赛_赛事与奖励);
+            Log("开始新一轮比赛......");
+            Click(ZButton.群英联赛主按钮);
             if (WaitTo([Symbol.继续], maxWait: 299))
             {
                 MoveTo([Symbol.快进, Button.比赛结束], 0);
@@ -187,11 +218,12 @@ namespace Shining_BeautifulGirls
             goto 退出;
 
         结果处理:
-            Click(ZButton.群英联赛_赛事与奖励);
+            Log("所有比赛已结束，领取奖励");
+            Click(ZButton.群英联赛主按钮);
             PageDown([Symbol.继续, Button.比赛结束]);
             goto 入场判定;
 
-        退出:;
+        退出: MoveTo(AtStartPage, Button.主页);
         }
 
         private void 传奇赛事流程()
@@ -290,7 +322,7 @@ namespace Shining_BeautifulGirls
                 // 训练值不足时的处理
                 if (Cw == false)
                 {
-                    if (UserConfig is not null && (UserConfig.CultivateCount > 0))
+                    if (UserConfig is not null && UserConfig.CultivateExhaustTP == false)
                     {
                         Click(Button.弹窗确认);
                         PageDown(Zone.上部, PText.Cultivation.回复训练值);
@@ -306,7 +338,7 @@ namespace Shining_BeautifulGirls
                         }
 
                     UseMoney:
-                        if (UserConfig.CultivateUseMoney)
+                        if (UserConfig.CultivateUseDiamond)
                         {
                             Click(Button.使用宝石);
                             PageDown([Symbol.回复选条]);
@@ -384,7 +416,9 @@ namespace Shining_BeautifulGirls
 
         public void 标准群英联赛()
         {
+            Log("开始自动群英联赛");
             群英联赛流程();
+            Log("结束群英联赛任务");
         }
 
         public void 标准传奇赛事()
@@ -403,7 +437,15 @@ namespace Shining_BeautifulGirls
                 while (true)
                 {
                     Log($"#####准备第 {++t} 次养成######");
-                    if (count > 0)
+                    if (UserConfig.CultivateExhaustTP)
+                    {
+                        if (养成流程())
+                            continue;
+                        Log($"训练值不足，结束任务");
+                        t--;
+                        break;
+                    }
+                    else if (count > 0)
                     {
                         while (true)
                         {
@@ -417,14 +459,6 @@ namespace Shining_BeautifulGirls
                         }
                         if (t == count)
                             break;
-                    }
-                    else
-                    {
-                        if (养成流程())
-                            continue;
-                        Log($"训练值不足，结束任务");
-                        t--;
-                        break;
                     }
                 }
                 Log($"#####养成结束，共完成 {t} 次养成######");
@@ -492,7 +526,6 @@ namespace Shining_BeautifulGirls
             Start();
             Log("正在检测位置......");
 
-            /*WaitTo([Symbol.主界面, Button.主页], 0.8);*/
             return MoveControl.Builder
                 .SetButtons(Button.主页)
                 .AddTarget(AtStartPage)

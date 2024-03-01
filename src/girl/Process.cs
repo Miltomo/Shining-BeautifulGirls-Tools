@@ -226,7 +226,12 @@ namespace Shining_BeautifulGirls
 
                     Log("参加比赛");
 
-                    MoveTo(Zone.中部, PText.Race.赛事详情, ZButton.通用参赛);
+                    MC.Builder
+                        .SetButtons(ZButton.通用参赛)
+                        .AddProcess(Zone.中部, PText.Race.连续参赛, Button.弹窗确认)
+                        .AddTarget(Zone.中部, PText.Race.赛事详情)
+                        .StartAsMoveTo(Mnt, 1000);
+
                     Click(Button.大弹窗确认);
 
                     return 比赛处理(比赛过程Enum.新比赛);
