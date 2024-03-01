@@ -57,7 +57,6 @@
                 var fail = target.Fail;
                 int failLine;
 
-                //TODO 完善25回合之前的判断
                 if (Turn < 26)
                 {
                     failLine = 25;
@@ -67,7 +66,6 @@
                         case < 2:
                             if (Mood < 5)
                                 return GoOut;
-                            //TODO 这里错误
                             if (Turn > 11)
                                 return Race;
                             break;
@@ -129,6 +127,23 @@
                 }
 
                 return target;
+            }
+
+            public override PlanInfo WhenNoRace()
+            {
+                if (InSummer)
+                {
+                    if (Vitality > 50)
+                        return TheOne(t => t.Plan == PlanEnum.智力);
+                    else
+                        return Relex;
+                }
+
+                var m = MaxSum;
+                if (m.UpS.Sum() > 30 && m.Fail < 25)
+                    return m;
+
+                return base.WhenNoRace();
             }
         }
     }
