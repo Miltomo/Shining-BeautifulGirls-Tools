@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 
@@ -20,6 +17,15 @@ namespace MHTools
         public class SaveAllAttribute : Attribute { }
 
         /// <summary>
+        /// 标记一个类，忽略特定类型的变量，剩余所有变量均为存储目标「For MHTools」
+        /// </summary>
+        [AttributeUsage(AttributeTargets.Class)]
+        public class SaveAllWithoutAttribute(BindingFlags ignoredFlags) : Attribute
+        {
+            public BindingFlags IgnoredFlags => ignoredFlags;
+        }
+
+        /// <summary>
         /// 标记一个成员变量为数据存储目标「For MHTools」
         /// </summary>
         [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
@@ -33,14 +39,27 @@ namespace MHTools
 
         public static string[] GetToSaveMemberName(Type type)
         {
+            IEnumerable<MemberInfo> orins;
+
             if (type.IsDefined(typeof(SaveAllAttribute), false))
-                return type.GetMembers(ALLKINDS)
+                orins = type.GetMembers(ALLKINDS)
                     .Where(member => (member.MemberType == MemberTypes.Field || member.MemberType == MemberTypes.Property) && !member.IsDefined(typeof(DoNotSaveAttribute), false))
-                    .Where(m => !m.Name.Contains('<'))
-                    .Select(member => member.Name)
-                    .ToArray();
-            return type.GetMembers(ALLKINDS)
-                   .Where(member => member.IsDefined(typeof(ToSaveAttribute), false))
+                    .Where(m => !m.Name.Contains('<'));
+            else if (type.IsDefined(typeof(SaveAllWithoutAttribute), false))
+            {
+                var attribute = type.GetCustomAttribute<SaveAllWithoutAttribute>();
+                orins = type.GetMembers(ALLKINDS ^ attribute!.IgnoredFlags)
+                    .Where(member => (member.MemberType == MemberTypes.Field || member.MemberType == MemberTypes.Property) && !member.IsDefined(typeof(DoNotSaveAttribute), false))
+                    .Where(m => !m.Name.Contains('<'));
+            }
+            else
+            {
+                orins =
+                    type.GetMembers(ALLKINDS)
+                   .Where(member => member.IsDefined(typeof(ToSaveAttribute), false));
+            }
+
+            return orins
                    .Select(member => member.Name)
                    .ToArray();
         }
