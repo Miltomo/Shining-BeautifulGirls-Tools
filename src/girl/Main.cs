@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
@@ -60,7 +61,11 @@ namespace Shining_BeautifulGirls
         {
             public int[]? TargetProperty { get; set; }
             public int ReChallenge { get; set; } = 0;
-            public List<List<string>>? PrioritySkillList { get; set; }
+            public bool SaveFactor { get; set; } = true;
+            public bool SaveCultivationInfo { get; set; } = true;
+            public bool SaveHighLight { get; set; } = true;
+            public string[][]? PrioritySkillList { get; set; }
+            public Task<string[][]>? GetSkillsTask { get; set; }
         }
 
         public void Log(object logInfo)

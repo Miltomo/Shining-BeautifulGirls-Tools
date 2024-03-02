@@ -16,6 +16,7 @@
                 通用参赛,
                 查看结果,
 
+                JJC主按钮,
                 JJC队伍1,
                 JJC队伍2,
                 JJC队伍3,
@@ -33,8 +34,7 @@
                 剧情,
                 主页,
                 赛事,
-                JJC1,
-                JJC2,
+                团队竞技场,
                 竞技场连点,
                 日常赛事,
                 日1,
@@ -144,8 +144,7 @@
             MakeButton(Button.剧情, 190, 1225);
             MakeButton(Button.主页, 360, 1195, 50, 25);
             MakeButton(Button.赛事, 520, 1225);
-            MakeButton(Button.JJC1, 208, 864);
-            MakeButton(Button.JJC2, 360, 810);
+            MakeButton(Button.团队竞技场, 208, 864);
             MakeButton(Button.竞技场连点, 275, 1165, 40); // last 320 1180
             MakeButton(Button.日常赛事, 210, 1040);
             MakeButton(Button.日1, 360, 690);
@@ -291,6 +290,7 @@
             BuildZB(ZButton.外出1, 50, 400, 670, 500);
             BuildZB(ZButton.外出2, 50, 540, 670, 640);
 
+            BuildZB(ZButton.JJC主按钮, 170, 760, 547, 870);
             BuildZB(ZButton.JJC队伍1, 36, 238, 685, 467);
             BuildZB(ZButton.JJC队伍2, 36, 514, 685, 740);
             BuildZB(ZButton.JJC队伍3, 36, 782, 685, 1010);

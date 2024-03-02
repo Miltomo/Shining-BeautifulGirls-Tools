@@ -114,7 +114,6 @@ namespace Shining_BeautifulGirls
                 case 养成过程Enum.比赛日:
                     Log(回合开始);
 
-                    //TODO 使用文字识别替换，同时检查技能点和是否是决赛
                     SkPoints = ExtractValue(Zone.技能点);
 
                     Log($"★今天是比赛日★");
@@ -122,7 +121,6 @@ namespace Shining_BeautifulGirls
 
                     if ((Turn > 35 || SkPoints > 500) && SkPoints > 150)
                     {
-                        /*FastCheck(Symbol.决赛)*/
                         if (ExtractInfo(Zone.决赛判断).Equals(PText.Cultivation.决赛))
                             技能学习过程("最终学习");
                         else
@@ -165,12 +163,18 @@ namespace Shining_BeautifulGirls
 
                     PageDown([Symbol.下一页, Button.结束连点]);
                     PageDown([Symbol.下一页]);
-                    Mnt.SaveScreen(dir, $"{name}_因子");
-                    Log("已保存因子信息截图");
+                    if (UserConfig?.SaveFactor ?? false)
+                    {
+                        Mnt.SaveScreen(dir, $"{name}_因子");
+                        Log("已保存因子信息截图");
+                    }
                     Click(Button.结束连点);
                     PageDown(Zone.上部, PText.Cultivation.优俊少女详情);
-                    Mnt.SaveScreen(dir, name);
-                    Log("已保存养成信息截图");
+                    if (UserConfig?.SaveCultivationInfo ?? false)
+                    {
+                        Mnt.SaveScreen(dir, name);
+                        Log("已保存养成信息截图");
+                    }
 
                     MoveTo(Mnt.AtStartPage, Button.结束连点, 0);
                     EndTraining = true;

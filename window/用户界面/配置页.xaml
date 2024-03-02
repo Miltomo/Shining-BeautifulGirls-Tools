@@ -187,18 +187,18 @@
                     </StackPanel>
 
                     <!--右边-->
-                    <StackPanel Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="124,59,25,0" Grid.RowSpan="2">
+                    <StackPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="124,0,25,0">
                         <TextBlock Text="开启「传奇赛事」使用提示" Style="{DynamicResource 设置项TextBlockStyle}"/>
                         <CheckBox x:Name="传奇赛事CheckBox" HorizontalAlignment="Right" Style="{DynamicResource 启用CheckBoxStyle}" Margin="20,0,0,0"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="124,49,25,0" Grid.RowSpan="2">
+                    <StackPanel Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="124,0,25,0">
                         <TextBlock Text="开启「群英联赛」使用提示" Style="{DynamicResource 设置项TextBlockStyle}"/>
                         <CheckBox x:Name="群英联赛CheckBox" HorizontalAlignment="Right" Style="{DynamicResource 启用CheckBoxStyle}" Margin="20,0,0,0"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="124,49,25,0" Grid.RowSpan="2">
-                        <TextBlock Text="自动群英联赛允许使用宝石" Style="{DynamicResource 设置项TextBlockStyle}"/>
+                    <StackPanel Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="124,0,25,0">
+                        <TextBlock Text="群英联赛允许使用宝石报名" Style="{DynamicResource 设置项TextBlockStyle}"/>
                         <CheckBox x:Name="群英允许宝石CheckBox" HorizontalAlignment="Right" Style="{DynamicResource 启用CheckBoxStyle}" Margin="20,0,0,0"/>
                     </StackPanel>
                 </Grid>

@@ -61,6 +61,10 @@ namespace Shining_BeautifulGirls
                         // 核程序变动
                         Thread thread核心程序 = new(() =>
                         {
+                            //TODO 应该放在这里吗？
+                            /*Monitor.UserConfig!.SBGConfig!.GetSkillsTask =
+                            技能编辑.GetPrioritySkillListAsync("");*/
+
                             Monitor.Start();
                             try
                             {
@@ -466,7 +470,15 @@ namespace Shining_BeautifulGirls
                     if (VM.Is需要日常赛事)
                         PlanQueue.Enqueue(Monitor.标准日常赛事);
                     if (VM.Is需要群英联赛)
+                    {
+                        if (Config.Tip群英联赛)
+                            Config.Tip群英联赛 =
+                                OpenWarningBox(
+                                    "你选择了「群英联赛」任务。\n" +
+                                    "该任务只用于[小组赛]的自动执行，且默认不会使用宝石进行报名。" +
+                                    "如需，请至设置界面勾选。");
                         PlanQueue.Enqueue(Monitor.标准群英联赛);
+                    }
                     if (VM.Is需要养成)
                         PlanQueue.Enqueue(Monitor.自定义养成);
 
@@ -497,10 +509,16 @@ namespace Shining_BeautifulGirls
                         {
                             TargetProperty = [VM.V1, VM.V2, VM.V3, VM.V4, VM.V5],
                             ReChallenge = VM.重赛逻辑Index,
-                            PrioritySkillList =
+                            SaveFactor = Config.保存养成因子,
+                            SaveCultivationInfo = Config.保存养成记录,
+                            SaveHighLight = Config.保存高光时刻,
+                            PrioritySkillList = string.IsNullOrWhiteSpace(VM.技能文件Value) ?
+                            null :
+                            技能编辑.GetPrioritySkillList(VM.技能文件Value),
+                            /*GetSkillsTask =
                             string.IsNullOrWhiteSpace(VM.技能文件Value) ?
                             null :
-                            技能编辑.GetPrioritySkillList(VM.技能文件Value)
+                            技能编辑.GetPrioritySkillListAsync(VM.技能文件Value)*/
                         }
                     };
                     CoreState = "准备开始";

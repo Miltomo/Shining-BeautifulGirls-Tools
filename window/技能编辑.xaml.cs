@@ -1,8 +1,10 @@
-﻿using MHTools;
+﻿using ComputerVision;
+using MHTools;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -48,24 +50,61 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        public static List<List<string>> GetPrioritySkillList(string name)
+        public static string[][] GetPrioritySkillList(string name)
         {
-            List<List<string>> pslist = [];
+            List<string[]> skList = [];
             var wd = new 技能编辑();
             if (wd.FileManager.Select(name))
             {
                 wd.Load技能配置(wd.FileManager.SelectedFile!);
                 wd.技能组.ForEach(lb =>
-                pslist.Add(
+                skList.Add(
                     App.Items2List<SkillItem>(lb.Items)
                     .Select(item => item.Name)
-                    .ToList()
+                    .ToArray()
                 )
                 );
                 wd.FileManager.CancelSelect();
             }
             wd.Close();
-            return pslist;
+
+            return [.. skList];
+        }
+
+        public static async Task<string[][]> GetPrioritySkillListAsync(string name)
+        {
+            List<string[]> pathList = [];
+            var wd = new 技能编辑();
+            //TODO 用OCR识别各文件
+            if (wd.FileManager.Select(name))
+            {
+                wd.Load技能配置(wd.FileManager.SelectedFile!);
+                wd.技能组.ForEach(lb =>
+                pathList.Add(
+                    App.Items2List<SkillItem>(lb.Items)
+                    .Select(item => item.Path)
+                    .ToArray()
+                )
+                );
+                wd.FileManager.CancelSelect();
+            }
+            wd.Close();
+
+            var skList = await Task.Run(() =>
+            {
+                return pathList
+                .Select(ps =>
+                ps.Select(
+                    x =>
+                    {
+                        var r = PaddleOCR.SetImage(x).Extract().TextAsLines.First();
+                        Trace.WriteLine(r);
+                        Thread.Sleep(100);
+                        return r;
+                    }).ToArray());
+            });
+
+            return [.. skList];
         }
         public 技能编辑()
         {

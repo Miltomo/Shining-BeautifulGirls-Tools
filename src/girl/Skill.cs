@@ -5,7 +5,7 @@ namespace Shining_BeautifulGirls
 {
     partial class ShiningGirl
     {
-        public List<List<string>> PrioritySkillList
+        public string[][] PrioritySkillList
         {
             get =>
                 UserConfig?.PrioritySkillList ??
@@ -66,7 +66,7 @@ namespace Shining_BeautifulGirls
                     case 1: if (SkTurns > 2) canUpdate = true; break;
                     case 2: if (SkTurns > 5) canUpdate = true; break;
                 }
-            if (canUpdate && SkIndex < PrioritySkillList.Count)
+            if (canUpdate && SkIndex < PrioritySkillList.Length)
                 SkList.AddRange(PrioritySkillList[SkIndex++]);
         }
 

@@ -9,9 +9,14 @@ namespace Shining_BeautifulGirls
         {
             int count = 0;
             MoveTo(Zone.上部, PText.Main.赛事, Button.赛事);
-            Click(Button.JJC1);
+            Click(Button.团队竞技场);
             MoveTo(Zone.上部, PText.Main.团队竞技场, Button.继续);
-            Click(Button.JJC2);
+            if (IsNoLight(ZButton.JJC主按钮))
+            {
+                Log("当前处于结算中，无法进行比赛");
+                goto 结束;
+            }
+            Click(ZButton.JJC主按钮);
 
             bool Aw = MC.Builder
                 .AddTarget(Zone.上部, PText.JJC.选择对战对手)
@@ -19,6 +24,7 @@ namespace Shining_BeautifulGirls
                 .StartAsPageDown(this);
             if (Aw)
                 goto 选队;
+            Log("竞技值不足，退出");
             goto 结束;
 
         选队:
@@ -57,10 +63,10 @@ namespace Shining_BeautifulGirls
 
             if (Bw)
                 goto 选队;
+            Log("竞技值不足，退出");
             goto 结束;
 
         结束:
-            Log("竞技值不足，退出");
             MoveTo(AtStartPage, Button.主页, 0);
             Log($"共完成了 {count} 次比赛");
         }
@@ -165,6 +171,7 @@ namespace Shining_BeautifulGirls
             Pause(1000);
             var zb = ExtractZone(Zone.中部);
 
+            // 弹出报名窗口
             if (zb.Equals(PText.Extravaganza.报名确认))
             {
                 // 需要使用宝石时
@@ -182,15 +189,21 @@ namespace Shining_BeautifulGirls
                 }
 
                 Click(Button.弹窗确认);
-                goto 开始分歧;
             }
+            // 已选报名角色
             else if (zb.Contains(PText.Extravaganza.适应性))
             {
                 MoveTo(() => ExtractZoneAndContains(Zone.中部, PText.Extravaganza.参赛登记确认), [Button.继续]);
                 Click(Button.弹窗确认);
                 Log("报名成功，正式进入比赛");
-                goto 开始分歧;
             }
+            // 未选报名角色
+            else if (FastCheck(Symbol.空位))
+            {
+                Log("⚠️未选择报名角色，请自行选好角色后再尝试⚠️");
+                goto 退出;
+            }
+            // 进入比赛界面
             else if (zb.Contains(PText.Extravaganza.奖励))
             {
                 if (IsNoLight(ZButton.群英联赛主按钮))

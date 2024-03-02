@@ -171,13 +171,16 @@
             // 记录增益值信息
             train.UpS = [.. ups];
 
-            // 判断并记录高光时刻
-            foreach (var v in train.UpS)
+            if (UserConfig?.SaveHighLight ?? false)
             {
-                if (v > 49 || (v > 29 && train.HeadInfo.Count == 5))
+                // 判断并记录高光时刻
+                foreach (var v in train.UpS)
                 {
-                    Mnt.SaveScreen(HighLightDir);
-                    break;
+                    if (v > 49 || (v > 29 && train.HeadInfo.Count == 5))
+                    {
+                        Mnt.SaveScreen(HighLightDir);
+                        break;
+                    }
                 }
             }
 
