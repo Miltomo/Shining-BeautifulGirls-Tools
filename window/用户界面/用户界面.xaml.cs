@@ -46,6 +46,8 @@ namespace Shining_BeautifulGirls
             右键测试.Visibility = Visibility.Visible;
 #endif
             //TODO 使用异步更新技能名列表
+            //TODO 更换增益值检测方法
+            //TODO 思考如何处理文件空值问题？
         }
 
         public void 切换页面(PageEnum page)

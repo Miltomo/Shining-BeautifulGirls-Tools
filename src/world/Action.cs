@@ -319,7 +319,7 @@ namespace Shining_BeautifulGirls
                     throw new StopException();
                 }
 
-                var card = UserConfig is null ? "北部玄驹" : UserConfig.SupportCard;
+                var card = UserConfig?.SupportCard;
                 if (!寻找协助卡(card))
                 {
                     Log($"⚠️未找到目标协助卡\"{card}\"⚠️");
@@ -478,8 +478,14 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        private bool 寻找协助卡(string card)
+        private bool 寻找协助卡(string? card)
         {
+            if (string.IsNullOrWhiteSpace(card))
+            {
+                Log("⚠️未指定任何协助卡⚠️");
+                throw new StopException();
+            }
+
             Log("正在选择好友协助卡");
             Click(Button.选卡);
 

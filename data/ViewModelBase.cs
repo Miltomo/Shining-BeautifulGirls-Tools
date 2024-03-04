@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Shining_BeautifulGirls.data
+namespace Shining_BeautifulGirls
 {
     class ViewModelBase : INotifyPropertyChanged
     {

@@ -23,7 +23,7 @@ namespace Shining_BeautifulGirls
         public static Page? ConfigPage { get; set; }
         public static Window? SkillWindow { get; set; }
 
-        public static readonly string Version = "v1.0.0";
+        public static readonly string Version = "v1.0.1";
 
         public static string AdbPath => Path.Combine(ProgramDir, @"adb/adb.exe");
         public static string ProgramDir { get; private set; } = Environment.CurrentDirectory;
@@ -138,8 +138,11 @@ namespace Shining_BeautifulGirls
             return null;
         }
 
-        public static void SetImage(Image image, string picturePath)
+        public static void SetImage(Image image, string? picturePath)
         {
+            if (string.IsNullOrEmpty(picturePath))
+                return;
+
             // 创建BitmapImage对象
             BitmapImage bitmap = new();
             bitmap.BeginInit();

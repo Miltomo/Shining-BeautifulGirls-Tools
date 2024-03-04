@@ -452,6 +452,8 @@ namespace Shining_BeautifulGirls
             switch (CoreState)
             {
                 case "未启动":
+                    Save用户设置();
+
                     // 任务入队
                     PlanQueue.Clear();
 
@@ -512,13 +514,7 @@ namespace Shining_BeautifulGirls
                             SaveFactor = Config.保存养成因子,
                             SaveCultivationInfo = Config.保存养成记录,
                             SaveHighLight = Config.保存高光时刻,
-                            PrioritySkillList = string.IsNullOrWhiteSpace(VM.技能文件Value) ?
-                            null :
-                            技能编辑.GetPrioritySkillList(VM.技能文件Value),
-                            /*GetSkillsTask =
-                            string.IsNullOrWhiteSpace(VM.技能文件Value) ?
-                            null :
-                            技能编辑.GetPrioritySkillListAsync(VM.技能文件Value)*/
+                            PrioritySkillList = 技能编辑.GetPrioritySkillList(VM.技能文件Value),
                         }
                     };
                     CoreState = "准备开始";

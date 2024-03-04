@@ -50,7 +50,7 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        public static string[][] GetPrioritySkillList(string name)
+        public static string[][] GetPrioritySkillList(string? name)
         {
             List<string[]> skList = [];
             var wd = new 技能编辑();

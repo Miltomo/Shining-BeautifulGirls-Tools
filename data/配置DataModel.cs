@@ -1,5 +1,4 @@
-﻿using Shining_BeautifulGirls.data;
-using System.IO;
+﻿using System.IO;
 using static MHTools.数据工具;
 namespace Shining_BeautifulGirls
 {

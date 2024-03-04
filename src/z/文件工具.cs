@@ -186,12 +186,14 @@ namespace MHTools
         //========SimpleFileManager========
         //=================================
 
+        public SimpleFileManager ToSimpleFileManager() => SF;
+
         /// <summary>
         /// 通过无后缀文件名找到文件的全名
         /// </summary>
         /// <param name="nameNoEx"></param>
         /// <returns>文件的绝对路径</returns>
-        public string? Find(string nameNoEx)
+        public string? Find(string? nameNoEx)
         {
             return SF.Files.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == nameNoEx);
         }
