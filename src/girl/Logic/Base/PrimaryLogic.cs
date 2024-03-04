@@ -140,7 +140,7 @@
                 }
 
                 var m = MaxSum;
-                if (m.UpS.Sum() > 30 && m.Fail < 25)
+                if (m.UpS.Sum() > 24 && m.Fail < 25)
                     return m;
 
                 return base.WhenNoRace();

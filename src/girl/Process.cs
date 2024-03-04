@@ -232,7 +232,6 @@ namespace Shining_BeautifulGirls
 
                     MC.Builder
                         .SetButtons(ZButton.通用参赛)
-                        .AddProcess(Zone.中部, PText.Race.连续参赛, Button.弹窗确认)
                         .AddTarget(Zone.中部, PText.Race.赛事详情)
                         .StartAsMoveTo(Mnt, 1000);
 
@@ -359,6 +358,9 @@ namespace Shining_BeautifulGirls
                     //Mnt.SaveScreen();
                     //
                     //TODO 使用Task异步
+                    //TODO 重构技能系统 => 应当在每次进入之后确定学习什么
+                    // => 应当在最终确认获取后，才删除已学习的列表
+
                     for (int i = 1; i < 4; i++)
                     {
                         Zone zone = i switch

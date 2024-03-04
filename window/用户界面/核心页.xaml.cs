@@ -88,10 +88,6 @@ namespace Shining_BeautifulGirls
                             {
                                 OutPut("⚠️图片或背景不存在⚠️");
                             }
-                            catch (Exception)
-                            {
-                                throw;
-                            }
                             Monitor.Stop();
                             Save养成优俊少女();
 

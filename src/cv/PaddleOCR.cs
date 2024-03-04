@@ -11,15 +11,8 @@ namespace ComputerVision
         private PaddleOCREngine Engine { get; init; }
         private string TargetImage { get; set; }
 
-        private static PaddleOCR? _instance;
-        private static PaddleOCR Instance
-        {
-            get
-            {
-                _instance ??= new PaddleOCR();
-                return _instance;
-            }
-        }
+        private static readonly Lazy<PaddleOCR> _lazy = new(() => new PaddleOCR());
+        private static PaddleOCR Instance => _lazy.Value;
         private static OCRParameter? Parameter { get; set; }
 
         public static int CPUthreads { get; set; } = 10;

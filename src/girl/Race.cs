@@ -2,6 +2,7 @@
 
 namespace Shining_BeautifulGirls
 {
+    //TODO 完善FirstG1实现
     partial class ShiningGirl
     {
         class AdaptInfo
