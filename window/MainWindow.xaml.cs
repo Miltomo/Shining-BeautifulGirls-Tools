@@ -52,10 +52,12 @@ namespace Shining_BeautifulGirls
             World.CreateLocInfo();
 
             ShiningGirl.RecordDir = @$"{path}\养成记录";
+            ShiningGirl.SaveDir = Path.Combine(App.UserDataDir, "girl");
 
             Directory.CreateDirectory(cache);
             Directory.CreateDirectory(World.ScreenshotDir);
             Directory.CreateDirectory(ShiningGirl.RecordDir);
+            Directory.CreateDirectory(ShiningGirl.SaveDir);
 
             AdbHelper.SetProgramPath(App.AdbPath);
             AdbHelper.SetWorkDir(World.CacheDir);

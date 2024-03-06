@@ -18,7 +18,8 @@ namespace Shining_BeautifulGirls
         public int 赛事难度Index { get; set; } = 0;
 
         public bool Is用尽体力 { get; set; } = true;
-        public int 养成次数设定 { get; set; } = 1;
+        public bool Is设置循环 { get; set; } = false;
+        public int 养成次数Value { get; set; } = 1;
         public bool Is使用道具 { get; set; } = true;
         public bool Is使用宝石 { get; set; } = false;
 
