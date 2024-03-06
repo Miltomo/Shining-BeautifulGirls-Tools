@@ -1,7 +1,9 @@
-﻿using MHTools;
+﻿using ComputerVision;
+using MHTools;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,7 +11,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
 {
@@ -19,7 +20,6 @@ namespace Shining_BeautifulGirls
     public partial class 核心页 : Page
     {
         #region 变量定义
-        private readonly string _json养成优俊少女 = Path.Combine(App.UserDataDir, "girl.json");
         private string _corestate = "未启动";
         public string CoreState
         {
@@ -61,9 +61,31 @@ namespace Shining_BeautifulGirls
                         // 核程序变动
                         Thread thread核心程序 = new(() =>
                         {
-                            //TODO 应该放在这里吗？
-                            /*Monitor.UserConfig!.SBGConfig!.GetSkillsTask =
-                            技能编辑.GetPrioritySkillListAsync("");*/
+                            // 异步获取所有要学习技能
+                            var cfg = Monitor.UserConfig!.SBGConfig!;
+                            if (cfg.NeedNewTask || cfg.SkillGetingTask == null)
+                                cfg.SkillGetingTask = Task.Run(async () =>
+                                {
+                                    var paths = cfg.SkillPaths;
+
+                                    List<string[]> zz = [];
+                                    foreach (var item in paths)
+                                    {
+                                        List<string> lin = [];
+                                        for (int i = 0; i < item.Length; i++)
+                                        {
+                                            var ext = await PaddleOCR.SetImage(item[i]).ExtractAsync();
+                                            lin.Add(ext.TextAsLines.First());
+                                            await Task.Delay(200);
+                                        }
+
+                                        zz.Add([.. lin]);
+                                    }
+
+                                    string[][] r = [.. zz];
+
+                                    return r;
+                                });
 
                             Monitor.Start();
                             try
@@ -213,7 +235,8 @@ namespace Shining_BeautifulGirls
             MakeBinding(日常赛事ComboBox2, ComboBox.SelectedIndexProperty, nameof(VM.赛事难度Index));
 
             MakeBinding(养成循环_体力, RadioButton.IsCheckedProperty, nameof(VM.Is用尽体力));
-            MakeBinding(养成次数Input, TextBox.TextProperty, nameof(VM.养成次数设定));
+            MakeBinding(养成循环_次数, RadioButton.IsCheckedProperty, nameof(VM.Is设置循环));
+            MakeBinding(养成次数Input, TextBox.TextProperty, nameof(VM.养成次数Value));
             MakeBinding(使用体力补剂CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is使用道具));
             MakeBinding(使用宝石CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is使用宝石));
 
@@ -329,8 +352,7 @@ namespace Shining_BeautifulGirls
         }
         private void Save养成优俊少女()
         {
-            if (Monitor.Girl is not null)
-                SaveAllToSaveAsJSON(Monitor.Girl, _json养成优俊少女);
+            Monitor.Girl?.Save();
         }
         private void Save用户设置()
         {
@@ -488,31 +510,42 @@ namespace Shining_BeautifulGirls
 
                     // 还原养成优俊少女
                     ShiningGirl girl = new(Monitor);
-                    LoadFromJSON(girl, _json养成优俊少女);
+                    girl.Load();
                     Monitor.Girl = girl;
 
                     // 载入用户配置
-                    Monitor.UserConfig = new World.Config
+                    Monitor.UserConfig ??= new World.Config();
+                    var mcf = Monitor.UserConfig;
+                    mcf.DailyRaceNumber = VM.赛事名Index + 1;
+                    mcf.DRDNumber = VM.赛事难度Index + 1;
+                    mcf.TeamIndex = VM.选队Index;
+                    mcf.SupportCard = VM.协助卡名称;
+                    mcf.CultivateExhaustTP = VM.Is用尽体力;
+                    mcf.CultivateCount = VM.养成次数Value;
+                    mcf.CultivateUseProp = VM.Is使用道具;
+                    mcf.CultivateUseDiamond = VM.Is使用宝石;
+                    mcf.ExtravaganzaUseDiamond = Config.Is群英允许宝石;
+
+                    mcf.SBGConfig ??= new ShiningGirl.Config();
+                    var scf = mcf.SBGConfig;
+                    scf.TargetProperty = [VM.V1, VM.V2, VM.V3, VM.V4, VM.V5];
+                    scf.ReChallenge = VM.重赛逻辑Index;
+                    scf.SaveFactor = Config.保存养成因子;
+                    scf.SaveCultivationInfo = Config.保存养成记录;
+                    scf.SaveHighLight = Config.保存高光时刻;
+
+                    var dqF = VM.技能文件Value;
+                    if (scf.SkillFile == dqF && scf.SkillGetingTask != null)
                     {
-                        DailyRaceNumber = VM.赛事名Index + 1,
-                        DRDNumber = VM.赛事难度Index + 1,
-                        TeamIndex = VM.选队Index,
-                        SupportCard = VM.协助卡名称,
-                        CultivateExhaustTP = VM.Is用尽体力,
-                        CultivateCount = VM.养成次数设定,
-                        CultivateUseProp = VM.Is使用道具,
-                        CultivateUseDiamond = VM.Is使用宝石,
-                        ExtravaganzaUseDiamond = Config.Is群英允许宝石,
-                        SBGConfig = new ShiningGirl.Config
-                        {
-                            TargetProperty = [VM.V1, VM.V2, VM.V3, VM.V4, VM.V5],
-                            ReChallenge = VM.重赛逻辑Index,
-                            SaveFactor = Config.保存养成因子,
-                            SaveCultivationInfo = Config.保存养成记录,
-                            SaveHighLight = Config.保存高光时刻,
-                            PrioritySkillList = 技能编辑.GetPrioritySkillList(VM.技能文件Value),
-                        }
-                    };
+                        scf.NeedNewTask = false;
+                    }
+                    else
+                    {
+                        scf.NeedNewTask = true;
+                        scf.SkillFile = dqF;
+                        scf.SkillPaths = 技能编辑.GetSkillPaths(scf.SkillFile);
+                    }
+
                     CoreState = "准备开始";
                     break;
 

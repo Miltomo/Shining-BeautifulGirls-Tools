@@ -1,14 +1,13 @@
-﻿using ComputerVision;
-using MHTools;
+﻿using MHTools;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Threading;
 using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
@@ -50,32 +49,11 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        public static string[][] GetPrioritySkillList(string? name)
-        {
-            List<string[]> skList = [];
-            var wd = new 技能编辑();
-            if (wd.FileManager.Select(name))
-            {
-                wd.Load技能配置(wd.FileManager.SelectedFile!);
-                wd.技能组.ForEach(lb =>
-                skList.Add(
-                    App.Items2List<SkillItem>(lb.Items)
-                    .Select(item => item.Name)
-                    .ToArray()
-                )
-                );
-                wd.FileManager.CancelSelect();
-            }
-            wd.Close();
-
-            return [.. skList];
-        }
-
-        public static async Task<string[][]> GetPrioritySkillListAsync(string name)
+        public static List<string[]> GetSkillPaths(string? name)
         {
             List<string[]> pathList = [];
+
             var wd = new 技能编辑();
-            //TODO 用OCR识别各文件
             if (wd.FileManager.Select(name))
             {
                 wd.Load技能配置(wd.FileManager.SelectedFile!);
@@ -90,22 +68,9 @@ namespace Shining_BeautifulGirls
             }
             wd.Close();
 
-            var skList = await Task.Run(() =>
-            {
-                return pathList
-                .Select(ps =>
-                ps.Select(
-                    x =>
-                    {
-                        var r = PaddleOCR.SetImage(x).Extract().TextAsLines.First();
-                        Trace.WriteLine(r);
-                        Thread.Sleep(100);
-                        return r;
-                    }).ToArray());
-            });
-
-            return [.. skList];
+            return pathList;
         }
+
         public 技能编辑()
         {
             InitializeComponent();
