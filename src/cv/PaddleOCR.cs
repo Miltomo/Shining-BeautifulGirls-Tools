@@ -1,5 +1,6 @@
 ﻿using PaddleOCRSharp;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 namespace ComputerVision
 {
     /// <summary>
@@ -57,6 +58,11 @@ namespace ComputerVision
         public Result Extract()
         {
             return new Result(Engine.DetectText(TargetImage));
+        }
+
+        public async Task<Result> ExtractAsync()
+        {
+            return await Task.Run(() => new Result(Engine.DetectText(TargetImage)));
         }
 
         public class Result : IOCRResult

@@ -95,8 +95,12 @@ namespace Shining_BeautifulGirls
         /// <exception cref="LongTimeNoOperationException"></exception>
         public void Refresh()
         {
-            if (ADB.CopyScreen(DeviceID))
-                return;
+            lock (_screenlock)
+            {
+                if (ADB.CopyScreen(DeviceID))
+                    return;
+            }
+
             throw new LongTimeNoOperationException();
         }
 

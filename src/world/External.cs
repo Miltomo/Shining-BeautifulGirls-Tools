@@ -2,6 +2,7 @@
 using MHTools;
 using OpenCvSharp;
 using System.IO;
+using System.Threading.Tasks;
 using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
@@ -144,6 +145,13 @@ namespace Shining_BeautifulGirls
             return PaddleOCR
                 .SetImage(CropScreen(zone, "extract"))
                 .Extract();
+        }
+
+        public async Task<IOCRResult> ExtractZoneAsync(Enum zone)
+        {
+            return await PaddleOCR
+                .SetImage(CropScreen(zone, zone.ToString()))
+                .ExtractAsync();
         }
 
         public bool ExtractZoneAndContains(Enum zone, Enum ptext)

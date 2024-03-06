@@ -27,7 +27,7 @@ namespace Shining_BeautifulGirls
             {
                 if (obj is RaceInfo another)
                 {
-                    return another.Name == Name;
+                    return another.Name == Name && another.Ground == Ground && another.Distance == Distance;
                 }
                 return false;
             }

@@ -16,7 +16,20 @@ namespace Shining_BeautifulGirls
 
         public double Width { get; set; } = STANDARD_WIDTH;
         public double Height { get; set; } = STANDARD_HEIGHT;
-        public string Screen { get; init; }
+
+        private readonly object _screenlock = new();
+        private string? _screen;
+        public string Screen
+        {
+            get
+            {
+                lock (_screenlock)
+                {
+                    return _screen!;
+                }
+            }
+            init => _screen = value;
+        }
         public string DeviceID { get; init; }
 
         public Action<string> Log { get; init; }

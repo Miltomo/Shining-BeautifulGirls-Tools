@@ -1,6 +1,7 @@
 ﻿using ComputerVision;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using static ComputerVision.ImageRecognition;
 
 namespace Shining_BeautifulGirls
@@ -110,6 +111,7 @@ namespace Shining_BeautifulGirls
         }
 
         IOCRResult ExtractInfo(Enum zone) => Mnt.ExtractZone(zone);
+        async Task<IOCRResult> ExtractInfoAsync(Enum zone) => await Mnt.ExtractZoneAsync(zone);
 
         private HeadInfo GetHeadInfo()
         {

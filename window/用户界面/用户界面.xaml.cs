@@ -49,6 +49,7 @@ namespace Shining_BeautifulGirls
             //TODO 更换增益值检测方法
             //TODO 思考如何处理文件空值问题？
             //TODO 异常未成功截获？
+
         }
 
         public void 切换页面(PageEnum page)
