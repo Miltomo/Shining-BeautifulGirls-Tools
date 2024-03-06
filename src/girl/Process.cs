@@ -1,5 +1,6 @@
 ﻿using ComputerVision;
 using MHTools;
+using System.Threading.Tasks;
 
 namespace Shining_BeautifulGirls
 {
@@ -8,6 +9,7 @@ namespace Shining_BeautifulGirls
         private bool _havefree = false;
         private int _dqRemakeTimes = 0;
         private IOCRResult? _lastSkill;
+        private List<string> CurrentLearns { get; } = [];
 
         private enum 养成过程Enum
         {
@@ -122,9 +124,9 @@ namespace Shining_BeautifulGirls
                     if ((Turn > 35 || SkPoints > 500) && SkPoints > 150)
                     {
                         if (ExtractInfo(Zone.决赛判断).Equals(PText.Cultivation.决赛))
-                            技能学习过程("最终学习");
+                            技能学习过程(技能过程Enum.最终学习);
                         else
-                            技能学习过程("普通学习");
+                            技能学习过程(技能过程Enum.普通学习);
                     }
 
                     if (比赛处理(比赛过程Enum.目标比赛))
@@ -152,27 +154,28 @@ namespace Shining_BeautifulGirls
                         return false;
                     }, Button.比赛结束, 0);
 
-                    技能学习过程("结束学习");
+                    技能学习过程(技能过程Enum.结束学习);
 
                     Click(Button.养成结束);
                     PageDown(Zone.中部, PText.Cultivation.养成结束确认, Button.大弹窗确认);
 
 
                     var dir = GetTodayRecordDir();
-                    var name = FileManagerHelper.SetDir(dir).NextName();
 
                     PageDown([Symbol.下一页, Button.结束连点]);
                     PageDown([Symbol.下一页]);
+                    // 保存因子截图
                     if (UserConfig?.SaveFactor ?? false)
                     {
-                        Mnt.SaveScreen(dir, $"{name}_因子");
+                        Mnt.SaveScreen(dir, FileManagerHelper.SetDir(dir).NextName("因子"));
                         Log("已保存因子信息截图");
                     }
                     Click(Button.结束连点);
                     PageDown(Zone.上部, PText.Cultivation.优俊少女详情);
+                    // 保存信息截图
                     if (UserConfig?.SaveCultivationInfo ?? false)
                     {
-                        Mnt.SaveScreen(dir, name);
+                        Mnt.SaveScreen(dir, FileManagerHelper.SetDir(dir).NextName());
                         Log("已保存养成信息截图");
                     }
 
@@ -320,114 +323,86 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        private void 技能学习过程(string state)
+
+        private enum 技能过程Enum
         {
-            switch (state)
+            普通学习,
+            最终学习,
+            结束学习,
+            进入,
+            核心处理,
+            翻页,
+            结束
+        }
+
+        private void 技能学习过程(技能过程Enum p)
+        {
+            switch (p)
             {
-                case "普通学习":
-                    SkTurns++;
-                    UpdateLearningList();
-                    Log($"=====>准备进行第 {SkTurns} 次技能学习<=====");
-                    技能学习过程("进入");
+                case 技能过程Enum.普通学习:
+                    Log($"=====>准备进行第 {SkillManager.SkTurns} 次技能学习<=====");
+                    技能学习过程(技能过程Enum.进入);
                     break;
 
-                case "最终学习":
-                    while (SkIndex < 3)
-                        SkList.AddRange(PrioritySkillList[SkIndex++]);
+                case 技能过程Enum.最终学习:
+                    SkillManager.IsLastL = true;
                     Log($"=====>准备进行最后一次技能学习<=====");
-                    技能学习过程("进入");
+                    技能学习过程(技能过程Enum.进入);
                     break;
 
-                case "结束学习":
-                    while (SkIndex < 4)
-                        SkList.AddRange(PrioritySkillList[SkIndex++]);
+                case 技能过程Enum.结束学习:
+                    SkillManager.IsEndL = true;
                     Log($"=====>开始进行养成结束的技能学习<=====");
-                    技能学习过程("进入");
+                    技能学习过程(技能过程Enum.进入);
                     break;
 
-                case "进入":
+                case 技能过程Enum.进入:
+                    CurrentLearns.Clear();
                     _lastSkill = default;
                     Click(Button.技能);
                     PageDown(Zone.上部, PText.Cultivation.技能获取);
                     RefreshSkillPoint();
-                    技能学习过程("学习");
+                    技能学习过程(技能过程Enum.核心处理);
                     break;
 
-                case "学习":
-                    //
-                    //Mnt.SaveScreen();
-                    //
-                    //TODO 使用Task异步
-                    //TODO 重构技能系统 => 应当在每次进入之后确定学习什么
-                    // => 应当在最终确认获取后，才删除已学习的列表
-
-                    for (int i = 1; i < 4; i++)
+                case 技能过程Enum.核心处理:
+                    //TODO 测试
+                    // 异步检查三个技能位
+                    Task.Run(async () =>
                     {
-                        Zone zone = i switch
+                        List<Task<SkillCore.CheckInfo>> tasks = [
+                        SkillManager.CheckTheSkillAsync(Zone.技1),
+                        SkillManager.CheckTheSkillAsync(Zone.技2),
+                        SkillManager.CheckTheSkillAsync(Zone.技3)
+                        ];
+
+                        while (tasks.Count > 0)
                         {
-                            1 => Zone.技1,
-                            2 => Zone.技2,
-                            3 => Zone.技3,
-                            _ => throw new NotImplementedException()
-                        };
-
-                        bool Aw = false;
-
-                        var mask = MaskScreen(zone);
-
-                        // 加速：若已获得则跳过
-                        if (IsHadSkill(mask))
-                            continue;
-
-                        // 处理
-                        if (IsNecessarySkill(zone))
-                        {
-                            // 加速：若不够学习则跳过
-                            if (theLearnCost > SkPoints)
-                                continue;
-
-                            Aw = true;
-
-                            Match(out OpenCvSharp.Point pt, Symbol.技能加, mask);
-                            Mnt.Click(pt.X + 20, pt.Y + 20, pauseTime: 300);
-
-                            // 二次学习检测
-                            if (!IsHadSkill(CropScreen(zone)) && (SkPoints >= 2 * theLearnCost))
-                                Mnt.Click(pt.X + 20, pt.Y + 20, pauseTime: 200);
-
-                            if (Aw)
-                            {
-                                Log($"学习技能「{theLearnName}」");
-                                if (IsHadSkill(CropScreen(zone)))
-                                    SkList.Remove(theLearnName!);
-                            }
+                            Task<SkillCore.CheckInfo> finished = await Task.WhenAny(tasks);
+                            LearnSkill(await finished);
+                            tasks.Remove(finished);
                         }
+                    }).Wait();
 
-                        // 加速：只在变化时更新技能点
-                        if (Aw) RefreshSkillPoint();
-
-                        // 加速：若技能点过小则结束
-                        if (SkPoints < 71)
-                        {
-                            技能学习过程("结束");
-                            return;
-                        }
-                    }//for
-                    技能学习过程("翻页");
+                    if (SkPoints > 80)
+                        技能学习过程(技能过程Enum.翻页);
+                    else
+                        技能学习过程(技能过程Enum.结束);
                     break;
-                case "翻页":
+
+                case 技能过程Enum.翻页:
                     var dqLast = ReadLastSkill();
                     if (_lastSkill?.Equals(dqLast) ?? false)
-                        技能学习过程("结束");
+                        技能学习过程(技能过程Enum.结束);
                     else
                     {
                         _lastSkill = dqLast;
                         SkillScroll(430);
-                        技能学习过程("学习");
+                        技能学习过程(技能过程Enum.核心处理);
                     }
                     break;
 
-                case "结束":
+                case 技能过程Enum.结束:
                     MC.Builder
                         .AddProcess(Zone.上部, PText.Cultivation.技能获取确认, Button.技能获取)
                         .SetButtons(Button.继续)
@@ -439,6 +414,8 @@ namespace Shining_BeautifulGirls
                         if (FastCheck(Symbol.比赛日主页, 0.7) || AtEndPage())
                             break;
                     }
+
+                    SkillManager.AcceptLearned(CurrentLearns);
 
                     Log("结束技能学习");
                     break;
