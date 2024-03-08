@@ -28,7 +28,7 @@ namespace Shining_BeautifulGirls
                 //TODO 使用Task异步
                 // 控制中心
                 case 养成过程Enum.转场处理:
-                    Click(Button.选择末尾, 20);
+                    Click(Button.选择倒二, 20);
                     IOCRResult sb, zb, xb;
 
                     if ((zb = Extract中部(), zb.Contains(PText.Race.前往赛事)).Item2)
@@ -47,7 +47,6 @@ namespace Shining_BeautifulGirls
                     {
                         Click(Button.低继续);
                     }
-                    /*FastCheck(Symbol.OK)*/
                     else if ((xb = Extract下部(), xb.Contains(PText.Cultivation.OK)).Item2)
                     {
                         Click(Button.比赛结束);
@@ -79,38 +78,31 @@ namespace Shining_BeautifulGirls
                     break;
 
                 case 养成过程Enum.普通日:
-                    Log(回合开始);
-
                     UpdateBasicValue();
+                    Core.Reset();
+
+                    Log(回合开始);
                     Log(基本信息);
 
-                    // 判断要去训练还是干别的
-                    if (InAilment)
+                    bool Aw = false;
+
+                    Func<bool>[] pcs = [
+                        日常赛事决断,
+                        直接决断,
+                        训练决断
+                        ];
+
+                    foreach (var p in pcs)
                     {
-                        Log("已受伤，进行治疗");
-                        System__treat__();
-                    }
-                    else if (Vitality < 26)
-                    {
-                        Log("体力过低，放松休息");
-                        System__relex__();
-                    }
-                    else if (Mood < 3)
-                    {
-                        Log("心情低落，选择外出");
-                        System__out__();
-                    }
-                    else
-                    {
-                        Log("前往训练场地");
-                        if (!TryTrain())
-                        {
-                            养成流程(养成过程Enum.转场处理);
+                        Aw = p();
+                        if (Aw)
                             break;
-                        }
                     }
 
-                    养成流程(养成过程Enum.每日总结);
+                    if (Aw)
+                        养成流程(养成过程Enum.每日总结);
+                    else
+                        养成流程(养成过程Enum.转场处理);
                     break;
 
                 case 养成过程Enum.比赛日:
@@ -310,7 +302,7 @@ namespace Shining_BeautifulGirls
                     Click(Button.比赛结束);
                     PageDown([Symbol.赛果, Button.比赛结束]);
                     Log("比赛结束，已达成目标");
-                    _lastAction = "比赛";
+                    LastAction = ActionEnum.比赛;
                     return true;
 
                 case 比赛过程Enum.比赛失败:
@@ -366,7 +358,6 @@ namespace Shining_BeautifulGirls
                     break;
 
                 case 技能过程Enum.核心处理:
-                    //TODO 测试
                     // 异步检查三个技能位
                     Task.Run(async () =>
                     {
@@ -397,7 +388,7 @@ namespace Shining_BeautifulGirls
                     else
                     {
                         _lastSkill = dqLast;
-                        SkillScroll(430);
+                        SkillScroll();
                         技能学习过程(技能过程Enum.核心处理);
                     }
                     break;

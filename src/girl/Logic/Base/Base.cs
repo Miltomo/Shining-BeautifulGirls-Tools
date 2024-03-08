@@ -6,6 +6,10 @@
         {
             List<PlanInfo> T { get; } = [];
 
+            public bool IsNeedInfo => T.Count == 0;
+            public virtual bool IsG1Consider => false;
+            public bool TodayNoSuitableRace { get; private set; } = false;
+
             /// <summary>
             /// 休息
             /// </summary>
@@ -52,27 +56,75 @@
                 get
                 {
                     var max = T.Select(x => x.UpS.Sum()).Max();
-                    return TheOne(t => t.UpS.Sum() >= max);
+                    return TheOne(t => t.UpS.Sum() >= max)!;
                 }
             }
 
-            protected int Turn => girl.Turn;
-            protected int Vitality => girl.Vitality;
-            protected int Mood => girl.Mood;
-            protected bool InSummer => girl.InSummer;
-            protected int[] TargetProperty => girl.UserConfig!.TargetProperty!;
-            protected int[] CurrentProperty => girl.Property;
 
-            public void Add(PlanInfo info)
+            protected ShiningGirl Girl { get; init; } = girl;
+            protected int Turn => Girl.Turn;
+            protected int Vitality => Girl.Vitality;
+            protected int Mood => Girl.Mood;
+            protected bool InSummer => Girl.InSummer;
+            protected bool InContinuousRace => Girl.InContinuousRace;
+            protected int[] TargetProperty => Girl.UserConfig.TargetProperty ?? [0, 0, 0, 0, 0];
+            protected int[] CurrentProperty => Girl.Property;
+
+            abstract protected double Score(PlanInfo info);
+            abstract protected PlanInfo Select();
+            virtual public bool Skip() => false;
+            public PlanInfo PlanToDo() => Select();
+
+            public virtual PlanInfo WhenNoRace()
             {
-                info.Score = Score(info);
-                T.Add(info);
+                if (Vitality > 69)
+                    return TheOne(t => t.Plan == PlanEnum.智力)!;
+
+                if (Mood < 5 && Vitality > 39)
+                    return GoOut;
+
+                return Relex;
             }
 
-            public PlanInfo PlanToDo()
+
+
+            protected virtual bool RaceFindingLogic()
             {
-                return Select();
+                if (Turn < 31)
+                    return Girl.SelectFirstSuitableRace();
+
+                return Girl.SelectMaxFansSuitableRace();
             }
+
+            public bool CheckRaceEnvironment()
+            {
+                return !(InSummer || Mood < 3 || InContinuousRace && Mood < 5 || TodayNoSuitableRace);
+            }
+
+            public bool TryRace()
+            {
+                if (CheckRaceEnvironment())
+                {
+                    if (RaceFindingLogic())
+                        return true;
+                    else
+                    {
+                        TodayNoSuitableRace = true;
+                        return false;
+                    }
+                }
+                return false;
+            }
+
+            public virtual void Reset()
+            {
+                T.Clear();
+                TodayNoSuitableRace = false;
+            }
+
+
+
+            //==================================================
 
             public string[] Print()
             {
@@ -93,39 +145,19 @@
                 return [.. list];
             }
 
+            public void Add(PlanInfo info)
+            {
+                info.Score = Score(info);
+                T.Add(info);
+            }
 
             /// <summary>
-            /// 返回满足条件的(首个)训练项目；如果没有，则返回得分最高的
+            /// 返回满足条件的(首个)训练项目
             /// </summary>
             /// <param name="predicate"></param>
-            /// <returns></returns>
-            protected PlanInfo TheOne(Func<PlanInfo, bool> predicate)
-            {
-                return T.Where(t => predicate(t)).FirstOrDefault() ?? First;
-            }
-
-            abstract protected double Score(PlanInfo info);
-            abstract protected PlanInfo Select();
-            virtual public bool Skip() => false;
-            virtual public bool FindRace()
-            {
-                if (Turn < 31)
-                    return girl.SelectFirstSuitableRace();
-
-                return girl.SelectMaxFansSuitableRace();
-            }
-            virtual public PlanInfo WhenNoRace()
-            {
-                if (Vitality > 69)
-                    return TheOne(t => t.Plan == PlanEnum.智力);
-
-                if (Mood < 5 && Vitality > 39)
-                    return GoOut;
-
-                return Relex;
-            }
-
-
+            /// <returns>目标项目；如果找不到，则返回空值</returns>
+            protected PlanInfo? TheOne(Func<PlanInfo, bool> predicate) =>
+                T.Where(t => predicate(t)).FirstOrDefault();
 
             protected void SortByIndex()
             {

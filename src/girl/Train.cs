@@ -9,19 +9,7 @@
             [PlanEnum.速度, PlanEnum.耐力, PlanEnum.力量, PlanEnum.毅力, PlanEnum.智力];
         private static Button[] TrainingButtons { get; } =
             [Button.速度, Button.耐力, Button.力量, Button.毅力, Button.智力];
-        private Algorithm Core { get; set; }
-        public bool TryTrain()
-        {
-            if (GotoTrainPage())
-            {
-                Core = new PrimaryLogic(this);
-                Subject巡视();
-                StartPlan();
-                return true;
-            }
-
-            return false;
-        }
+        private Algorithm Core { get; init; }
 
         private bool GotoTrainPage()
         {
@@ -38,13 +26,29 @@
                 .StartAsWaitTo(Mnt, 200);
         }
 
-        private void StartPlan()
+        /// <summary>
+        /// 确保从任何位置能前往训练场地并获取训练信息
+        /// </summary>
+        /// <returns>true，成功获取训练信息；false，无法移至训练界面</returns>
+        private bool 获取训练信息()
         {
-            Log(Core.Print());
-            var t = Core.PlanToDo();
-            var plan = t.Plan;
+            if (GotoTrainPage())
+            {
+                if (Core.IsNeedInfo)
+                {
+                    Subject巡视();
+                    Log(Core.Print());
+                }
+                return true;
+            }
 
-        计划匹配:
+            return false;
+        }
+
+
+        private void StartPlan(PlanInfo t)
+        {
+            var plan = t.Plan;
             if (TrainingItems.Contains(plan))
             {
                 GotoTrainPage();
@@ -54,6 +58,7 @@
                 while (FastCheck(Symbol.返回, 0.7))
                     Click(bt);
 
+                LastAction = ActionEnum.训练;
             }
             else
             {
@@ -70,35 +75,18 @@
                         break;
 
                     case PlanEnum.比赛:
-                        // 夏天不比赛
-                        if (InSummer)
-                        {
-                            plan = Core.WhenNoRace().Plan;
-                            goto 计划匹配;
-                        }
-
                         Log($"训练增益值过低，准备参加日常比赛......");
-                        if (Core.FindRace())
-                        {
-                            Log($"已找到合适比赛：");
-                            Log(TargetRace);
-                            比赛处理(比赛过程Enum.进入);
-                            break;
-                        }
-                        Log($"未找到合适比赛");
-                        plan = Core.WhenNoRace().Plan;
-                        GotoMainPage();
-
-                        goto 计划匹配;
+                        if (!DailyRaceProcess(Core.TryRace))
+                            StartPlan(Core.WhenNoRace());
+                        break;
 
                     default:
                         System__relex__();
                         break;
                 }
             }
-
-            _lastAction = plan.ToString();
         }
+
 
         private void Subject巡视()
         {
@@ -224,8 +212,23 @@
             public PlanEnum Plan { get; set; }
             public int[] UpS { get; set; }
             public HeadInfo HeadInfo { get; set; }
-            public int Fail { get; set; }
+
+            private int _fail = 0;
+            public int Fail
+            {
+                get => _fail;
+                set => _fail = value < 0 ? 0 : value;
+            }
             public double Score { get; set; } = 0d;
+
+            public override bool Equals(object? obj)
+            {
+                if (obj is PlanInfo another)
+                {
+                    return another.Plan == Plan;
+                }
+                return false;
+            }
         }
 
         private enum PlanEnum
