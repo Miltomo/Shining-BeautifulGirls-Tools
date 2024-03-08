@@ -20,7 +20,7 @@ namespace Shining_BeautifulGirls
         public void UpdateHP()
         {
             Vitality = GetHP();
-            Vitality = Vitality > 95 && _lastHP < 50 && _lastAction != "休息" ? 0 : Vitality;
+            Vitality = Vitality > 95 && _lastHP < 50 && LastAction != ActionEnum.休息 ? 0 : Vitality;
             _lastHP = Vitality;
         }
         private int GetHP()
@@ -149,8 +149,26 @@ namespace Shining_BeautifulGirls
 
                 if (IsSuitable(info))
                 {
-                    // 获胜赛事简介
-                    //info.Introduction = ExtractInfo(zones[2]).Text;
+                    // 获取赛事简介
+                    var typebg = CropScreen(zones[2]);
+                    if (Match(out _, Symbol.G1, typebg) > 0.9)
+                        info.Type = RaceInfo.TypeEnum.G1;
+
+                    /*var jj = ExtractInfo(zones[2]);
+                    var typeOrin = jj.Like(RaceTypeRegex()).FirstOrDefault();
+                    if (typeOrin != null)
+                    {
+                        if (typeOrin.First() == 'G')
+                        {
+                            ;
+                        }
+                        else if (typeOrin.First() == 'O')
+                            info.Type = RaceInfo.TypeEnum.OP;
+                        else
+                            info.Type = RaceInfo.TypeEnum.PreOP;
+                    }
+
+                    info.Introduction = jj.Text.Replace(typeOrin ?? "", "");*/
 
                     // 获取粉丝数
                     info.Fans = GetFans(ExtractInfo(zones[3]));
@@ -176,6 +194,34 @@ namespace Shining_BeautifulGirls
             if (fs != null && int.TryParse(RaceFansTransRegex().Replace(fs, ""), out var fans))
                 return fans;
             return 0;
+        }
+
+        private DateInfo GetDate()
+        {
+            var r = ExtractInfo(Zone.日期);
+            DateInfo date = new();
+            // 确定年份
+            if (r.Contains(PText.Date.初级))
+                date.年份 = 1;
+            else if (r.Contains(PText.Date.经典级))
+                date.年份 = 2;
+            else if (r.Contains(PText.Date.高级))
+                date.年份 = 3;
+
+            var s = r.Like(日期Regex()).FirstOrDefault();
+            if (s != null)
+            {
+                // 确定月份
+                date.月份 = int.Parse(月份Regex().Match(s).Value);
+
+                // 确定旬位
+                if (s.Contains(PText.Date.上.ToString()))
+                    date.旬位 = DateInfo.旬Enum.上;
+                else
+                    date.旬位 = DateInfo.旬Enum.下;
+            }
+
+            return date;
         }
 
         private static string GetTodayRecordDir()
@@ -233,5 +279,11 @@ namespace Shining_BeautifulGirls
 
         [GeneratedRegex("\\s")]
         private static partial Regex 空白Regex();
+        [GeneratedRegex("\\d+月.*半月")]
+        private static partial Regex 日期Regex();
+        [GeneratedRegex("\\d+")]
+        private static partial Regex 月份Regex();
+        [GeneratedRegex("^[GOP]")]
+        private static partial Regex RaceTypeRegex();
     }
 }

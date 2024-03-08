@@ -2,7 +2,6 @@
 
 namespace Shining_BeautifulGirls
 {
-    //TODO 完善FirstG1实现
     partial class ShiningGirl
     {
         class AdaptInfo
@@ -17,6 +16,17 @@ namespace Shining_BeautifulGirls
             public int Fans { get; set; }
             public string Ground { get; set; }
             public string Distance { get; set; }
+            public TypeEnum Type { get; set; } = TypeEnum.未知;
+
+            public enum TypeEnum
+            {
+                G1,
+                G2,
+                G3,
+                OP,
+                PreOP,
+                未知,
+            }
 
             public override string ToString()
             {
@@ -38,6 +48,37 @@ namespace Shining_BeautifulGirls
                     Name.GetHashCode() ^ Ground.GetHashCode() ^ Distance.GetHashCode();
             }
         }
+        public class DateInfo
+        {
+            public enum 旬Enum
+            {
+                上,
+                下
+            }
+            public int 年份 { get; set; } = 0;
+            public int 月份 { get; set; } = 0;
+            public 旬Enum 旬位 { get; set; } = 旬Enum.上;
+
+            public override bool Equals(object? obj)
+            {
+                if (obj is DateInfo another)
+                {
+                    return another.年份 == 年份 && another.月份 == 月份 && another.旬位 == 旬位;
+                }
+                return false;
+            }
+
+            public override int GetHashCode() =>
+                年份.GetHashCode() ^ 月份.GetHashCode() ^ 旬位.GetHashCode();
+
+            public override string ToString()
+            {
+                return $"第{年份}年 {月份}月{旬位}半月";
+            }
+
+            public static DateInfo Build(int year = 0, int month = 0, 旬Enum xun = 旬Enum.上) =>
+                new() { 年份 = year, 月份 = month, 旬位 = xun };
+        }
 
         private static Zone[] 场地适应性 { get; } = [Zone.Rank草地, Zone.Rank泥地];
         private static Zone[] 距离适应性 { get; } = [Zone.Rank短距离, Zone.Rank英里, Zone.Rank中距离, Zone.Rank长距离];
@@ -54,12 +95,41 @@ namespace Shining_BeautifulGirls
             [Zone.赛事Type2, Zone.赛事Name2, Zone.赛事Intro2, Zone.赛事Fans2],
         ];
 
-        private RaceInfo TargetRace { get; set; }
+        private static DateInfo[] G1TimeTable { get; } = [
+            DateInfo.Build(1, 12, DateInfo.旬Enum.上),
+            DateInfo.Build(1, 12, DateInfo.旬Enum.下),
+            DateInfo.Build(2, 4, DateInfo.旬Enum.上),
+            DateInfo.Build(2, 5, DateInfo.旬Enum.上),
+            DateInfo.Build(2, 5, DateInfo.旬Enum.下),
+            DateInfo.Build(2, 6, DateInfo.旬Enum.上),
+            DateInfo.Build(2, 6, DateInfo.旬Enum.下),
+            DateInfo.Build(2, 7, DateInfo.旬Enum.上),
+            DateInfo.Build(2, 10, DateInfo.旬Enum.下),
+            DateInfo.Build(2, 11, DateInfo.旬Enum.上),
+            DateInfo.Build(2, 11, DateInfo.旬Enum.下),
+            DateInfo.Build(2, 12, DateInfo.旬Enum.上),
+            DateInfo.Build(2, 12, DateInfo.旬Enum.下),
+            DateInfo.Build(3, 2, DateInfo.旬Enum.下),
+            DateInfo.Build(3, 3, DateInfo.旬Enum.下),
+            DateInfo.Build(3, 4, DateInfo.旬Enum.下),
+            DateInfo.Build(3, 5, DateInfo.旬Enum.上),
+            DateInfo.Build(3, 6, DateInfo.旬Enum.上),
+            DateInfo.Build(3, 6, DateInfo.旬Enum.下),
+            DateInfo.Build(3, 7, DateInfo.旬Enum.上),
+            DateInfo.Build(3, 10, DateInfo.旬Enum.下),
+            DateInfo.Build(3, 11, DateInfo.旬Enum.上),
+            DateInfo.Build(3, 11, DateInfo.旬Enum.下),
+            DateInfo.Build(3, 12, DateInfo.旬Enum.上),
+            DateInfo.Build(3, 12, DateInfo.旬Enum.下),
+            ];
+
+        private RaceInfo? TargetRace { get; set; }
 
         //==============================================================
 
         private bool IsGoodAt(string? item)
         {
+            DateInfo.Build(1, 12, DateInfo.旬Enum.上);
             var r = AdaptionTable
                     .Where(x => x.Item == item)
                     .Select(w => w.Rank)
@@ -145,17 +215,27 @@ namespace Shining_BeautifulGirls
                     index -= 2;
                 }
 
-                Click(index switch
+                var Aw = true;
+                var infos = ReadRaceInfos();
+                for (int i = 0; i <= infos.Length; i++)
                 {
-                    1 => Button.赛事位置1,
-                    2 => Button.赛事位置2,
-                    _ => throw new NotImplementedException()
-                }, 500);
+                    var dq = infos[i];
+                    if (IsSuitable(dq))
+                    {
+                        Click(i switch
+                        {
+                            0 => Button.赛事位置1,
+                            1 => Button.赛事位置2,
+                            _ => throw new NotImplementedException()
+                        }, 500);
+                        TargetRace = dq;
+                        Aw = false;
+                        break;
+                    }
+                }
 
-                if (IsDimmed(ZButton.通用参赛, 140))
+                if (Aw || IsDimmed(ZButton.通用参赛, 140))
                     return false;
-
-                TargetRace = ReadRaceInfos()[index - 1];
 
                 return true;
             }
@@ -184,15 +264,7 @@ namespace Shining_BeautifulGirls
                     for (int i = 0; i < races.Length; i++)
                     {
                         if (IsSuitable(races[i]))
-                        {
-                            if (SelectRace(i))
-                            {
-                                TargetRace = races[i];
-                                return true;
-                            }
-
-                            return false;
-                        }
+                            return SelectRace(i);
                     }
 
                     if (last?.Equals(races[^1]) ?? false)
@@ -227,6 +299,38 @@ namespace Shining_BeautifulGirls
         private bool SelectFirstG1orMaxFans()
         {
             throw new NotImplementedException();
+        }
+
+        private bool SelectFirstSuitableG1()
+        {
+            if (AdaptionTable.Count == 0)
+                UpdateAdpTable();
+
+            if (GotoRacePage())
+            {
+                RaceInfo? last = default;
+
+                while (true)
+                {
+                    var races = ReadRaceInfos();
+
+                    for (int i = 0; i < races.Length; i++)
+                    {
+                        var dq = races[i];
+                        if (IsSuitable(dq) && dq.Type == RaceInfo.TypeEnum.G1)
+                            return SelectRace(i);
+                    }
+
+                    if (last?.Equals(races[^1]) ?? false)
+                        break;
+
+                    last = races[^1];
+
+                    RaceScroll();
+                }
+            }
+
+            return false;
         }
 
 
@@ -265,8 +369,12 @@ namespace Shining_BeautifulGirls
                 // 检测提醒弹窗
                 else if ((r = Extract中部(), r.Equals(PText.Race.前往赛事)).Item2)
                     Click(Button.大弹窗确认, 1000);
+                // 连续参赛提示
                 else if (r.Contains(PText.Race.连续参赛))
+                {
+                    InContinuousRace = true;
                     Click(Button.弹窗确认, 1000);
+                }
                 // 当没有比赛时
                 else if (r.Equals(PText.Cultivation.暂无可以参加的比赛))
                     return false;
