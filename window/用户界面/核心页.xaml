@@ -205,8 +205,17 @@
                             <ComboBoxItem Content="只要失败就重赛"/>
                         </ComboBox>
 
-                        <ComboBox Grid.Row="5" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0" IsEnabled="False">
-                            <ComboBoxItem Content="基本逻辑"/>
+                        <ComboBox x:Name="养成算法ComboBox" Grid.Row="5" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type ComboBox}},Path=ActualWidth}">
+                                        <TextBlock Text="{Binding Name}" Cursor="Help"/>
+                                        <Grid.ToolTip>
+                                            <ToolTip Content="{Binding Description}"/>
+                                        </Grid.ToolTip>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
                         </ComboBox>
 
                         <!--循环设置-->

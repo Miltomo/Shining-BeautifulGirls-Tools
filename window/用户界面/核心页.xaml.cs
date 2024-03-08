@@ -66,6 +66,9 @@ namespace Shining_BeautifulGirls
                             if (cfg.NeedNewTask || cfg.SkillGetingTask == null)
                                 cfg.SkillGetingTask = Task.Run(async () =>
                                 {
+#if DEBUG
+                                    Toast("开始技能获取任务");
+#endif
                                     var paths = cfg.SkillPaths;
 
                                     List<string[]> zz = [];
@@ -83,9 +86,18 @@ namespace Shining_BeautifulGirls
                                     }
 
                                     string[][] r = [.. zz];
-
+#if DEBUG
+                                    Toast("已成功获取全部技能");
+#endif
                                     return r;
                                 });
+                            else
+                            {
+#if DEBUG
+                                Toast($"使用原来任务：{cfg.SkillGetingTask.Status}\n" +
+                                    $"技能数：{cfg.SkillGetingTask.Result.SelectMany(x => x).ToArray().Length}");
+#endif
+                            }
 
                             Monitor.Start();
                             try
@@ -198,6 +210,7 @@ namespace Shining_BeautifulGirls
         }
         Queue<Action> PlanQueue { get; set; } = new();
         World Monitor { get; init; }
+        static ShiningGirl.AlgorithmItem[] 算法集合 => ShiningGirl.Algorithms;
         class 协助卡Item
         {
             public string Name { get; set; }
@@ -261,14 +274,21 @@ namespace Shining_BeautifulGirls
 
         public void UpdateSource()
         {
+            if (Monitor.UserConfig?.SBGConfig is ShiningGirl.Config cfg)
+                cfg.SkillGetingTask = null;
+
             // 更新源集合
             协助卡ComboBox.ItemsSource = Directory.GetFiles(World.CardDir)
                 .Select(f => new 协助卡Item { Name = Path.GetFileNameWithoutExtension(f), Path = f });
 
             技能ComboBox.ItemsSource = new SimpleFileManager(App.SkillStrategyDir).Names;
 
+            养成算法ComboBox.ItemsSource = 算法集合;
+
             // 值还原
             协助卡ComboBox.SelectedIndex = ((IEnumerable<协助卡Item>)协助卡ComboBox.ItemsSource).ToList().FindIndex(x => x.Name.Contains(VM.协助卡名称));
+            养成算法ComboBox.SelectedIndex = Array.FindIndex(算法集合, x => x.代号 == VM.养成算法代号);
+
         }
 
         #region 信息输出
@@ -358,6 +378,7 @@ namespace Shining_BeautifulGirls
         {
             // 保存无法绑定的值
             VM.协助卡名称 = ((协助卡Item)协助卡ComboBox.SelectedItem)?.Name ?? "";
+            VM.养成算法代号 = ((ShiningGirl.AlgorithmItem)养成算法ComboBox.SelectedItem).代号;
 
             // 保存普通值
             用户DataModel.Save();
@@ -508,11 +529,6 @@ namespace Shining_BeautifulGirls
                         return;
                     }
 
-                    // 还原养成优俊少女
-                    ShiningGirl girl = new(Monitor);
-                    girl.Load();
-                    Monitor.Girl = girl;
-
                     // 载入用户配置
                     Monitor.UserConfig ??= new World.Config();
                     var mcf = Monitor.UserConfig;
@@ -530,6 +546,7 @@ namespace Shining_BeautifulGirls
                     var scf = mcf.SBGConfig;
                     scf.TargetProperty = [VM.V1, VM.V2, VM.V3, VM.V4, VM.V5];
                     scf.ReChallenge = VM.重赛逻辑Index;
+                    scf.AlgorithmCode = VM.养成算法代号;
                     scf.SaveFactor = Config.保存养成因子;
                     scf.SaveCultivationInfo = Config.保存养成记录;
                     scf.SaveHighLight = Config.保存高光时刻;
@@ -545,6 +562,12 @@ namespace Shining_BeautifulGirls
                         scf.SkillFile = dqF;
                         scf.SkillPaths = 技能编辑.GetSkillPaths(scf.SkillFile);
                     }
+
+
+                    // 还原养成优俊少女
+                    ShiningGirl girl = new(Monitor, scf);
+                    girl.Load();
+                    Monitor.Girl = girl;
 
                     CoreState = "准备开始";
                     break;

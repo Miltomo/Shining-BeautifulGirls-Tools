@@ -11,6 +11,7 @@ namespace Shining_BeautifulGirls
         public int V4 { get; set; } = 360;
         public int V5 { get; set; } = 400;
         public string 协助卡名称 { get; set; } = "北部玄驹";
+        public ShiningGirl.AlgorithmItem.代号Enum 养成算法代号 { get; set; } = ShiningGirl.AlgorithmItem.代号Enum.PL;
         public string 技能文件Value { get; set; } = "";
         public int 重赛逻辑Index { get; set; } = 0;
         public int 选队Index { get; set; } = 0;

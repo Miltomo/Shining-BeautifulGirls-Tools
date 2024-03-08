@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using static MHTools.数据工具;
+using Code = Shining_BeautifulGirls.ShiningGirl.AlgorithmItem.代号Enum;
 
 namespace Shining_BeautifulGirls
 {
@@ -27,6 +28,7 @@ namespace Shining_BeautifulGirls
         public int[] Property => _hproperty ?? [0, 0, 0, 0, 0];
         public int Vitality { get; private set; }
         public int Mood { get; private set; } = 3;//普通
+        public DateInfo Today { get; private set; } = DateInfo.Build();
 
         [ToSave]
         public int Turn { get; private set; } = 1;
@@ -36,9 +38,12 @@ namespace Shining_BeautifulGirls
         public bool EndTraining { get; private set; } = false;
 
         [ToSave]
-        private int _lastHP = 100;
+        private ActionEnum LastAction { get; set; } = ActionEnum.休息;
+
         [ToSave]
-        private string _lastAction = "休息";
+        private int _lastHP = 100;
+
+
 
         private string 回合开始 => $"###############第 {Turn} 回合###############";
 
@@ -58,13 +63,14 @@ namespace Shining_BeautifulGirls
                 ];
 
         private World Mnt { get; init; }
-        public Config? UserConfig { get; set; }
+        private Config UserConfig { get; init; }
         #endregion
 
         public class Config
         {
             public int[]? TargetProperty { get; set; }
             public int ReChallenge { get; set; } = 0;
+            public Code AlgorithmCode { get; set; } = Code.PL;
             public bool SaveFactor { get; set; } = true;
             public bool SaveCultivationInfo { get; set; } = true;
             public bool SaveHighLight { get; set; } = true;
@@ -74,11 +80,17 @@ namespace Shining_BeautifulGirls
             public Task<string[][]>? SkillGetingTask { get; set; } = null;
         }
 
-        public ShiningGirl(World world, Config? userConfig = default)
+        public ShiningGirl(World world, Config userConfig)
         {
             Mnt = world;
             UserConfig = userConfig;
             SkillManager = SkillCore.New(this);
+            Core = UserConfig.AlgorithmCode switch
+            {
+                Code.PL => new PrimaryLogic(this),
+                Code.PB => new PrimaryBattle(this),
+                _ => new PrimaryLogic(this)
+            };
         }
 
 
@@ -101,13 +113,15 @@ namespace Shining_BeautifulGirls
         public void Load()
         {
             LoadFromJSON(this, 本体Json);
-            if (!EndTraining)
-                LoadFromJSON(SkillManager, 技能Json);
+            LoadFromJSON(SkillManager, 技能Json);
         }
 
-        public void 测试()
+        public void 测试(Action<object>? toast = null)
         {
-            SelectMaxFansSuitableRace();
+            var r = ReadRaceInfos();
+
+            Array.ForEach(r, (x) => { toast?.Invoke(x); });
+
         }
     }
 }
