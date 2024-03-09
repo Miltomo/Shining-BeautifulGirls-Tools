@@ -4,6 +4,7 @@ namespace Shining_BeautifulGirls
 {
     static class Symbol
     {
+        public static string G1 => Path.Combine(World.SymbolDir, "G1.png");
         public static string 下一页 => Path.Combine(World.SymbolDir, "下一页.png");
         public static string 养成 => Path.Combine(World.SymbolDir, "养成.png");
         public static string 养成2 => Path.Combine(World.SymbolDir, "养成2.png");

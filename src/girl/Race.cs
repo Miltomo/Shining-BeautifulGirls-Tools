@@ -301,7 +301,7 @@ namespace Shining_BeautifulGirls
             throw new NotImplementedException();
         }
 
-        private bool SelectFirstSuitableG1()
+        private bool SelectFirstG1()
         {
             if (AdaptionTable.Count == 0)
                 UpdateAdpTable();

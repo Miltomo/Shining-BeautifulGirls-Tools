@@ -55,7 +55,7 @@ namespace Shining_BeautifulGirls
             return Mnt.FastCheck(Symbol.已获得, background, 0.8);
         }
 
-        private void SkillScroll(int distance = 430)
+        private void SkillScroll(int distance = 435)
         {
             Mnt.Scroll([360, 1000, distance]);
             Pause(1000);

@@ -2,6 +2,7 @@
 
 namespace Shining_BeautifulGirls
 {
+    //TODO 准备提前增加剧本选择处理逻辑，以便兼容
     partial class World
     {
         //TODO 增加处于结算中的情况 => 按钮变灰的情况
@@ -20,7 +21,7 @@ namespace Shining_BeautifulGirls
 
             bool Aw = MC.Builder
                 .AddTarget(Zone.上部, PText.JJC.选择对战对手)
-                .AddOpposite(Zone.中部, PText.JJC.确认)
+                .AddOpposite(Zone.中部, PText.JJC.竞技值不足)
                 .StartAsPageDown(this);
             if (Aw)
                 goto 选队;
@@ -58,11 +59,13 @@ namespace Shining_BeautifulGirls
             bool Bw = MC.Builder
                 .SetButtons(Button.竞技场连点)
                 .AddTarget(Zone.上部, PText.JJC.选择对战对手)
-                .AddOpposite(Zone.中部, PText.JJC.确认)
+                .AddOpposite(Zone.中部, PText.JJC.竞技值不足)
                 .StartAsMoveTo(this);
 
             if (Bw)
                 goto 选队;
+            Click(Button.比赛结束, 1000);
+            Click(Button.比赛结束);
             Log("竞技值不足，退出");
             goto 结束;
 
@@ -395,7 +398,7 @@ namespace Shining_BeautifulGirls
 
             if (Girl is null || Girl.EndTraining)
             {
-                Girl = new ShiningGirl(this, UserConfig?.SBGConfig);
+                Girl = new ShiningGirl(this, UserConfig?.SBGConfig!);
                 if (已存在养成)
                     Log("⚠️未检测到上次养成数据，会从零开始进行养成，这可能会导致行为不符合预期");
                 Girl.Start();
@@ -406,7 +409,6 @@ namespace Shining_BeautifulGirls
                 Log($"回合数: {Girl.Turn}");
                 Log($"属性值: {Girl.Property[0]} , {Girl.Property[1]} , {Girl.Property[2]} , {Girl.Property[3]} , {Girl.Property[4]}");
                 Log($"技能学习次数: {Girl.SkillManager.SkTurns}");
-                Girl.UserConfig = UserConfig?.SBGConfig;
                 Girl.Continue();
             }
 

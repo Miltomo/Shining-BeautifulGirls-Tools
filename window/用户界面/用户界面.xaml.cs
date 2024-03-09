@@ -45,7 +45,6 @@ namespace Shining_BeautifulGirls
 #if DEBUG
             右键测试.Visibility = Visibility.Visible;
 #endif
-            //TODO 使用异步更新技能名列表
             //TODO 更换增益值检测方法
             //TODO 思考如何处理文件空值问题？
             //TODO 异常未成功截获？
@@ -146,29 +145,10 @@ namespace Shining_BeautifulGirls
 
                 //Toast($"亮度：{ComputerVision.ImageRecognition.AvgBrightness(Monitor.CropScreen(ZButton.养成日常赛事位, "测试"))}");
 
-                /*var g = new ShiningGirl(Monitor);
-                g.测试();*/
+                /*var g = new ShiningGirl(Monitor, new ShiningGirl.Config());
+                g.测试(Toast);*/
 
-                /*var result = RankClassification.Predict(new()
-                {
-                    ImageSource = File.ReadAllBytes(Monitor.CropScreen(World.NP.Zone.Rank英里, "测试")),
-                }).PredictedLabel;
-
-                Toast(result);*/
-
-                /*var dir = @"C:\Users\Administrator\Desktop\mlData\data\Rank";
-                Monitor.Refresh();
-                Func<object, OpenCvSharp.Mat> func = Monitor.CropScreen;
-                func(World.NP.Zone.Rank草地).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank泥地).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank短距离).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank英里).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank中距离).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank长距离).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank领跑).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank跟前).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank居中).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));
-                func(World.NP.Zone.Rank后追).SaveImage(Path.Combine(dir, $"{TimeTool.RandomLetters(10)}.png"));*/
+                Toast(Monitor.Match(out _, Symbol.G1));
 
 
                 // 停止计时器

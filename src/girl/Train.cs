@@ -1,10 +1,9 @@
 ﻿namespace Shining_BeautifulGirls
 {
-    //TODO 连续参赛时的处理
-    //TODO 增加"训练-赛事"权衡决断定义
     //TODO 着手设计自选比赛功能
     partial class ShiningGirl
     {
+        //TODO 更改为class内部判断函数
         private static PlanEnum[] TrainingItems { get; } =
             [PlanEnum.速度, PlanEnum.耐力, PlanEnum.力量, PlanEnum.毅力, PlanEnum.智力];
         private static Button[] TrainingButtons { get; } =
@@ -206,7 +205,7 @@
             return V;
         }
 
-
+        //TODO 更名换地
         private class PlanInfo()
         {
             public PlanEnum Plan { get; set; }

@@ -134,7 +134,7 @@
                 if (InSummer)
                 {
                     if (Vitality > 50)
-                        return TheOne(t => t.Plan == PlanEnum.智力);
+                        return TheOne(t => t.Plan == PlanEnum.智力)!;
                     else
                         return Relex;
                 }

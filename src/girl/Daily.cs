@@ -2,8 +2,6 @@
 {
     //TODO 比赛后选择第一个选项
     //TODO 保留每次养成的日志和成果记录
-    //TODO 继续完善突发分支的处理
-    //TODO 修改比赛逻辑
     //TODO 增加友人卡外出分支
     partial class ShiningGirl
     {
@@ -123,8 +121,7 @@
             if (Core.IsG1Consider && InG1Day)
             {
                 Log("☆今天有G1比赛☆");
-                //TODO 更改为只找G1比赛
-                if (DailyRaceProcess(SelectFirstSuitableG1))
+                if (DailyRaceProcess(SelectFirstG1))
                     return true;
             }
             return false;

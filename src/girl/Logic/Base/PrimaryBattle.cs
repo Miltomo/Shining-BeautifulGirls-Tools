@@ -6,6 +6,7 @@
         {
             public override bool IsG1Consider => true;
 
+            //TODO 智力只要求 > 25?
             private static bool SumFail(PlanInfo p)
             {
                 var f = p.Fail;
@@ -22,6 +23,7 @@
                 {
                     if (Mood < 5)
                         return GoOut;
+                    //TODO 要不要改为Relex？
                     else
                         return Race;
                 }
@@ -40,6 +42,7 @@
                         return orin;
                 }
 
+                //TODO 降低得分 > 16 的条件？ => 14? 会选择毅力的
                 if (TheOne(x =>
                     x != orin && (x.Score > 16) &&
                     SumFail(x)

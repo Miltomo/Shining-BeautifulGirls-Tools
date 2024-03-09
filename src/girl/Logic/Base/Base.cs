@@ -75,6 +75,7 @@
             virtual public bool Skip() => false;
             public PlanInfo PlanToDo() => Select();
 
+            //TODO 再次包装，带结果检查！
             public virtual PlanInfo WhenNoRace()
             {
                 if (Vitality > 69)

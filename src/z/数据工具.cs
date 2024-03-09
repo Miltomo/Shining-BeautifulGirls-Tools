@@ -300,6 +300,10 @@ namespace MHTools
 
                 return array;
             }
+            else if (targetType.IsEnum)
+            {
+                return Enum.ToObject(targetType, value);
+            }
             else
             {
                 try
