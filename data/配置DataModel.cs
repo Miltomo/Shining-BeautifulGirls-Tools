@@ -11,6 +11,17 @@ namespace Shining_BeautifulGirls
         public bool 保存高光时刻 { get; set; } = true;
         public bool Is群英允许宝石 { get; set; } = false;
 
+        private bool _useGPU = false;
+        public bool IsReadUpsByGPU
+        {
+            get => _useGPU;
+            set
+            {
+                _useGPU = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool _tipCQ = true;
         public bool Tip传奇赛事
         {

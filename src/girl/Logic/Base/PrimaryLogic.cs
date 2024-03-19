@@ -15,18 +15,18 @@
             }
 
 
-            protected override double Score(PlanInfo info)
+            protected override double Score(Plan info)
             {
                 if (Turn < 26)
                     return info.HeadInfo.Count;
 
                 var s = .0;
                 // 当体力较低时，增加智力的基础得分
-                if (Vitality < 65 && info.Plan == PlanEnum.智力)
+                if (Vitality < 65 && info.Name == PlanName.智力)
                     s += 2;
 
                 //(delta) 检测当前项目属性值与目标值差距；并给予相应奖罚措施
-                int index = Array.IndexOf(TrainingItems, info.Plan);
+                int index = Plan.GetIndexOfTrainning(info);
                 var dq = CurrentProperty[index];
                 var tg = TargetProperty[index];
 
@@ -50,7 +50,7 @@
                 return s;
             }
 
-            protected override PlanInfo Select()
+            protected override Plan Select()
             {
                 var target = First;
                 var score = target.Score;
@@ -112,11 +112,16 @@
                         if (Vitality < 70)
                         {
                             if (Mood < 4) return GoOut;
-                            if (target.Plan == PlanEnum.智力 && score > baseScore) return target;
+                            if (target.Is智力 && score > baseScore) return target;
                         }
+
+                        if (Vitality < 40)
+                            return Relex;
+
                         return Race;
                     }
                 }
+
                 // 与失败率比较
                 if (target.Fail > 1 * (score - baseScore) + failLine)
                 {
@@ -129,12 +134,12 @@
                 return target;
             }
 
-            public override PlanInfo WhenNoRace()
+            public override Plan WhenNoRace()
             {
                 if (InSummer)
                 {
                     if (Vitality > 50)
-                        return TheOne(t => t.Plan == PlanEnum.智力)!;
+                        return TheOne(t => t.Is智力) ?? First;
                     else
                         return Relex;
                 }
@@ -145,6 +150,8 @@
 
                 return base.WhenNoRace();
             }
+
+            public override bool IsReadUpValue => Turn > 25;
         }
     }
 }

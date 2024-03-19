@@ -15,6 +15,7 @@ namespace ComputerVision
         private static readonly Lazy<PaddleOCR> _lazy = new(() => new PaddleOCR());
         private static PaddleOCR Instance => _lazy.Value;
         private static OCRParameter? Parameter { get; set; }
+        public static OCRModelConfig? ModelConfig { get; set; }
 
         public static int CPUthreads { get; set; } = 10;
 
@@ -29,9 +30,6 @@ namespace ComputerVision
             return Instance;
         }
 
-        public static void ChangeModel()
-        {
-        }
         public static void CustomPara(OCRParameter parameter)
         {
             Parameter = parameter;
@@ -48,10 +46,10 @@ namespace ComputerVision
 #pragma warning disable CS8618 // 禁止类成员的构造null检查
         private PaddleOCR()
         {
-            Engine = new PaddleOCREngine(null, Parameter ?? new OCRParameter()
+            Engine = new PaddleOCREngine(ModelConfig, Parameter ?? new OCRParameter()
             {
-                use_gpu = false,
                 cpu_math_library_num_threads = CPUthreads,
+                det_db_score_mode = false,
             });
         }
 #pragma warning restore CS8618 // 恢复类成员的构造null检查
@@ -62,7 +60,7 @@ namespace ComputerVision
 
         public async Task<Result> ExtractAsync()
         {
-            return await Task.Run(() => new Result(Engine.DetectText(TargetImage)));
+            return await Task.Run(Extract);
         }
 
         public class Result : IOCRResult

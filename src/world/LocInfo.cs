@@ -13,8 +13,15 @@
                 外出2,
                 返回,
                 高返回,
-                通用参赛,
+                通用赛事, // 改为Button => 比赛日赛事
+                兼容参赛,
                 查看结果,
+
+                速度,
+                耐力,
+                力量,
+                毅力,
+                智力,
 
                 JJC主按钮,
                 JJC队伍1,
@@ -31,6 +38,7 @@
             public enum Button
             {
                 强化编成,
+                切换剧本,
                 剧情,
                 主页,
                 赛事,
@@ -59,11 +67,7 @@
                 训练,
                 技能,
                 外出,
-                速度,
-                耐力,
-                力量,
-                毅力,
-                智力,
+
                 能力详情,
                 赛事位置1,
                 赛事位置2,
@@ -105,11 +109,11 @@
                 力量增加,
                 毅力增加,
                 智力增加,
-                速度,
-                耐力,
-                力量,
-                毅力,
-                智力,
+                速度值,
+                耐力值,
+                力量值,
+                毅力值,
+                智力值,
                 卡1,
                 卡2,
                 卡3,
@@ -141,6 +145,7 @@
             ZoneLocation.Clear();
 
             MakeButton(Button.强化编成, 75, 1225);
+            MakeButton(Button.切换剧本, 25, 585, 15, 30);
             MakeButton(Button.剧情, 190, 1225);
             MakeButton(Button.主页, 360, 1195, 50, 25);
             MakeButton(Button.赛事, 520, 1225);
@@ -169,13 +174,6 @@
             MakeButton(Button.训练, 355, 985);
             MakeButton(Button.技能, 210, 1075);
             MakeButton(Button.外出, 400, 1125);
-
-            int trainY = 1055, train_d = 25;
-            MakeButton(Button.速度, 105, trainY, train_d, train_d);
-            MakeButton(Button.耐力, 233, trainY, train_d, train_d);
-            MakeButton(Button.力量, 360, trainY, train_d, train_d);
-            MakeButton(Button.毅力, 488, trainY, train_d, train_d);
-            MakeButton(Button.智力, 615, trainY, train_d, train_d);
 
             MakeButton(Button.能力详情, 645, 772, 20, 20);
             MakeButton(Button.赛事位置1, 360, 765, 200, 30);
@@ -215,7 +213,7 @@
 
             MakeZone(Zone.事件类型, 110, 325, 210, 235);
             MakeZone(Zone.事件名, 110, 550, 245, 275);
-            MakeZone(Zone.日期, 0, 300, 0, 100);
+            MakeZone(Zone.日期, 0, 400, 0, 100);
             MakeZone(Zone.心情, 530, 700, 138, 183);
             MakeZone(Zone.体力, 223, 600, 145, 177);
             MakeZone(Zone.协助1, 580, 700, 185, 290);
@@ -228,11 +226,11 @@
             MakeZone(Zone.力量增加, 250, 365, 775, 825);
             MakeZone(Zone.毅力增加, 365, 475, 775, 825);
             MakeZone(Zone.智力增加, 475, 585, 775, 825);
-            MakeZone(Zone.速度, 65, 140, 855, 883);
-            MakeZone(Zone.耐力, 180, 250, 855, 883);
-            MakeZone(Zone.力量, 290, 365, 855, 883);
-            MakeZone(Zone.毅力, 405, 475, 855, 883);
-            MakeZone(Zone.智力, 515, 585, 855, 883);
+            MakeZone(Zone.速度值, 65, 140, 855, 883);
+            MakeZone(Zone.耐力值, 180, 250, 855, 883);
+            MakeZone(Zone.力量值, 290, 365, 855, 883);
+            MakeZone(Zone.毅力值, 405, 475, 855, 883);
+            MakeZone(Zone.智力值, 515, 585, 855, 883);
             MakeZone(Zone.卡1, 35, 160, 80, 310);
             MakeZone(Zone.卡2, 35, 160, 250, 480);
             MakeZone(Zone.卡3, 35, 160, 430, 655);
@@ -284,8 +282,17 @@
             BuildZB(ZButton.高返回, 36, 1190, 130, 1210);
             BuildZB(ZButton.医务室, 107, 1085, 228, 1170);
             BuildZB(ZButton.养成日常赛事位, 491, 1084, 613, 1171);
-            BuildZB(ZButton.通用参赛, 495, 1085, 605, 1115);
+            BuildZB(ZButton.通用赛事, 495, 1085, 605, 1115);
+            BuildZB(ZButton.兼容参赛, 380, 1050, 490, 1120);
             BuildZB(ZButton.查看结果, 165, 1145, 340, 1200);
+
+            int xlY1 = 1040, xlY2 = 1120;
+
+            BuildZB(ZButton.速度, 60, xlY1, 145, xlY2);
+            BuildZB(ZButton.耐力, 190, xlY1, 275, xlY2);
+            BuildZB(ZButton.力量, 320, xlY1, 400, xlY2);
+            BuildZB(ZButton.毅力, 445, xlY1, 530, xlY2);
+            BuildZB(ZButton.智力, 575, xlY1, 655, xlY2);
 
             BuildZB(ZButton.外出1, 50, 400, 670, 500);
             BuildZB(ZButton.外出2, 50, 540, 670, 640);

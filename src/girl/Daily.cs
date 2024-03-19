@@ -1,6 +1,5 @@
 ﻿namespace Shining_BeautifulGirls
 {
-    //TODO 比赛后选择第一个选项
     //TODO 保留每次养成的日志和成果记录
     //TODO 增加友人卡外出分支
     partial class ShiningGirl
@@ -56,14 +55,14 @@
 
             // 读取当前属性值
             List<int> property = [];
-            for (int i = 0; i < TrainingItems.Length; i += 1)
+            for (int i = 0; i < Plan.TrainningItemsCount; i += 1)
                 property.Add(ExtractValue(i switch
                 {
-                    0 => Zone.速度,
-                    1 => Zone.耐力,
-                    2 => Zone.力量,
-                    3 => Zone.毅力,
-                    4 => Zone.智力,
+                    0 => Zone.速度值,
+                    1 => Zone.耐力值,
+                    2 => Zone.力量值,
+                    3 => Zone.毅力值,
+                    4 => Zone.智力值,
                     _ => throw new KeyNotFoundException()
                 }));
 
@@ -139,6 +138,7 @@
                 Log("已受伤，进行治疗");
                 System__treat__();
             }
+            //TODO 低体力时 => 对于历战算法，若不处于连续参赛则比赛；若心情小于 < 5则恢复心情
             else if (Vitality < 26)
             {
                 Log("体力过低，放松休息");
@@ -164,7 +164,7 @@
             if (获取训练信息())
             {
                 var orin = Core.PlanToDo();
-                if (orin.Plan == PlanEnum.比赛 && !Core.CheckRaceEnvironment())
+                if (orin.Name == PlanName.比赛 && !Core.CheckRaceEnvironment())
                     StartPlan(Core.WhenNoRace());
                 else
                     StartPlan(orin);

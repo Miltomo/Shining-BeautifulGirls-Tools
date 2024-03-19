@@ -26,7 +26,7 @@ namespace Shining_BeautifulGirls
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             ResizeMode = ResizeMode.CanMinimize;
             Title = $"操作设备：{emulator}";
-            Height = 800;
+            Height = 900;
             Width = 600;
             Monitor = new(emulator.ID);
             App.UserWindow = this;
@@ -133,7 +133,7 @@ namespace Shining_BeautifulGirls
         {
             Thread thread = new(() =>
             {
-                Monitor.Refresh();
+                //Monitor.Refresh();
                 Monitor.Start();
                 // 创建 Stopwatch 实例
                 Stopwatch stopwatch = new();
@@ -145,10 +145,10 @@ namespace Shining_BeautifulGirls
 
                 //Toast($"亮度：{ComputerVision.ImageRecognition.AvgBrightness(Monitor.CropScreen(ZButton.养成日常赛事位, "测试"))}");
 
-                /*var g = new ShiningGirl(Monitor, new ShiningGirl.Config());
-                g.测试(Toast);*/
+                var g = new ShiningGirl(Monitor, new ShiningGirl.Config());
+                g.测试(Toast);
 
-                Toast(Monitor.Match(out _, Symbol.G1));
+                /*Toast(Monitor.Match(out _, Symbol.G1));*/
 
 
                 // 停止计时器

@@ -144,17 +144,14 @@
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
+                            <RowDefinition/>
                             <RowDefinition Height="1.5*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Style="{DynamicResource 面板名TextBlockStyle}">养成任务</TextBlock>
+                        <CheckBox x:Name="养成启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True"/>
+                        
+                        
                         <TextBlock Grid.Row="1" Text="目标属性值" Style="{DynamicResource 选项TextBlockStyle}"/>
-                        <TextBlock Grid.Row="2" Text="好友协助卡" Style="{DynamicResource 选项TextBlockStyle}"/>
-                        <TextBlock Grid.Row="3" Text="学习技能组" Style="{DynamicResource 选项TextBlockStyle}"/>
-                        <TextBlock Grid.Row="4" Text="重赛逻辑" Style="{DynamicResource 选项TextBlockStyle}"/>
-                        <TextBlock Grid.Row="5" Text="养成算法" Style="{DynamicResource 选项TextBlockStyle}"/>
-                        <TextBlock Grid.Row="6" Text="循环设置" Style="{DynamicResource 选项TextBlockStyle}"/>
-
-                        <!--编辑属性值-->
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -179,6 +176,8 @@
                             <TextBox x:Name="智力Input" Grid.Row="1" Grid.Column="4" Style="{DynamicResource 属性值TextBoxStyle}" Text="100" KeyDown="NumberInput_KeyDown" KeyUp="NumberInput_KeyUp"/>
                         </Grid>
 
+
+                        <TextBlock Grid.Row="2" Text="好友协助卡" Style="{DynamicResource 选项TextBlockStyle}"/>
                         <ComboBox x:Name="协助卡ComboBox" Grid.Row="2" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" 
                       SelectedIndex="0"
                       SelectionChanged="协助卡ComboBox_SelectionChanged"
@@ -186,40 +185,47 @@
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding Name}" Margin="5,5,0,10"/>
+                                        <TextBlock Text="{Binding Name}" Margin="0,5,0,10"/>
                                         <Image Grid.Row="1" Source="{Binding Path}" Width="96" Height="106" Margin="30,0,0,0"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-
                         <Image x:Name="协助卡Image" Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Margin="14,41,40,2"/>
 
+                        <TextBlock Grid.Row="3" Text="学习技能组" Style="{DynamicResource 选项TextBlockStyle}"/>
                         <ComboBox x:Name="技能ComboBox" Grid.Row="3" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0"/>
-
                         <Button Style="{DynamicResource ButtonStyle}" x:Name="Button技能编辑" Grid.Row="3" Grid.Column="2" Height="30" Width="60" HorizontalAlignment="Left" Click="Button技能编辑_Click" Content="编辑"/>
 
+                        <TextBlock Grid.Row="4" Text="重赛逻辑" Style="{DynamicResource 选项TextBlockStyle}"/>
                         <ComboBox x:Name="重赛逻辑ComboBox" Grid.Row="4" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0">
                             <ComboBoxItem Content="只使用免费次数"/>
                             <ComboBoxItem Content="每场比赛至多重赛一次"/>
                             <ComboBoxItem Content="只要失败就重赛"/>
                         </ComboBox>
 
-                        <ComboBox x:Name="养成算法ComboBox" Grid.Row="5" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0">
+                        <TextBlock Grid.Row="5" Text="剧本选择" Style="{DynamicResource 选项TextBlockStyle}"/>
+                        <ComboBox x:Name="剧本ComboBox" Grid.Row="5" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0" IsEnabled="False" FontFamily="Microsoft YaHei" >
+                            <ComboBoxItem Content="URA"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="6" Text="养成算法" Style="{DynamicResource 选项TextBlockStyle}"/>
+                        <ComboBox x:Name="养成算法ComboBox" Grid.Row="6" Grid.Column="1" Style="{DynamicResource ComboBoxStyle}" SelectedIndex="0">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type ComboBox}},Path=ActualWidth}">
                                         <TextBlock Text="{Binding Name}" Cursor="Help"/>
                                         <Grid.ToolTip>
-                                            <ToolTip Content="{Binding Description}"/>
+                                            <ToolTip Content="{Binding Description}" FontSize="18" FontWeight="Bold"/>
                                         </Grid.ToolTip>
                                     </Grid>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
 
-                        <!--循环设置-->
-                        <Grid Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2">
+                        
+                        <TextBlock Grid.Row="99" Text="循环设置" Style="{DynamicResource 选项TextBlockStyle}"/>
+                        <Grid Grid.Row="99" Grid.Column="1" Grid.ColumnSpan="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition/>
@@ -252,11 +258,6 @@
                                 </CheckBox.Foreground>
                             </CheckBox>
                         </Grid>
-
-                        <!--<Button Style="{DynamicResource ButtonStyle}" x:Name="Button默认" Grid.Column="1" Click="Button默认_Click" Height="30">
-                恢复默认值
-            </Button>-->
-                        <CheckBox x:Name="养成启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True"/>
                     </Grid>
                 </Border>
                 <!--杂项任务-->

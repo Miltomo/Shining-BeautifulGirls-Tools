@@ -74,6 +74,7 @@ namespace Shining_BeautifulGirls
             public bool SaveFactor { get; set; } = true;
             public bool SaveCultivationInfo { get; set; } = true;
             public bool SaveHighLight { get; set; } = true;
+            public bool UseGPU { get; set; } = false;
             public string SkillFile { get; set; } = string.Empty;
             public IEnumerable<string[]> SkillPaths { get; set; } = [];
             public bool NeedNewTask { get; set; } = true;
@@ -118,10 +119,33 @@ namespace Shining_BeautifulGirls
 
         public void 测试(Action<object>? toast = null)
         {
-            var r = ReadRaceInfos();
+            Zone[] zones = [Zone.速度增加, Zone.耐力增加, Zone.力量增加, Zone.毅力增加, Zone.智力增加];
 
-            Array.ForEach(r, (x) => { toast?.Invoke(x); });
+            foreach (Zone zone in UPZones)
+            {
+                File.Copy(CropScreen(zone, "test"), Path.Combine(@"Z:\mlData\data\ups_t", $"{MHTools.TimeTool.RandomTime()}.png"));
+            }
 
+
+
+            /*string s = "";
+            for (int i = 0; i < zones.Length; i++)
+            {
+                var dqZ = zones[i];
+                var tg = CropScreen(dqZ, $"zone{i + 1}");
+
+                Laplacian(
+                    Gray(new OpenCvSharp.Mat(tg)),
+                    5,
+                    0.1,
+                    10
+                    )
+                    .SaveImage(tg);
+
+                s += ExtractValue(tg);
+                s += " | ";
+            }
+            toast?.Invoke(s);*/
         }
     }
 }

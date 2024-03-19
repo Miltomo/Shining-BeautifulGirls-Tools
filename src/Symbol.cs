@@ -10,6 +10,7 @@ namespace Shining_BeautifulGirls
         public static string 养成2 => Path.Combine(World.SymbolDir, "养成2.png");
         public static string 决定 => Path.Combine(World.SymbolDir, "决定.png");
         public static string 回复选条 => Path.Combine(World.SymbolDir, "回复选条.png");
+        public static string 增益值示例 => Path.Combine(World.SymbolDir, "增益值示例.png");
         public static string 夏日 => Path.Combine(World.SymbolDir, "夏日.png");
         public static string 多次参赛ON => Path.Combine(World.SymbolDir, "多次参赛ON.png");
         public static string 已获得 => Path.Combine(World.SymbolDir, "已获得.png");

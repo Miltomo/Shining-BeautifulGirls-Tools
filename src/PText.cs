@@ -73,6 +73,9 @@
         /// </summary>
         public enum Cultivation
         {
+            // 剧本
+            URA,
+
             // 开始
             养成,
             继续养成,

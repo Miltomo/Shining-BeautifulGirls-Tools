@@ -87,15 +87,16 @@ namespace Shining_BeautifulGirls
         private static string[] AllDistance { get; } = 距离适应性.Select(x => x.ToString().Replace("Rank", "")).ToArray();
         private static string[] AllRunMethod { get; } = 跑法适应性.Select(x => x.ToString().Replace("Rank", "")).ToArray();
 
-        private static readonly string[] AcceptRank = ["S", "A", "B"];
         private List<AdaptInfo> AdaptionTable { get; } = [];
 
-        private static Zone[][] RaceZoneTable { get; } = [
+        private static readonly string[] AcceptRank = ["S", "A", "B"];
+
+        private static Zone[][] RaceZoneTable = [
             [Zone.赛事Type1, Zone.赛事Name1, Zone.赛事Intro1, Zone.赛事Fans1],
             [Zone.赛事Type2, Zone.赛事Name2, Zone.赛事Intro2, Zone.赛事Fans2],
         ];
 
-        private static DateInfo[] G1TimeTable { get; } = [
+        private static DateInfo[] G1TimeTable = [
             DateInfo.Build(1, 12, DateInfo.旬Enum.上),
             DateInfo.Build(1, 12, DateInfo.旬Enum.下),
             DateInfo.Build(2, 4, DateInfo.旬Enum.上),
@@ -129,7 +130,6 @@ namespace Shining_BeautifulGirls
 
         private bool IsGoodAt(string? item)
         {
-            DateInfo.Build(1, 12, DateInfo.旬Enum.上);
             var r = AdaptionTable
                     .Where(x => x.Item == item)
                     .Select(w => w.Rank)
@@ -194,12 +194,6 @@ namespace Shining_BeautifulGirls
 
             // 退回到开头
             RaceScroll(-5000);
-            /*do
-            {
-                RaceScroll(-3000);
-                if (list.First().Equals(ReadRaceInfos().First()))
-                    break;
-            } while (true);*/
 
             return [.. list.Distinct()];
         }
@@ -234,7 +228,7 @@ namespace Shining_BeautifulGirls
                     }
                 }
 
-                if (Aw || IsDimmed(ZButton.通用参赛, 140))
+                if (Aw || IsDimmed(ZButton.兼容参赛, 140))
                     return false;
 
                 return true;
@@ -351,7 +345,7 @@ namespace Shining_BeautifulGirls
                 {
                     // 比赛日主页无需检测
                     if (FastCheck(Symbol.比赛日主页))
-                        Click(ZButton.通用参赛, 1000);
+                        Click(ZButton.通用赛事, 1000);
                     else
                     {
                         if (IsDimmed(ZButton.养成日常赛事位, 140))

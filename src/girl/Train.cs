@@ -3,11 +3,8 @@
     //TODO 着手设计自选比赛功能
     partial class ShiningGirl
     {
-        //TODO 更改为class内部判断函数
-        private static PlanEnum[] TrainingItems { get; } =
-            [PlanEnum.速度, PlanEnum.耐力, PlanEnum.力量, PlanEnum.毅力, PlanEnum.智力];
-        private static Button[] TrainingButtons { get; } =
-            [Button.速度, Button.耐力, Button.力量, Button.毅力, Button.智力];
+        private static ZButton[] TrainingButtons { get; } =
+            [ZButton.速度, ZButton.耐力, ZButton.力量, ZButton.毅力, ZButton.智力];
         private Algorithm Core { get; init; }
 
         private bool GotoTrainPage()
@@ -43,17 +40,15 @@
 
             return false;
         }
-
-
-        private void StartPlan(PlanInfo t)
+        private void StartPlan(Plan t)
         {
-            var plan = t.Plan;
-            if (TrainingItems.Contains(plan))
+            var pName = t.Name;
+            if (Plan.IsTrainningPlan(t))
             {
                 GotoTrainPage();
 
-                Log($"选择「{plan}」 {(t.Fail > 9 ? $"(训练失败率：{t.Fail}%)" : "")}");
-                var bt = TrainingButtons[Array.IndexOf(TrainingItems, plan)];
+                Log($"选择「{pName}」 {(t.Fail > 9 ? $"(训练失败率：{t.Fail}%)" : "")}");
+                var bt = TrainingButtons[Plan.GetIndexOfTrainning(t)];
                 while (FastCheck(Symbol.返回, 0.7))
                     Click(bt);
 
@@ -61,19 +56,19 @@
             }
             else
             {
-                switch (plan)
+                switch (pName)
                 {
-                    case PlanEnum.休息:
+                    case PlanName.休息:
                         Log($"训练失败率高，选择休息");
                         System__relex__();
                         break;
 
-                    case PlanEnum.外出:
+                    case PlanName.外出:
                         Log($"放弃训练，恢复心情");
                         System__out__();
                         break;
 
-                    case PlanEnum.比赛:
+                    case PlanName.比赛:
                         Log($"训练增益值过低，准备参加日常比赛......");
                         if (!DailyRaceProcess(Core.TryRace))
                             StartPlan(Core.WhenNoRace());
@@ -85,7 +80,6 @@
                 }
             }
         }
-
 
         private void Subject巡视()
         {
@@ -102,61 +96,39 @@
             var start = index;
             do
             {
-                Read训练信息(TrainingItems[index]);
+                Read训练信息(Plan.GetTrainningItemByIndex(index));
+
+                var next = (index + 1) % Plan.TrainningItemsCount;
+                var zbt = TrainingButtons[next];
+
                 // 判断是否可以跳过剩下的
-                if (Core.Skip())
-                    return;
-                var next = (index + 1) % TrainingItems.Length;
-                if (next == start)
+                if (next == start || IsDimmed(zbt, 125) || Core.Skip())
                     break;
+
                 Click(TrainingButtons[next], 50);
                 index = next;
             } while (true);
         }
 
-        private void Read训练信息(PlanEnum subject)
+        private void Read训练信息(PlanName subject)
         {
             var 等效体力 = InSummer ? Vitality - 2 : Vitality;
-            if (subject == PlanEnum.智力)
+            if (subject == PlanName.智力)
                 等效体力 += 10;
 
             // 记录训练信息
-            PlanInfo train = new()
+            Plan train = new()
             {
-                Plan = subject,
+                Name = subject,
                 HeadInfo = GetHeadInfo(),
                 Fail = FailPredict(等效体力)
             };
 
-            // 定义读值次数：通过多次判断纠正错误
-            int count = 2;
-            List<int[]> vList = [];
-            while (true)
-            {
-                count -= 1;
-                vList.Add(Once增益读值(subject));
-
-                if (count < 1)
-                    break;
-                Mnt.Refresh();
-            }
-
-            List<int> ups = [];
-            for (int i = 0; i < TrainingItems.Length; i++)
-            {
-                int real;
-                var table = vList.Select(x => x[i]);
-                var max = table.Max();
-                var min = table.Min();
-                if (max > 100 && min > 0)
-                    real = min;
-                else
-                    real = max;
-                ups.Add(real);
-            }
-
             // 记录增益值信息
-            train.UpS = [.. ups];
+            if (Core.IsReadUpValue)
+            {
+                train.UpS = GetUpsInfoByOCR();
+            }
 
             if (UserConfig?.SaveHighLight ?? false)
             {
@@ -173,73 +145,6 @@
 
             // 载入算法
             Core.Add(train);
-        }
-
-        private int[] Once增益读值(PlanEnum subject)
-        {
-            int[] V = TrainingItems.Select(x => 0).ToArray();
-            int[] rCode = subject switch
-            {
-                PlanEnum.速度 => [0, 2],
-                PlanEnum.耐力 => [1, 3],
-                PlanEnum.力量 => [1, 2],
-                PlanEnum.毅力 => [0, 2, 3],
-                PlanEnum.智力 => [0, 4],
-                _ => []
-            };
-
-            for (int i = 0; i < rCode.Length; i++)
-            {
-                int dq = rCode[i];
-                V[dq] = ExtractValue(dq switch
-                {
-                    0 => Zone.速度增加,
-                    1 => Zone.耐力增加,
-                    2 => Zone.力量增加,
-                    3 => Zone.毅力增加,
-                    4 => Zone.智力增加,
-                    _ => throw new KeyNotFoundException()
-                });
-            }
-
-            return V;
-        }
-
-        //TODO 更名换地
-        private class PlanInfo()
-        {
-            public PlanEnum Plan { get; set; }
-            public int[] UpS { get; set; }
-            public HeadInfo HeadInfo { get; set; }
-
-            private int _fail = 0;
-            public int Fail
-            {
-                get => _fail;
-                set => _fail = value < 0 ? 0 : value;
-            }
-            public double Score { get; set; } = 0d;
-
-            public override bool Equals(object? obj)
-            {
-                if (obj is PlanInfo another)
-                {
-                    return another.Plan == Plan;
-                }
-                return false;
-            }
-        }
-
-        private enum PlanEnum
-        {
-            速度,
-            耐力,
-            力量,
-            毅力,
-            智力,
-            外出,
-            休息,
-            比赛,
         }
 
         private struct HeadInfo()

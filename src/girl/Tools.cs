@@ -105,13 +105,77 @@ namespace Shining_BeautifulGirls
             };
         }
 
-        private int ExtractValue(Zone zone)
-        {
-            return (int)ExtractInfo(zone).NumericLines.FirstOrDefault();
-        }
+        private int ExtractValue(Zone zone) => ExtractValue(CropScreen(zone, "value"));
+
+        private int ExtractValue(string imagePath) =>
+            (int)Mnt.Extract(imagePath).NumericLines.FirstOrDefault();
 
         IOCRResult ExtractInfo(Enum zone) => Mnt.ExtractZone(zone);
         async Task<IOCRResult> ExtractInfoAsync(Enum zone) => await Mnt.ExtractZoneAsync(zone);
+
+        private static Zone[] UPZones =
+            [Zone.速度增加, Zone.耐力增加, Zone.力量增加, Zone.毅力增加, Zone.智力增加];
+
+        /*private int[] GetUpsInfoByGPU()
+        {
+            List<int> ups = [];
+
+            foreach (var zone in UPZones)
+            {
+                var result = DigitsDetection.Predict(new()
+                {
+                    Image = MLImage.CreateFromFile(CropScreen(zone)),
+                });
+
+                List<string> orin = [];
+
+                if (result.Score != null)
+                {
+                    // 获取原始信息
+                    Dictionary<int, string> dt = [];
+                    var score = result.Score;
+                    for (int i = 0; i < score.Length; i++)
+                        if (score[i] > 0.7)
+                            dt.Add((int)result.PredictedBoundingBoxes[i * 4], result.PredictedLabel[i]);
+
+                    List<List<string>> same = [];
+                    var sortedKeys = dt.Keys.OrderBy(key => key).ToArray();
+                    int lastKey = int.MinValue;
+
+                    for (int i = 0; i < sortedKeys.Length; i++)
+                    {
+                        var key = sortedKeys[i];
+                        var dq = dt[key];
+
+                        if (Math.Abs(key - lastKey) < 11)
+                            same[i - 1].Add(dq);
+                        else
+                            same.Add([dq]);
+
+                        lastKey = key;
+                    }
+
+                    same.ForEach(x =>
+                    {
+                        if (x.Count > 1)
+                            orin.Add(x.Contains("3") ? "3" : x.First());
+                        else
+                            orin.Add(x.First());
+                    });
+
+                }
+
+                if (int.TryParse(string.Join(string.Empty, orin), out int r))
+                    ups.Add(r);
+                else
+                    ups.Add(0);
+            }
+
+            return [.. ups];
+        }*/
+
+        private int[] GetUpsInfoByOCR() =>
+            UPZones.Select(ExtractValue).ToArray();
 
         private HeadInfo GetHeadInfo()
         {

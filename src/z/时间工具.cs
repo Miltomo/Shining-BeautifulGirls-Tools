@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace MHTools
 {
@@ -28,7 +27,7 @@ namespace MHTools
             return time + "_" + RandomLetters(5);
         }
 
-        public static string RandomLetters(int length)
+        public static string RandomLetters(int length = 5)
         {
             if (length < 1)
             {

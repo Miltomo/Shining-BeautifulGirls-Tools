@@ -129,6 +129,7 @@ namespace Shining_BeautifulGirls
 
                 case 养成过程Enum.每日总结:
                     Turn += 1;
+                    Save();
                     养成流程(养成过程Enum.转场处理);
                     break;
 
@@ -226,7 +227,7 @@ namespace Shining_BeautifulGirls
                     Log("参加比赛");
 
                     MC.Builder
-                        .SetButtons(ZButton.通用参赛)
+                        .SetButtons(ZButton.兼容参赛)
                         .AddTarget(Zone.中部, PText.Race.赛事详情)
                         .StartAsMoveTo(Mnt, 1000);
 

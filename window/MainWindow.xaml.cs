@@ -63,6 +63,16 @@ namespace Shining_BeautifulGirls
             AdbHelper.SetWorkDir(World.CacheDir);
 
             // ======系统配置======
+            /*string myDir;
+            string ppDir = Path.Combine(App.ProgramDir, "inference");
+
+            PaddleOCR.ModelConfig = new PaddleOCRSharp.OCRModelConfig()
+            {
+                det_infer = Path.Combine(ppDir, "ch_PP-OCRv4_det_server_infer"),
+                rec_infer = Path.Combine(ppDir, "ch_PP-OCRv4_rec_infer"),
+                keys = Path.Combine(ppDir, "ppocr_keys.txt"),
+            };*/
+
             PaddleOCR.CPUthreads = 配置DataModel.Get.OCRthreads;
 
             // ===================

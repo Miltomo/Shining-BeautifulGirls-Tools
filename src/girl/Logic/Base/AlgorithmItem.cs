@@ -26,12 +26,10 @@
             public static AlgorithmItem Build(string name, string description, 代号Enum id) =>
                 new() { Name = name, Description = description, 代号 = id };
         }
-
-
         public static AlgorithmItem[] Algorithms { get; } =
             [
-            AlgorithmItem.Build("基本逻辑","通用的适中性算法，兼顾数值和比赛。满足一般需求。",AlgorithmItem.代号Enum.PL),
-            AlgorithmItem.Build("基本历战(实验性)","基于基本逻辑的历战算法，赛事权重大，会进行所有G1比赛。满足对粉丝数的要求。",AlgorithmItem.代号Enum.PB),
+            AlgorithmItem.Build("基本逻辑","通用的适中性算法，兼顾数值和比赛。注重综合结果。",AlgorithmItem.代号Enum.PL),
+            AlgorithmItem.Build("基本赛事特化","基于基本逻辑的历战算法，赛事权重大，会进行所有G1比赛。注重粉丝数。",AlgorithmItem.代号Enum.PB),
             ];
     }
 }

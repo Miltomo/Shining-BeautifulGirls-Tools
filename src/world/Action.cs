@@ -2,10 +2,9 @@
 
 namespace Shining_BeautifulGirls
 {
-    //TODO 准备提前增加剧本选择处理逻辑，以便兼容
+    //TODO 赛事活动处也准备兼容化处理！
     partial class World
     {
-        //TODO 增加处于结算中的情况 => 按钮变灰的情况
         private void 竞技场流程()
         {
             int count = 0;
@@ -309,6 +308,16 @@ namespace Shining_BeautifulGirls
             if (Aw)
             {
                 Click(ZButton.养成);
+                PageDown([Symbol.返回]);
+
+                // 选择剧本
+                while (true)
+                {
+                    if (ExtractZoneAndContains(Zone.中部, PText.Cultivation.URA))
+                        break;
+                    Click(Button.切换剧本, 1000);
+                }
+
                 bool Bw = MoveControl.Builder
                     .SetButtons(Button.继续)
                     .AddProcess(Zone.上部, PText.Cultivation.选择养成难度, Button.比赛结束)
@@ -408,7 +417,7 @@ namespace Shining_BeautifulGirls
                 Log("✔️检测到上次养成数据");
                 Log($"回合数: {Girl.Turn}");
                 Log($"属性值: {Girl.Property[0]} , {Girl.Property[1]} , {Girl.Property[2]} , {Girl.Property[3]} , {Girl.Property[4]}");
-                Log($"技能学习次数: {Girl.SkillManager.SkTurns}");
+                Log($"技能学习次数: {Girl.SkillManager.SkTurns - 1}");
                 Girl.Continue();
             }
 

@@ -84,7 +84,7 @@ namespace Shining_BeautifulGirls
                 for (int i = 0; i < tgs.Length; i++)
                 {
                     var skill = tgs[i];
-                    if (result.Contains(skill))
+                    if (result.Equals(skill))
                     {
                         info.IsTarget = true;
                         info.Cost = (int)result.NumericLines.FirstOrDefault();
@@ -104,7 +104,7 @@ namespace Shining_BeautifulGirls
             public void AcceptLearned(IEnumerable<string> learned)
             {
                 SkTurns++;
-                Completed.AddRange(learned.Where(s => !string.IsNullOrEmpty(s)));
+                //Completed.AddRange(learned.Where(s => !string.IsNullOrEmpty(s)));
             }
         }
     }

@@ -140,6 +140,13 @@ namespace Shining_BeautifulGirls
         //========文字识别========
         //========================
 
+        public IOCRResult Extract(string imagePath)
+        {
+            return PaddleOCR
+                .SetImage(imagePath)
+                .Extract();
+        }
+
         public IOCRResult ExtractZone(Enum zone)
         {
             return PaddleOCR

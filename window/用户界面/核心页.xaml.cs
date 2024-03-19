@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
+//TODO 把核心Thread移到窗口去
 namespace Shining_BeautifulGirls
 {
     /// <summary>
@@ -94,8 +95,7 @@ namespace Shining_BeautifulGirls
                             else
                             {
 #if DEBUG
-                                Toast($"使用原来任务：{cfg.SkillGetingTask.Status}\n" +
-                                    $"技能数：{cfg.SkillGetingTask.Result.SelectMany(x => x).ToArray().Length}");
+                                Toast($"使用原来任务：{cfg.SkillGetingTask.Status}\n");
 #endif
                             }
 
@@ -121,6 +121,11 @@ namespace Shining_BeautifulGirls
                             catch (ResourcesNotFindException)
                             {
                                 OutPut("⚠️图片或背景不存在⚠️");
+                                OutPut("⚠️游戏可能已闪退⚠️");
+                            }
+                            catch (Exception)
+                            {
+                                throw;
                             }
                             Monitor.Stop();
                             Save养成优俊少女();
@@ -550,6 +555,7 @@ namespace Shining_BeautifulGirls
                     scf.SaveFactor = Config.保存养成因子;
                     scf.SaveCultivationInfo = Config.保存养成记录;
                     scf.SaveHighLight = Config.保存高光时刻;
+                    scf.UseGPU = false;
 
                     var dqF = VM.技能文件Value;
                     if (scf.SkillFile == dqF && scf.SkillGetingTask != null)

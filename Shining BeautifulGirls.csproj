@@ -17,9 +17,11 @@
     <Page Remove="original\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.ML" Version="1.7.1" />
-    <PackageReference Include="Microsoft.ML.FastTree" Version="1.7.1" />
-    <PackageReference Include="Microsoft.ML.Vision" Version="1.7.1" />
+    <PackageReference Include="Microsoft.ML" Version="3.0.1" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="3.0.1" />
+    <PackageReference Include="Microsoft.ML.ImageAnalytics" Version="3.0.1" />
+    <PackageReference Include="Microsoft.ML.TorchSharp" Version="0.21.1" />
+    <PackageReference Include="Microsoft.ML.Vision" Version="3.0.1" />
     <PackageReference Include="OpenCvSharp4" Version="4.8.0.20230708" />
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.8.0.20230708" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.8.0.20230708" />
@@ -27,6 +29,7 @@
     <PackageReference Include="OpenCvSharp4.WpfExtensions" Version="4.8.0.20230708" />
     <PackageReference Include="PaddleOCRSharp" Version="4.1.0" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.3.1" />
+    <PackageReference Include="TorchSharp-cpu" Version="0.101.5" />
   </ItemGroup>
   <ItemGroup>
     <None Update="adb\adb.exe">
@@ -41,18 +44,7 @@
       <LastGenOutput>Symbol.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup Label="HeadClassification">
-    <None Include="HeadClassification.consumption.cs">
-      <DependentUpon>HeadClassification.mbconfig</DependentUpon>
-    </None>
-    <None Include="HeadClassification.training.cs">
-      <DependentUpon>HeadClassification.mbconfig</DependentUpon>
-    </None>
-    <None Include="HeadClassification.zip">
-      <DependentUpon>HeadClassification.mbconfig</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	
   <ItemGroup Label="HeadDetection">
     <None Include="HeadDetection.consumption.cs">
       <DependentUpon>HeadDetection.mbconfig</DependentUpon>
@@ -65,6 +57,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+	
   <ItemGroup Label="MoodClassification">
     <None Include="MoodClassification.consumption.cs">
       <DependentUpon>MoodClassification.mbconfig</DependentUpon>
@@ -82,12 +75,12 @@
       <DependentUpon>Symbol.tt</DependentUpon>
     </None>
   </ItemGroup>
-	<ItemGroup Label="RankClassification">
-		<None Include="RankClassification.mlnet">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
 	
+  <ItemGroup Label="RankClassification">
+    <None Include="RankClassification.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 	
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
@@ -104,20 +97,17 @@
       <DependentUpon>TextTemplate1.tt</DependentUpon>
     </Compile>
   </ItemGroup>
-	
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(ProjectDir)resources&quot; &quot;$(TargetDir)resources&quot; /E /I /Y" />
   </Target>
-	
-	<Target Name="CleanUnusedFiles" BeforeTargets="BeforeBuild">
-		<ItemGroup>
-			<FilesToDelete Include="$(TargetDir)*.*" />
-		</ItemGroup>
-		<!-- Delete the specified files -->
-		<Delete Files="@(FilesToDelete)" />
-	</Target>
-	
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	  <Exec Command="FOR /D %25%25i IN (&quot;$(TargetDir)*&quot;) DO (&#xD;&#xA;    IF /I NOT &quot;%25%25~nxi&quot;==&quot;养成记录&quot; (&#xD;&#xA;        IF /I NOT &quot;%25%25~nxi&quot;==&quot;screenshot&quot; (&#xD;&#xA;            IF /I NOT &quot;%25%25~nxi&quot;==&quot;userdata&quot; (&#xD;&#xA;                rmdir /s /q &quot;%25%25i&quot;&#xD;&#xA;            )&#xD;&#xA;        )&#xD;&#xA;    )&#xD;&#xA;)" />
-	</Target>
+  <Target Name="CleanUnusedFiles" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <FilesToDelete Include="$(TargetDir)*.*" />
+    </ItemGroup>
+    <!-- Delete the specified files -->
+    <Delete Files="@(FilesToDelete)" />
+  </Target>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="FOR /D %25%25i IN (&quot;$(TargetDir)*&quot;) DO (&#xD;&#xA;    IF /I NOT &quot;%25%25~nxi&quot;==&quot;养成记录&quot; (&#xD;&#xA;        IF /I NOT &quot;%25%25~nxi&quot;==&quot;screenshot&quot; (&#xD;&#xA;            IF /I NOT &quot;%25%25~nxi&quot;==&quot;userdata&quot; (&#xD;&#xA;                rmdir /s /q &quot;%25%25i&quot;&#xD;&#xA;            )&#xD;&#xA;        )&#xD;&#xA;    )&#xD;&#xA;)" />
+  </Target>
 </Project>

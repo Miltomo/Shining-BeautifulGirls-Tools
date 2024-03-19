@@ -1,9 +1,6 @@
 ﻿using MHTools;
 using OpenCvSharp;
 using OpenCvSharp.Features2D;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ComputerVision
 {
@@ -284,25 +281,21 @@ namespace ComputerVision
             return contours;
         }
 
-
-        public static Mat CropImage(Mat inputImage, Rectangle zone)
-        {
-            return new(inputImage, new Rect(
-                zone.minX,
-                zone.minY,
-                zone.width,
-                zone.height
-                ));
-        }
-
         public static Mat CropImage(string inputImage, Rectangle zone)
         {
-            return new(new(inputImage), new Rect(
+            try
+            {
+                return new(new(inputImage), new Rect(
                 zone.minX,
                 zone.minY,
                 zone.width,
                 zone.height
                 ));
+            }
+            catch (Exception)
+            {
+                throw new ResourcesNotFindException();
+            }
         }
 
 
