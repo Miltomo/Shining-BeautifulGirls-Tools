@@ -1,5 +1,4 @@
-﻿using MHTools;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -16,9 +15,6 @@ namespace Shining_BeautifulGirls
         {
             InitializeComponent();
             DataContext = VM;
-
-            App.SetImage(主页图标, FileManagerHelper.SetDir(App.SystemIconsDir).Find("主页")!);
-
             // 绑定数据值
             OCR线程数滑条.SetBinding(Slider.ValueProperty, MakeBinding(nameof(VM.OCRthreads)));
             养成因子CheckBox.SetBinding(CheckBox.IsCheckedProperty, MakeBinding(nameof(VM.保存养成因子)));
@@ -39,12 +35,5 @@ namespace Shining_BeautifulGirls
             };
         }
         private static void MakeBinding(FrameworkElement element, DependencyProperty dq, string propertyName) => element.SetBinding(dq, MakeBinding(propertyName));
-
-
-        private void 主页图标MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (App.UserWindow is 用户界面 wd)
-                wd.切换页面(用户界面.PageEnum.主页面);
-        }
     }
 }

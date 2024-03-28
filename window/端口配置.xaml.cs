@@ -1,6 +1,4 @@
-﻿using MHTools;
-using System;
-using System.Collections.Generic;
+﻿using MHTools.UI;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,7 +40,7 @@ namespace Shining_BeautifulGirls
             if (theInput.Text.Length > 0)
                 Ports.Add(theInput.Text);
 
-            if (App.StartWindow is MainWindow mw)
+            if (App.MWindow is MainWindow mw)
             {
                 mw.IsEnabled = true;
                 mw.Show();
@@ -65,7 +63,7 @@ namespace Shining_BeautifulGirls
 
                 e.Handled = true;
             }
-            else if (UI.IsKeyNumeric(e.Key) == false)
+            else if (Checker.IsKeyNumeric(e.Key) == false)
             {
                 e.Handled = true;
             }

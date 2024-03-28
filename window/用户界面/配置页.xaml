@@ -216,8 +216,6 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-
-            <Image x:Name="主页图标" Grid.Row="2" Width="50" Source="/resources/asset/主页.png" HorizontalAlignment="Center" VerticalAlignment="Top" Style="{StaticResource 系统图标Style}" MouseLeftButtonUp="主页图标MouseLeftButtonUp" ToolTip="回到主页"/>
         </Grid>
     </Grid>
 </Page>

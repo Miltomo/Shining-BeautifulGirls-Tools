@@ -1,8 +1,8 @@
 ﻿using System.Windows.Input;
 
-namespace MHTools
+namespace MHTools.UI
 {
-    public static class UI
+    public static class Checker
     {
         public static bool IsKeyNumeric(Key k)
         {

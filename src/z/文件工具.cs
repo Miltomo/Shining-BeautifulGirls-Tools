@@ -67,10 +67,11 @@ namespace MHTools
             return fileName;
         }
 
-        public void Add()
+        public string Add()
         {
-            File.Create(Path.Combine(WorkDir, $"{NextFileName()}.{DefaultFileType}"))
-                .Close();
+            var fileName = Path.Combine(WorkDir, $"{NextFileName()}.{DefaultFileType}");
+            File.Create(fileName).Close();
+            return fileName;
         }
 
         public void Delete()

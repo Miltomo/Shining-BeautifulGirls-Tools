@@ -386,13 +386,13 @@ namespace MHTools
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <param name="filePath"></param>
-        public static void LoadFromJSON<T>(T obj, string filePath)
+        public static T? LoadFromJSON<T>(T obj, string filePath)
         {
             var orin = LoadFromJSON<Dictionary<string, JsonElement>>(filePath);
             var data = new Dictionary<string, object>();
 
             if (orin is null)
-                return;
+                return obj;
 
             foreach (var kvp in orin)
             {
@@ -406,6 +406,8 @@ namespace MHTools
                 if (data.TryGetValue(item, out var value))
                     SetValue(obj, value, item);
             };
+
+            return obj;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using MHTools;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,12 +14,15 @@ namespace Shining_BeautifulGirls
     {
         readonly BlockingCollection<Action> TipQueue = [];
         World Monitor { get; init; }
+        核心页 CorePage { get; init; }
+        配置页 ConfigPage { get; init; }
 
         public enum PageEnum
         {
             主页面,
             配置页面,
         }
+        PageEnum CurrentPage { get; set; }
 
         public 用户界面(Emulator.EmulatorItem emulator)
         {
@@ -29,10 +33,9 @@ namespace Shining_BeautifulGirls
             Height = 900;
             Width = 600;
             Monitor = new(emulator.ID);
+            CorePage = new(Monitor);
+            ConfigPage = new();
             App.UserWindow = this;
-            App.CorePage = new 核心页(Monitor);
-            App.ConfigPage = new 配置页();
-            frame.Navigate(App.CorePage);
 
             Switch即时消息框状态(false);
 
@@ -48,24 +51,11 @@ namespace Shining_BeautifulGirls
             //TODO 更换增益值检测方法
             //TODO 思考如何处理文件空值问题？
             //TODO 异常未成功截获？
+            //TODO 增加预设功能
 
-        }
-
-        public void 切换页面(PageEnum page)
-        {
-            switch (page)
-            {
-                case PageEnum.主页面:
-                    frame.Navigate(App.CorePage);
-                    break;
-
-                case PageEnum.配置页面:
-                    frame.Navigate(App.ConfigPage);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
+            启动窗口.OnCompleted(this);
+            顶层弹出显示();
+            SwitchPage(PageEnum.主页面);
         }
 
         protected override void OnClosed(EventArgs e)
@@ -74,27 +64,59 @@ namespace Shining_BeautifulGirls
             base.OnClosed(e);
         }
 
+        public void 顶层弹出显示()
+        {
+            Topmost = true;
+            Task.Run(async () =>
+            {
+                await Task.Delay(200);
+                await Dispatcher.InvokeAsync(() => Topmost = false);
+            });
+        }
+
+        public void 打开技能窗口()
+        {
+            IsEnabled = false;
+            Task.Run(async () => await Dispatcher.BeginInvoke(() => new 技能编辑().Show()));
+        }
+
+        private void SwitchPage(PageEnum page)
+        {
+            switch (page)
+            {
+                case PageEnum.主页面:
+                    frame.Navigate(CorePage);
+                    App.SetImage(换页按钮, FileManagerHelper.SetDir(App.SystemIconsDir).Find("设置")!);
+                    换页按钮.ToolTip = "设置";
+                    break;
+
+                case PageEnum.配置页面:
+                    frame.Navigate(ConfigPage);
+                    App.SetImage(换页按钮, FileManagerHelper.SetDir(App.SystemIconsDir).Find("主页")!);
+                    换页按钮.ToolTip = "回到主页";
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            CurrentPage = page;
+        }
+
         private void Switch即时消息框状态(bool open = true)
         {
             即时消息框.Opacity = open ? 1 : 0;
             即时消息框.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public static void Refresh()
+        public void Refresh()
         {
-            if (App.CorePage is 核心页 cp)
-            {
-                cp.UpdateSource();
-            }
+            CorePage.UpdateSource();
         }
 
-        public static void Save()
+        public void Save()
         {
-            配置DataModel.Save();
-            if (App.CorePage is 核心页 cp)
-            {
-                cp.Save();
-            }
+            CorePage.Save();
         }
 
         public void Toast(object msg)
@@ -161,6 +183,19 @@ namespace Shining_BeautifulGirls
                 Toast("测试结束");
             });
             thread.Start();
+        }
+
+        private void 换页按钮MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            switch (CurrentPage)
+            {
+                case PageEnum.主页面:
+                    SwitchPage(PageEnum.配置页面);
+                    break;
+                case PageEnum.配置页面:
+                    SwitchPage(PageEnum.主页面);
+                    break;
+            }
         }
     }
 }

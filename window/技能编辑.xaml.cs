@@ -1,13 +1,11 @@
 ﻿using MHTools;
-using System.Diagnostics;
+using MHTools.UI;
 using System.IO;
 using System.Text.Json;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Threading;
 using static MHTools.数据工具;
 
 namespace Shining_BeautifulGirls
@@ -23,10 +21,9 @@ namespace Shining_BeautifulGirls
         SimpleFileManager FileManager { get; } =
             new(App.SkillStrategyDir, "技能组", "json");
 
-        CollectionView 仓库分类器 { get; init; }
+        FileListBox FLB { get; init; }
 
-        TextBlock? textBlockInEdit;
-        TextBox? textBoxInEdit;
+        CollectionView 仓库分类器 { get; init; }
 
         class SkillItem
         {
@@ -96,19 +93,17 @@ namespace Shining_BeautifulGirls
 
             筛选下拉列表.ItemsSource = DefaultList.Select(x => x.Tag).SelectMany(x => x).Distinct();
 
-            文件列表.ItemsSource = FileManager.Names;
+            FLB = new(文件列表, FileManager);
         }
         protected override void OnClosed(EventArgs e)
         {
             Save技能配置(FileManager.SelectedFile);
-            用户界面.Refresh();
-
-            if (App.UserWindow is not null)
+            if (App.UserWindow is 用户界面 wd)
             {
-                App.UserWindow.IsEnabled = true;
-                App.UserWindow.Show();
+                wd.Refresh();
+                wd.IsEnabled = true;
+                wd.Show();
             }
-            App.SkillWindow = null;
             base.OnClosed(e);
         }
 
@@ -149,49 +144,6 @@ namespace Shining_BeautifulGirls
             complement.ForEach(item => 技能仓库.Items.Add(item));
 
             仓库分类器.Refresh();
-        }
-
-        private void SwitchMode(bool edit = true)
-        {
-            if (textBlockInEdit != null && textBoxInEdit != null)
-            {
-                var dqFileName = edit ?
-                    textBlockInEdit.Text :
-                    textBoxInEdit.Text;
-
-                textBoxInEdit.IsEnabled = edit;
-                textBlockInEdit.Visibility = edit ? Visibility.Hidden : Visibility.Visible;
-                textBoxInEdit.Visibility = edit ? Visibility.Visible : Visibility.Hidden;
-
-                if (edit)
-                {
-                    textBoxInEdit.Text = dqFileName;
-                    textBoxInEdit.Focus();
-                    textBoxInEdit.CaretIndex = dqFileName.Length;
-                }
-                else
-                {
-                    if (FileManager.TryRename(dqFileName))
-                        文件列表.ItemsSource = FileManager.Names;
-                    textBlockInEdit = null;
-                    textBoxInEdit = null;
-                }
-            }
-        }
-
-        private void RenameSkFile(object source)
-        {
-            // 获取目标项
-            ListBoxItem? listBoxItem = App.FindVisualParent<ListBoxItem>(source as DependencyObject);
-
-            if (listBoxItem != null)
-            {
-                // 获取项中的元素
-                textBlockInEdit = App.FindVisualChild<TextBlock>(listBoxItem);
-                textBoxInEdit = App.FindVisualChild<TextBox>(listBoxItem);
-
-                SwitchMode();
-            }
         }
 
         private void Save技能配置(string? configFile)
@@ -254,42 +206,13 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        private void Button添加_Click(object sender, RoutedEventArgs e)
-        {
-            Button添加.IsEnabled = false;
-
-            Thread thread = new(() =>
-            {
-                FileManager.Add();
-                Dispatcher.Invoke(() =>
-                {
-                    文件列表.ItemsSource = FileManager.Names;
-                    Button添加.IsEnabled = true;
-                });
-            });
-            thread.Start();
-        }
+        private void Button添加_Click(object sender, RoutedEventArgs e) =>
+            FLB.Add(sender as FrameworkElement);
 
         private void Button删除_Click(object sender, RoutedEventArgs e)
         {
             Button删除.IsEnabled = false;
-
-            Thread thread = new(() =>
-            {
-                try
-                {
-                    FileManager.Delete();
-                    Dispatcher.Invoke(() =>
-                    {
-                        文件列表.ItemsSource = FileManager.Names;
-                    });
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                }
-            });
-            thread.Start();
+            FLB.Delete();
         }
 
         private void 文件列表_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -313,26 +236,20 @@ namespace Shining_BeautifulGirls
             }
         }
 
-        private void 文件列表_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            RenameSkFile(e.OriginalSource);
-        }
+        private void 文件列表_MouseDoubleClick(object sender, MouseButtonEventArgs e) =>
+            FLB.EnterRename(e.OriginalSource);
 
-        private void 右键重命名Click(object sender, RoutedEventArgs e)
-        {
-            RenameSkFile(文件列表.ItemContainerGenerator.ContainerFromItem(文件列表.SelectedItem));
-        }
+        private void 右键重命名Click(object sender, RoutedEventArgs e) =>
+            FLB.EnterRename(FLB.Main.ItemContainerGenerator.ContainerFromItem(FLB.Main.SelectedItem));
 
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            SwitchMode(false);
-        }
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e) =>
+            FLB.EndRename();
 
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                SwitchMode(false);
+                FLB.EndRename();
                 e.Handled = true;
             }
         }

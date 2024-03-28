@@ -23,7 +23,9 @@
                 <MenuItem x:Name="右键测试" Header="测试" Cursor="Hand" Click="右键测试_Click" Visibility="Collapsed"/>
             </ContextMenu>
         </Grid.ContextMenu>
-        <Frame Grid.RowSpan="3" Grid.ColumnSpan="3" x:Name="frame" NavigationUIVisibility="Hidden"/>
+        
+        <Frame Grid.RowSpan="99" Grid.ColumnSpan="99" x:Name="frame" NavigationUIVisibility="Hidden"/>
+
         <Border x:Name="即时消息框" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Background="#CC74DFFB">
             <Border.BorderBrush>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -43,6 +45,22 @@
                 明日千万-一瞬永恒
             </TextBlock>
         </Border>
+        
+        <!--下部面板-->
+        <Grid Grid.Row="99" Grid.ColumnSpan="99">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Image Grid.Row="1" Grid.RowSpan="2" Margin="0,20,0,0" Style="{StaticResource 系统图标Style}" x:Name="换页按钮" Width="50" HorizontalAlignment="Center" VerticalAlignment="Center" MouseLeftButtonUp="换页按钮MouseLeftButtonUp"/>
+        </Grid>
     </Grid>
 
 </Window>
