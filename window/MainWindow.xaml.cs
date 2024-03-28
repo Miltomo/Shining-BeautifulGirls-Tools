@@ -36,8 +36,7 @@ namespace Shining_BeautifulGirls
             Title = "闪耀!优俊少女-工具";
             Height = 600;
             Width = 800;
-            版本信息.Text = $"{App.Version}  byGithub@Miltomo";
-            App.StartWindow = this;
+            App.MWindow = this;
 
             // ===定义文件路径===
             var path = App.ProgramDir;
@@ -141,6 +140,7 @@ namespace Shining_BeautifulGirls
             Hide();
             LoadFromJSON(typeof(Config), _jsonEmulator);
             自动连接CheckBox.IsChecked = Config.AutoConnect;
+
             // 自动连接处理
             if (Config.AutoConnect && Config.LastEmulator != null)
             {
@@ -160,8 +160,8 @@ namespace Shining_BeautifulGirls
                     }
                 }
             }
-            // 显示模拟器选择界面
-            Show();
+
+            // 等待刷新完毕
             刷新(Button刷新, new RoutedEventArgs());
         }
 
@@ -228,6 +228,7 @@ namespace Shining_BeautifulGirls
                         $"未检测到设备，尝试刷新或重启";
                     }
                     IsEnabled = true;
+                    启动窗口.OnCompleted(this);
                 });
             });
             thread.Start();

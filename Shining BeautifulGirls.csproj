@@ -9,12 +9,16 @@
     <LangVersion>preview</LangVersion>
     <BaseIntermediateOutputPath />
     <PlatformTarget>x64</PlatformTarget>
+    <ApplicationIcon>resources\logo\icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="original\**" />
     <EmbeddedResource Remove="original\**" />
     <None Remove="original\**" />
     <Page Remove="original\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\logo\icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ML" Version="3.0.1" />

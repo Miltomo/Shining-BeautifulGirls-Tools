@@ -140,7 +140,5 @@
                 >
             确定
         </Button>
-
-        <TextBlock x:Name="版本信息" Text="Version" Grid.Row="3" Grid.ColumnSpan="4" FontSize="20" Opacity="0.2" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,0,0,0"/>
     </Grid>
 </Window>
