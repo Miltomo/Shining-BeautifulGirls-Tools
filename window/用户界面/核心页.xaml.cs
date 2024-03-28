@@ -1,5 +1,6 @@
 ﻿using ComputerVision;
 using MHTools;
+using MHTools.UI;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -128,7 +129,7 @@ namespace Shining_BeautifulGirls
                                 throw;
                             }
                             Monitor.Stop();
-                            Save养成优俊少女();
+                            Monitor.Girl?.Save();
 
 #pragma warning disable CA2011 // 禁用无限递归警告
                             if (CoreState == "终止")
@@ -175,8 +176,7 @@ namespace Shining_BeautifulGirls
                         // UI变动
                         Dispatcher.Invoke(() =>
                         {
-                            App.UserWindow!.Topmost = true;
-                            App.UserWindow!.Topmost = false;
+                            (App.UserWindow as 用户界面)!.顶层弹出显示();
                             LinearGradientBrush brush = new()
                             {
                                 StartPoint = new Point(0.5, 0),
@@ -215,6 +215,7 @@ namespace Shining_BeautifulGirls
         }
         Queue<Action> PlanQueue { get; set; } = new();
         World Monitor { get; init; }
+        FileListBox 预设Manager { get; init; }
         static ShiningGirl.AlgorithmItem[] 算法集合 => ShiningGirl.Algorithms;
         class 协助卡Item
         {
@@ -222,7 +223,8 @@ namespace Shining_BeautifulGirls
             public string Path { get; set; }
         }
         #endregion
-        static 用户DataModel VM => 用户DataModel.Get;
+        static 用户DataModel VM => 用户DataModel.Instance;
+        static 用户DataModel.养成任务Info YC => VM.Cultivation;
         static 配置DataModel Config => 配置DataModel.Get;
         public 核心页(World mnt)
         {
@@ -232,22 +234,23 @@ namespace Shining_BeautifulGirls
             Monitor.LogEvent += OutPut;
             Monitor.LogUpdateEvent += UpdateLogInfo;
             Monitor.LogDeleteEvent += DeleteLogInfo;
-            UpdateSource();
-
-            App.SetImage(设置图标, FileManagerHelper.SetDir(App.SystemIconsDir).Find("设置")!);
-
             DataContext = VM;
 
+            预设Manager = new(预设下拉列表, new SimpleFileManager(Path.Combine(App.UserDataDir, "clt"), "预设", "json"));
+
+            UpdateSource();
             //=== 绑定数据 ===
-            MakeBinding(速度Input, TextBox.TextProperty, nameof(VM.V1));
-            MakeBinding(耐力Input, TextBox.TextProperty, nameof(VM.V2));
-            MakeBinding(力量Input, TextBox.TextProperty, nameof(VM.V3));
-            MakeBinding(毅力Input, TextBox.TextProperty, nameof(VM.V4));
-            MakeBinding(智力Input, TextBox.TextProperty, nameof(VM.V5));
+            MakeBinding(预设下拉列表, ListBox.SelectedValueProperty, nameof(VM.养成预设Value));
 
-            MakeBinding(技能ComboBox, ComboBox.SelectedValueProperty, nameof(VM.技能文件Value));
+            MakeBinding(速度Input, TextBox.TextProperty, 用户DataModel.GetCultivationPath(nameof(YC.V1)));
+            MakeBinding(耐力Input, TextBox.TextProperty, 用户DataModel.GetCultivationPath(nameof(YC.V2)));
+            MakeBinding(力量Input, TextBox.TextProperty, 用户DataModel.GetCultivationPath(nameof(YC.V3)));
+            MakeBinding(毅力Input, TextBox.TextProperty, 用户DataModel.GetCultivationPath(nameof(YC.V4)));
+            MakeBinding(智力Input, TextBox.TextProperty, 用户DataModel.GetCultivationPath(nameof(YC.V5)));
 
-            MakeBinding(重赛逻辑ComboBox, ComboBox.SelectedIndexProperty, nameof(VM.重赛逻辑Index));
+            MakeBinding(技能ComboBox, ComboBox.SelectedValueProperty, 用户DataModel.GetCultivationPath(nameof(YC.技能文件Value)));
+
+            MakeBinding(重赛逻辑ComboBox, ComboBox.SelectedIndexProperty, 用户DataModel.GetCultivationPath(nameof(YC.重赛逻辑Index)));
             MakeBinding(选队ComboBox, ComboBox.SelectedIndexProperty, nameof(VM.选队Index));
             MakeBinding(日常赛事ComboBox1, ComboBox.SelectedIndexProperty, nameof(VM.赛事名Index));
             MakeBinding(日常赛事ComboBox2, ComboBox.SelectedIndexProperty, nameof(VM.赛事难度Index));
@@ -264,7 +267,6 @@ namespace Shining_BeautifulGirls
             MakeBinding(传奇赛事启用CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is需要传奇赛事));
             MakeBinding(群英联赛启用CheckBox, CheckBox.IsCheckedProperty, nameof(VM.Is需要群英联赛));
             //============
-
         }
 
         private static Binding MakeBinding(string propertyName)
@@ -291,8 +293,8 @@ namespace Shining_BeautifulGirls
             养成算法ComboBox.ItemsSource = 算法集合;
 
             // 值还原
-            协助卡ComboBox.SelectedIndex = ((IEnumerable<协助卡Item>)协助卡ComboBox.ItemsSource).ToList().FindIndex(x => x.Name.Contains(VM.协助卡名称));
-            养成算法ComboBox.SelectedIndex = Array.FindIndex(算法集合, x => x.代号 == VM.养成算法代号);
+            协助卡ComboBox.SelectedIndex = ((IEnumerable<协助卡Item>)协助卡ComboBox.ItemsSource).ToList().FindIndex(x => x.Name.Contains(YC.协助卡名称));
+            养成算法ComboBox.SelectedIndex = Array.FindIndex(算法集合, x => x.代号 == YC.养成算法代号);
 
         }
 
@@ -372,21 +374,14 @@ namespace Shining_BeautifulGirls
         #region 数据保存
         public void Save()
         {
-            Save养成优俊少女();
-            Save用户设置();
-        }
-        private void Save养成优俊少女()
-        {
-            Monitor.Girl?.Save();
-        }
-        private void Save用户设置()
-        {
             // 保存无法绑定的值
-            VM.协助卡名称 = ((协助卡Item)协助卡ComboBox.SelectedItem)?.Name ?? "";
-            VM.养成算法代号 = ((ShiningGirl.AlgorithmItem)养成算法ComboBox.SelectedItem).代号;
+            YC.协助卡名称 = ((协助卡Item)协助卡ComboBox.SelectedItem)?.Name ?? "";
+            YC.养成算法代号 = ((ShiningGirl.AlgorithmItem)养成算法ComboBox.SelectedItem).代号;
 
-            // 保存普通值
-            用户DataModel.Save();
+            // 存入文件
+            用户DataModel.Save(
+                clt: 预设Manager.FileManager.SelectedFile
+                );
         }
         #endregion
 
@@ -444,7 +439,7 @@ namespace Shining_BeautifulGirls
 
             if (e.Key != Key.Back)
             {
-                if (UI.IsKeyNumeric(e.Key) && length != limitLength)
+                if (Checker.IsKeyNumeric(e.Key) && length != limitLength)
                     return;
                 e.Handled = true;
             }
@@ -482,13 +477,46 @@ namespace Shining_BeautifulGirls
             使用宝石CheckBox.Visibility = toSet ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void Button技能编辑_Click(object sender, RoutedEventArgs e)
+        private void Button技能编辑_Click(object sender, RoutedEventArgs e) => App.UserWindow.打开技能窗口();
+        #endregion
+
+        #region 预设功能
+        private void 预设下拉列表_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Save用户设置();
-            App.SkillWindow ??= new 技能编辑();
-            App.SkillWindow.Show();
-            App.UserWindow!.IsEnabled = false;
+            // 保存旧值
+            Save();
+
+            // 选择新值
+            string? value = 预设Manager.Main.SelectedValue as string;
+            if (value is null)
+            {
+                预设Manager.Cancel();
+                预设删除Button.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                预设Manager.Select(value);
+                预设删除Button.Visibility = Visibility.Visible;
+            }
+
+            预设显示TextBlock.Text = value ?? "默认预设";
+            YC.ChangeValue(预设Manager.FileManager.SelectedFile);
+            UpdateSource();
         }
+        private void 预设展开Click(object sender, RoutedEventArgs e) => 预设Popup.IsOpen = true;
+        private void 预设TextBox_LostFocus(object sender, RoutedEventArgs e) => 预设Manager.EndRename();
+        private void 预设TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                预设Manager.EndRename();
+                e.Handled = true;
+            }
+        }
+        private void 预设添加(object sender, RoutedEventArgs e) => YC.Save(预设Manager.Add());
+        private void 预设删除(object sender, RoutedEventArgs e) => 预设Manager.Delete();
+        private void 预设重命名(object sender, RoutedEventArgs e) => 预设Manager.EnterRename();
+        private void 预设下拉列表_MouseDoubleClick(object sender, MouseButtonEventArgs e) => 预设Manager.EnterRename();
         #endregion
 
         private void Button执行_Click(object sender, RoutedEventArgs e)
@@ -496,7 +524,7 @@ namespace Shining_BeautifulGirls
             switch (CoreState)
             {
                 case "未启动":
-                    Save用户设置();
+                    Save();
 
                     // 任务入队
                     PlanQueue.Clear();
@@ -537,10 +565,10 @@ namespace Shining_BeautifulGirls
                     // 载入用户配置
                     Monitor.UserConfig ??= new World.Config();
                     var mcf = Monitor.UserConfig;
+                    mcf.SupportCard = YC.协助卡名称;
                     mcf.DailyRaceNumber = VM.赛事名Index + 1;
                     mcf.DRDNumber = VM.赛事难度Index + 1;
                     mcf.TeamIndex = VM.选队Index;
-                    mcf.SupportCard = VM.协助卡名称;
                     mcf.CultivateExhaustTP = VM.Is用尽体力;
                     mcf.CultivateCount = VM.养成次数Value;
                     mcf.CultivateUseProp = VM.Is使用道具;
@@ -549,15 +577,15 @@ namespace Shining_BeautifulGirls
 
                     mcf.SBGConfig ??= new ShiningGirl.Config();
                     var scf = mcf.SBGConfig;
-                    scf.TargetProperty = [VM.V1, VM.V2, VM.V3, VM.V4, VM.V5];
-                    scf.ReChallenge = VM.重赛逻辑Index;
-                    scf.AlgorithmCode = VM.养成算法代号;
+                    scf.TargetProperty = [YC.V1, YC.V2, YC.V3, YC.V4, YC.V5];
+                    scf.ReChallenge = YC.重赛逻辑Index;
+                    scf.AlgorithmCode = YC.养成算法代号;
                     scf.SaveFactor = Config.保存养成因子;
                     scf.SaveCultivationInfo = Config.保存养成记录;
                     scf.SaveHighLight = Config.保存高光时刻;
                     scf.UseGPU = false;
 
-                    var dqF = VM.技能文件Value;
+                    var dqF = YC.技能文件Value;
                     if (scf.SkillFile == dqF && scf.SkillGetingTask != null)
                     {
                         scf.NeedNewTask = false;
@@ -588,12 +616,6 @@ namespace Shining_BeautifulGirls
                 default:
                     break;
             }
-        }
-
-        private void 设置图标MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (App.UserWindow is 用户界面 wd)
-                wd.切换页面(用户界面.PageEnum.配置页面);
         }
     }
 }

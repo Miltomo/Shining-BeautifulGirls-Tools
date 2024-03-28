@@ -11,5 +11,11 @@ namespace Shining_BeautifulGirls
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        protected void OnManyChanged(string[] propertyNames)
+        {
+            foreach (var name in propertyNames)
+                OnPropertyChanged(name);
+        }
     }
 }

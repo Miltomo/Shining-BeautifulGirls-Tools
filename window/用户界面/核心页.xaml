@@ -40,6 +40,7 @@
             <Setter Property="FontWeight" Value="Black"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
         </Style>
 
         <Style x:Key="属性值TextBoxStyle" TargetType="{x:Type TextBox}">
@@ -60,6 +61,7 @@
         <Style x:Key="RadioButtonStyle" TargetType="{x:Type RadioButton}">
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
             <Setter Property="RenderTransform">
                 <Setter.Value>
@@ -149,8 +151,55 @@
                         </Grid.RowDefinitions>
                         <TextBlock Style="{DynamicResource 面板名TextBlockStyle}">养成任务</TextBlock>
                         <CheckBox x:Name="养成启用CheckBox" Style="{DynamicResource 启用CheckBoxStyle}" Grid.Column="1" IsChecked="True"/>
-                        
-                        
+
+                        <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,50,0">
+                            <TextBlock Text="预设" Style="{DynamicResource 选项TextBlockStyle}"/>
+                            <Border Margin="20,0,0,0" BorderBrush="Black" BorderThickness="1">
+                                <TextBlock x:Name="预设显示TextBlock" Text="默认预设" Style="{DynamicResource 选项TextBlockStyle}" FontSize="15" Background="White" Padding="3" Foreground="#99000000" TextAlignment="Center" MinWidth="60" MaxWidth="160" TextTrimming="CharacterEllipsis"/>
+                            </Border>
+                            
+                            <Popup x:Name="预设Popup" PlacementTarget="{Binding ElementName=预设显示TextBlock}" Placement="Bottom" StaysOpen="False" IsOpen="False">
+                                <StackPanel Background="White" MinWidth="90" MaxWidth="130">
+                                    <ListBox x:Name="预设下拉列表" SelectionChanged="预设下拉列表_SelectionChanged" MaxHeight="500" MouseDoubleClick="预设下拉列表_MouseDoubleClick">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,5,0,0">
+                                                    <TextBlock Text="{Binding}" FontSize="15" TextAlignment="Center" FontFamily="微软雅黑" FontWeight="Bold" HorizontalAlignment="Stretch"/>
+                                                    <TextBox Visibility="Hidden" FontSize="15" TextAlignment="Center" BorderBrush="{x:Null}" FontFamily="微软雅黑" IsEnabled="False" Foreground="#FF19AB0D" FontWeight="Bold" ContextMenu="{x:Null}" LostFocus="预设TextBox_LostFocus" PreviewKeyDown="预设TextBox_PreviewKeyDown"/>
+
+                                                    <Grid.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="删除" IsEnabled="True" Click="预设删除"/>
+                                                            <MenuItem Header="重命名" IsEnabled="True" Click="预设重命名"/>
+                                                        </ContextMenu>
+                                                    </Grid.ContextMenu>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <Button Cursor="Hand" Content="新建预设" Height="30" FontFamily="楷体" FontSize="16" FontWeight="Bold" HorizontalAlignment="Stretch" Click="预设添加">
+                                        <Button.Background>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="#FFA5F595"/>
+                                                <GradientStop Color="White" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Button.Background>
+                                    </Button>
+                                    <Button Visibility="Collapsed" x:Name="预设删除Button" Cursor="Hand" Content="删除" Height="20" FontFamily="楷体" FontSize="16" FontWeight="Bold" HorizontalAlignment="Stretch" Click="预设删除">
+                                        <Button.Background>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="#FFFF5454"/>
+                                                <GradientStop Color="#FFF7F5B5" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Button.Background>
+                                    </Button>
+                                </StackPanel>
+                            </Popup>
+                            
+                            <ToggleButton x:Name="预设展开" Cursor="Hand" Content="▼" FontSize="20" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center" Click="预设展开Click" Background="#FFF3F3A9" Foreground="#FF26BEE6"/>
+                        </StackPanel>
+
+
                         <TextBlock Grid.Row="1" Text="目标属性值" Style="{DynamicResource 选项TextBlockStyle}"/>
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid.RowDefinitions>
@@ -366,7 +415,7 @@
                     <RowDefinition Height="9*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Style="{DynamicResource 面板名TextBlockStyle}">运行记录</TextBlock>
-                <FlowDocumentScrollViewer x:Name="滚动包装器" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <FlowDocumentScrollViewer x:Name="滚动包装器" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" VerticalAlignment="Top" Cursor="Hand">
                     <FlowDocument x:Name="运行记录" FontFamily="微软雅黑" FontSize="20"/>
                 </FlowDocumentScrollViewer>
             </Grid>
@@ -383,8 +432,8 @@
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="3*"/>
             </Grid.RowDefinitions>
-            <Image Style="{StaticResource 系统图标Style}" x:Name="设置图标" Width="50" Grid.Row="1" Source="resources/asset/设置.png" HorizontalAlignment="Center" VerticalAlignment="Top" MouseLeftButtonUp="设置图标MouseLeftButtonUp" ToolTip="设置"/>
-            <Button x:Name="Button执行" Grid.RowSpan="2" Grid.Column="1" Style="{DynamicResource ButtonStyle}" FontSize="30" Height="60" Width="150" Click="Button执行_Click">
+            
+            <Button x:Name="Button执行" Grid.RowSpan="2" Grid.Column="1" Style="{DynamicResource ButtonStyle}" FontSize="30" Height="60" Width="150" Click="Button执行_Click" Cursor="Hand">
                 <Button.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF65BCF3"/>
