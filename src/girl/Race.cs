@@ -354,26 +354,30 @@ namespace Shining_BeautifulGirls
                         Click(ZButton.养成日常赛事位, 1000);
                     }
                 }
-                // 检测赛事推荐弹窗
-                else if (Extract上部().Contains(PText.Race.赛事推荐功能))
-                {
-                    Click(Button.不弹赛事推荐);
-                    Click(Button.比赛结束, 1000);
-                }
-                // 检测提醒弹窗
-                else if ((r = Extract中部(), r.Equals(PText.Race.前往赛事)).Item2)
-                    Click(Button.大弹窗确认, 1000);
-                // 连续参赛提示
-                else if (r.Contains(PText.Race.连续参赛))
-                {
-                    InContinuousRace = true;
-                    Click(Button.弹窗确认, 1000);
-                }
-                // 当没有比赛时
-                else if (r.Equals(PText.Cultivation.暂无可以参加的比赛))
-                    return false;
+                // 情况检测
                 else
-                    Click(ZButton.返回);
+                {
+                    // 检测赛事推荐弹窗
+                    if (Extract上部().Contains(PText.Race.赛事推荐功能))
+                    {
+                        Click(Button.不弹赛事推荐);
+                        Click(Button.比赛结束, 1000);
+                    }
+                    // 检测提醒弹窗
+                    else if ((r = Extract中部(), r.Equals(PText.Race.前往赛事)).Item2)
+                        Click(Button.大弹窗确认, 1000);
+                    // 连续参赛提示
+                    else if (r.Contains(PText.Race.连续参赛))
+                    {
+                        InContinuousRace = true;
+                        Click(Button.弹窗确认, 1000);
+                    }
+                    // 当没有比赛时
+                    else if (r.Equals(PText.Cultivation.暂无可以参加的比赛))
+                        return false;
+                    else
+                        Click(ZButton.返回);
+                }
             }
         }
 

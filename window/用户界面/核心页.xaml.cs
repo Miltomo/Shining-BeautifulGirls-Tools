@@ -176,7 +176,6 @@ namespace Shining_BeautifulGirls
                         // UI变动
                         Dispatcher.Invoke(() =>
                         {
-                            (App.UserWindow as 用户界面)!.顶层弹出显示();
                             LinearGradientBrush brush = new()
                             {
                                 StartPoint = new Point(0.5, 0),
@@ -188,6 +187,7 @@ namespace Shining_BeautifulGirls
                             Button执行.IsEnabled = true;
                             Button执行.Content = "返回";
                             Button执行.Background = brush;
+                            App.UserWindow.顶层弹出显示();
                         });
                         break;
 

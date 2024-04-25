@@ -228,8 +228,16 @@ namespace Shining_BeautifulGirls
 
                     MC.Builder
                         .SetButtons(ZButton.兼容参赛)
+                        .AddProcess(() =>
+                        {
+                            if (Extract中部().Contains(PText.Race.连续参赛))
+                            {
+                                InContinuousRace = true;
+                                Click(Button.弹窗确认, 1000);
+                            }
+                        })
                         .AddTarget(Zone.中部, PText.Race.赛事详情)
-                        .StartAsMoveTo(Mnt, 1000);
+                        .StartAsMoveTo(Mnt, 1500);
 
                     Click(Button.大弹窗确认);
 

@@ -11,6 +11,12 @@
     <PlatformTarget>x64</PlatformTarget>
     <ApplicationIcon>resources\logo\icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="original\**" />
     <EmbeddedResource Remove="original\**" />

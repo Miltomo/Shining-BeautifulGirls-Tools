@@ -20,7 +20,7 @@ namespace Shining_BeautifulGirls
         public static Window? MWindow { get; set; }
         public static 用户界面 UserWindow { get; set; }
 
-        public static readonly string Version = "v1.1.2";
+        public static readonly string Version = "v1.2.2";
 
         public static string AdbPath => Path.Combine(ProgramDir, @"adb/adb.exe");
         public static string ProgramDir { get; private set; } = Environment.CurrentDirectory;

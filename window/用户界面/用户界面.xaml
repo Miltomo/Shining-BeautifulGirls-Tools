@@ -3,10 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Shining_BeautifulGirls"
+        xmlns:local="clr-namespace:Shining_BeautifulGirls" 
         mc:Ignorable="d"
         Title="用户界面" Height="900" Width="600">
     <Grid>
+        <Grid.Style>
+            <Style/>
+        </Grid.Style>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="2*"/>
@@ -58,7 +61,6 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-
             <Image Grid.Row="1" Grid.RowSpan="2" Margin="0,20,0,0" Style="{StaticResource 系统图标Style}" x:Name="换页按钮" Width="50" HorizontalAlignment="Center" VerticalAlignment="Center" MouseLeftButtonUp="换页按钮MouseLeftButtonUp"/>
         </Grid>
     </Grid>

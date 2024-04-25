@@ -66,12 +66,14 @@ namespace Shining_BeautifulGirls
 
         public void 顶层弹出显示()
         {
+            WindowState = WindowState.Normal;
             Topmost = true;
-            Task.Run(async () =>
+            Thread thread = new(() =>
             {
-                await Task.Delay(200);
-                await Dispatcher.InvokeAsync(() => Topmost = false);
+                Thread.Sleep(500);
+                Dispatcher.Invoke(() => Topmost = false);
             });
+            thread.Start();
         }
 
         public void 打开技能窗口()
