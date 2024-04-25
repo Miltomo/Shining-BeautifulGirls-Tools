@@ -1,40 +1,56 @@
 ## 简介
-《闪耀！优俊少女》（国服赛马娘）的辅助工具。用于自动化操作。
-- 使用C#+WPF构建
-- **Windows应用程序**，也可在其他平台运行
-- 完全**GUI**操作
+SBGT(Shining!BeautifulGirls-Tools)，是本人自用自制的手游《闪耀！优俊少女》（国服赛马娘）的辅助工具。
+主要用途是自动化操作。减轻游玩负担，拒绝重复劳动。
+- 源代码
+- C#/.NET
+- WPF
 
+## 软件获取方式
+#### 前往[SBGT-Release](https://github.com/Miltomo/SBGT-Release)直接下载发布版本或自行构建
 
-## 下载地址 
-### 环境
-[.NET7.0](https://dotnet.microsoft.com/zh-cn/download/dotnet/7.0)  
-必须要有，否则无法运行
-### 程序
-测试版[v0.9.0]()  
-解压后双击exe即可运行
-
-## 软件功能
-- 养成任务
-1. 自定义协助卡（**可自行扩展**，操作方法见下）
-1. 自由配置技能，分组分段学习，更合理（**可自行扩展**）
-1. 支持数据保存，意外退出后，可继续上次养成（**需先回到主界面**）
-1. 支持保存养成截图、因子截图等
-- 支持其他日常任务(竞技场、日常赛事等)
-
-[个人使用&测试结果]()
-
-## 高级设置
-
-
-## 即将更新
-- 迁移到.NET8.0
-- 保存运行记录
-- 菜单面板(更多设置、截图功能)
-
-
-## 绿色软件声明
-- 本软件仅供学习和分享。因滥用本软件导致的一切问题概不负责。
-- 本软件的唯一发布地址为**Github**。其他来源均为盗版，并对内容不负责。
-- 本软件不访问网络，不含任何恶意程序。
-
-## 开源许可
+---
+## 贡献
+### ★编写新的养成算法★
+1. 在`src/girl/Logic`文件夹下新建`你的算法.cs`或直接复制`Template.cs`
+2. 你需要在`ShiningGirl`类下新建一个属于你的算法类，并继承自`ShiningGirl.Algorithm`。具体代码如下：
+    ```C#
+    namespace Shining_BeautifulGirls
+    {
+        partial class ShiningGirl
+        {
+            class 你的算法 : Algorithm
+            {
+            }
+        }
+    }
+    ```
+3. 编写算法主体：你最少需要实现`Score`和`Select`这两个函数：  
+`Score`接受一个`Plan`变量，返回`double`，内容是为一个计划打分；   
+`Select`为无参数函数，返回`Plan`，内容是选择一项合适的计划。   
+整个算法的实现过程就是先为所有可能的项目打分，最后根据得分(或其他因素)，选出最合适的要执行的项目。  
+具体代码如下：
+    ```C#
+    class YourAlgorithm : Algorithm
+    {
+        // 构造函数
+        public YourAlgorithm(ShiningGirl girl) : base(girl)
+        {
+        }
+    
+        // 实现你的打分逻辑
+        protected override double Score(Plan info)
+        {
+            throw new NotImplementedException();
+        }
+    
+        // 实现你的选择逻辑
+        protected override Plan Select()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    ```
+4. 注册算法：找到[`Shining BeautifulGirls\src\girl\Logic\Base\AlgorithmItem.cs`](https://github.com/Miltomo/Shining-BeautifulGirls-Tools/blob/master/src/girl/Logic/Base/AlgorithmItem.cs)，在其中的`代号Enum`里添加新的代号  
+   然后找到`public static AlgorithmItem[] Algorithms`，在其中添加新项，`AlgorithmItem.Build("算法名","算法介绍",AlgorithmItem.代号Enum.算法代号)`
+5. API参考：详见[`..\girl\Logic\Base\Base.cs`](https://github.com/Miltomo/Shining-BeautifulGirls-Tools/blob/master/src/girl/Logic/Base/Base.cs)。  
+注意，作为规则，只能使用基类`Algorithm`提供的变量与函数，不可直接用`girl`调用，更一般的，除构造函数外，不应再访问`girl`变量。
